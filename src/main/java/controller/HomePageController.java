@@ -5,7 +5,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.*;
-import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
 public class HomePageController{
@@ -30,7 +29,7 @@ public class HomePageController{
 
     @FXML
     void StartGameButton(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("/view/ChessBoard.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/view/GamePage.fxml"));
         stage = (Stage)((Node)event.getSource()).getScene().getWindow();
         scene = (Scene)((Node)event.getSource()).getScene();
         scene.setRoot(root);
