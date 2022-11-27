@@ -1,21 +1,33 @@
 package model;
 
+import javafx.scene.shape.Rectangle;
+
 public abstract class Piece {
-    public Tile currentTile;
+    public int  positionX;
+    public int  positionY;
 
-    public Piece(Tile currentTile) {
-        this.currentTile = currentTile;
+
+
+    public Piece(int positionX, int positionY) {
+
+        this.positionX = positionX;
+        this.positionY = positionY;
     }
 
-    public Tile getCurrentTile() {
-        return currentTile;
+    public int getPositionX() {
+        return positionX;
     }
 
-    public void setCurrentTile(Tile currentTile) {
-        this.currentTile = currentTile;
+    public void setPositionX(int positionX) {
+        this.positionX = positionX;
     }
 
+    public int getPositionY() {
+        return positionY;
+    }
 
-
-    abstract void movePiece(Tile tile);
+    public void setPositionY(int positionY) {
+        this.positionY = positionY;
+    }
+    abstract void movePiece(int positionX, int positionY);
 }

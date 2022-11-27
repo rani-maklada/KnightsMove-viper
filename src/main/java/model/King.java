@@ -2,14 +2,15 @@ package model;
 
 public class King extends Piece{
 
-    public King(Tile currentTile) {
-        super(currentTile);
+    public King(int positionX, int positionY) {
+        super(positionX,positionY);
     }
 
 
 
     @Override
-    void movePiece(Tile tile) {
-        setCurrentTile(tile);
+    void movePiece(int positionX, int positionY) {
+        setPositionX(positionX);
+        setPositionY(positionY);
     }
 }
