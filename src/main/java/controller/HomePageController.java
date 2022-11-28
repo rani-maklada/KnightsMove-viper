@@ -13,8 +13,13 @@ public class HomePageController{
     @FXML private Stage stage;
 
     @FXML
-    void HighScoreButton(ActionEvent event) {
-
+    void HighScoreButton(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("/view/HighScorePage.fxml"));
+        stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+        scene = (Scene)((Node)event.getSource()).getScene();
+        scene.setRoot(root);
+        stage.setScene(scene);
+        stage.show();
     }
 
     @FXML

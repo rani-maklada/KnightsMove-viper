@@ -1,5 +1,5 @@
 .root{
-     -fx-background-image:url('knight-chess-attack.jpg');
+     -fx-background-image:url('images/knight-chess-attack.jpg');
      -fx-background-size:cover;
 }
 .button {
