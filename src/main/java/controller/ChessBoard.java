@@ -3,20 +3,20 @@ package controller;
 import javafx.geometry.Insets;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import model.Knight;
-import model.Piece;
-import model.Queen;
-import model.Tile;
+import model.*;
 
 import java.util.ArrayList;
 
 public class ChessBoard {
 
     private GridPane chessBoard;
+    protected King king;
+    protected Queen queen;
     private String theme;
     private ArrayList<Tile> tiles = new ArrayList<>();
 
     public ChessBoard(GridPane chessBoard, String theme){
+
         this.chessBoard = chessBoard;
         this.theme = theme;
 
@@ -100,10 +100,12 @@ public class ChessBoard {
                     addPiece(tile, new Knight("black", tile.getX(), tile.getY()));
                 }
                 if(tile.getX() == 1){
-                    addPiece(tile, new Knight("white", tile.getX(), tile.getY()));
+                    this.king = new King("white", tile.getX(), tile.getY());
+                    addPiece(tile, king);
                 }
                 if(tile.getX() == 7){
-                    addPiece(tile, new Queen("white", tile.getX(), tile.getY()));
+                    this.queen = new Queen("white", tile.getX(), tile.getY());
+                    addPiece(tile,queen );
                 }
             }
         }

@@ -24,6 +24,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import model.King;
 import model.Piece;
 import model.Tile;
 
@@ -58,8 +59,10 @@ public class GamePageController {
         lbTimer.setStyle("-fx-font-size: 2em;");
 
     }
+
     @FXML
     void playButton(ActionEvent event){
+
             if (timeline != null) {
                 timeline.stop();
             }
@@ -94,14 +97,18 @@ public class GamePageController {
     void getOnMouseClicked(MouseEvent event) {
         EventTarget target = event.getTarget();
         System.out.println(target.toString());
+
         // Clicked on square
         if (target.toString().equals("Tile")) {
             Tile tile = (Tile) target;
             if (tile.isOccupied()) {
                 Piece newPiece = (Piece) tile.getChildren().get(0);
+
                 // Selecting a new piece
                 if (currentPiece == null) {
                     currentPiece = newPiece;
+
+
 //                            currentPiece.getAllPossibleMoves();
                     if (!currentPiece.getColor().equals(currentPlayer)) {
                         currentPiece = null;
