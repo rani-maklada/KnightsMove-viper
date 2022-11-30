@@ -2,15 +2,28 @@ package controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
+
+import javafx.animation.AnimationTimer;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.event.ActionEvent;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.event.EventTarget;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import model.Piece;
 import model.Tile;
 
@@ -20,19 +33,63 @@ public class GamePageController {
 //    @FXML private Scene scene;
 //    @FXML private Stage stage;
     @FXML private GridPane chessBoard;
+    @FXML private Label lbTimer;
+    @FXML private Button btPlay;
     public static Piece currentPiece;
     public static String currentPlayer;
+    private static final Integer STARTTIME = 0;
+    private Timeline timeline;
+    private Integer timeSeconds =
+            (STARTTIME);
+
     public static ChessBoard cb;
     private String theme;
     private ArrayList<Tile> tiles = new ArrayList<>();
     private boolean game;
     @FXML
     void initialize() throws IOException {
+
         cb = new ChessBoard(chessBoard, "Marine");
         currentPiece = null;
         currentPlayer = "black";
         this.game = true;
+        lbTimer.setText(timeSeconds.toString());
+        lbTimer.setTextFill(Color.BLUE);
+        lbTimer.setStyle("-fx-font-size: 2em;");
+
     }
+    @FXML
+    void playButton(ActionEvent event){
+            if (timeline != null) {
+                timeline.stop();
+            }
+
+            timeSeconds = STARTTIME;
+
+            // update timerLabel
+                lbTimer.setText(timeSeconds.toString());
+            timeline = new Timeline();
+            timeline.setCycleCount(Timeline.INDEFINITE);
+        // KeyFrame event handler
+        timeline.getKeyFrames().add(
+                    new KeyFrame(Duration.seconds(1),
+                            (EventHandler) event1 -> {
+                                timeSeconds++;
+                                // update timerLabel
+                                lbTimer.setText(
+                                        timeSeconds.toString());
+                                if (timeSeconds >= 100) {
+                                    timeline.stop();
+                                }
+                            }));
+        timeline.playFromStart();
+    }
+
+
+
+
+
+
     @FXML
     void getOnMouseClicked(MouseEvent event) {
         EventTarget target = event.getTarget();
