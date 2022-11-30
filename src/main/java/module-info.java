@@ -9,8 +9,6 @@ module application.knightsmove {
     requires org.kordamp.bootstrapfx.core;
     requires com.almasb.fxgl.all;
 
-    opens application to javafx.fxml;
-    exports application;
     opens controller to javafx.fxml;
     exports controller;
 }

@@ -3,7 +3,10 @@ package controller;
 import javafx.geometry.Insets;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import model.*;
+import model.Knight;
+import model.Piece;
+import model.Queen;
+import model.Tile;
 
 import java.util.ArrayList;
 
@@ -97,7 +100,7 @@ public class ChessBoard {
                     addPiece(tile, new Knight("black", tile.getX(), tile.getY()));
                 }
                 if(tile.getX() == 1){
-                    addPiece(tile, new King("white", tile.getX(), tile.getY()));
+                    addPiece(tile, new Knight("white", tile.getX(), tile.getY()));
                 }
                 if(tile.getX() == 7){
                     addPiece(tile, new Queen("white", tile.getX(), tile.getY()));
