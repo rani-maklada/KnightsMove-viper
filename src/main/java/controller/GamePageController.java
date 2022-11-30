@@ -181,6 +181,23 @@ public class GamePageController {
         currentPiece.showAllPossibleMoves(false);
         currentPiece = null;
         if (changePlayer) currentPlayer = currentPlayer.equals("white") ? "black" : "white";
+        if (currentPlayer.equals("white")){
+            autoMove();
+        }
+    }
+    private void autoMove(){
+        cb.king.getAllPossibleMoves();
+         ArrayList<String> autoMove = cb.king.getPossibleMoves();
+         System.out.println(autoMove);
+        String str =  autoMove.get(1);
+
+        for (Tile t : cb.getTiles()){
+            if (t.getName().equals(str)){
+                currentPiece = cb.king;
+                dropPiece(t);
+            }
+        }
+
     }
 
     private void dropPiece(Tile tile) {
