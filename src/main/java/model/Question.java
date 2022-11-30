@@ -60,12 +60,6 @@ public class Question {
 
     @Override
     public String toString() {
-        return "Question{" +
-                "questionID='" + questionID + '\'' +
-                ", answers=" + answers +
-                ", correct_ans=" + correct_ans +
-                ", level=" + level +
-                ", team='" + team + '\'' +
-                '}';
+        return questionID;
     }
 }
