@@ -18,6 +18,10 @@ public class Question {
         this.team = team;
     }
 
+    public Question(String questionID) {
+        this.questionID = questionID;
+    }
+
     public String getQuestionID() {
         return questionID;
     }
@@ -56,6 +60,21 @@ public class Question {
 
     public void setLevel(int level) {
         this.level = level;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Question question = (Question) o;
+
+        return questionID.equals(question.questionID);
+    }
+
+    @Override
+    public int hashCode() {
+        return questionID.hashCode();
     }
 
     @Override

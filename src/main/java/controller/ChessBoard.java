@@ -12,6 +12,7 @@ public class ChessBoard {
     private GridPane chessBoard;
     protected King king;
     protected Queen queen;
+    protected Knight knight;
     private String theme;
     private ArrayList<Tile> tiles = new ArrayList<>();
 
@@ -34,6 +35,11 @@ public class ChessBoard {
             }
         }
         addPieces();
+    }
+    public void setThemeBoard(String theme){
+        for (Tile tile : tiles){
+            setTheme(tile, theme, tile.getX(), tile.getY());
+        }
     }
 
     private void setTheme(Tile tile, String theme, int i, int j){
@@ -72,7 +78,6 @@ public class ChessBoard {
         }else{
             tile.setBackground(new Background(new BackgroundFill(color2, CornerRadii.EMPTY, Insets.EMPTY)));
         }
-
     }
 
     public String getTheme() {
@@ -81,6 +86,14 @@ public class ChessBoard {
 
     public void setTheme(String theme) {
         this.theme = theme;
+    }
+
+    public GridPane getChessBoard() {
+        return chessBoard;
+    }
+
+    public void setChessBoard(GridPane chessBoard) {
+        this.chessBoard = chessBoard;
     }
 
     public ArrayList<Tile> getTiles() {
@@ -97,16 +110,17 @@ public class ChessBoard {
             if(tile.isOccupied()) continue;
             if(tile.getY() == 0){
                 if(tile.getX() == 0){
-                    addPiece(tile, new Knight("black", tile.getX(), tile.getY()));
+                    this.knight = new Knight("black", tile.getX(), tile.getY());
+                    addPiece(tile, this.knight);
                 }
                 if(tile.getX() == 1){
                     this.king = new King("white", tile.getX(), tile.getY());
                     addPiece(tile, king);
                 }
-                if(tile.getX() == 7){
-                    this.queen = new Queen("white", tile.getX(), tile.getY());
-                    addPiece(tile,queen );
-                }
+//                if(tile.getX() == 7){
+//                    this.queen = new Queen("white", tile.getX(), tile.getY());
+//                    addPiece(tile,queen );
+//                }
             }
         }
     }

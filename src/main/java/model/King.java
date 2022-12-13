@@ -28,7 +28,7 @@ public class King extends Piece{
 
         for(String move : moves){
             if(getTileByName(move) != null){
-                if(getTileByName(move).isOccupied() && getPieceByName(move).getColor().equals(GamePageController.currentPlayer)) continue;
+//                if(getTileByName(move).isOccupied() && getPieceByName(move).getColor().equals(GamePageController.currentPlayer)) continue;
                 getPossibleMoves().add(move);
 
             }

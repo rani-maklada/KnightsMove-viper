@@ -5,10 +5,12 @@
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="402.0" prefWidth="458.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.QuestionsPageController">
+<AnchorPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.QuestionsPageController">
    <children>
-      <ListView fx:id="listView" layoutX="54.0" layoutY="83.0" prefHeight="261.0" prefWidth="350.0" styleClass="list-cell" stylesheets="@application.css" />
-      <Button layoutX="33.0" layoutY="355.0" mnemonicParsing="false" onAction="#BackButton" text="Back" />
-      <Label layoutX="184.0" prefHeight="69.0" prefWidth="90.0" text="Questions" />
+      <ListView fx:id="listView" layoutX="153.0" layoutY="117.0" prefHeight="365.0" prefWidth="493.0" styleClass="list-cell" stylesheets="@application.css" />
+      <Button layoutX="160.0" layoutY="503.0" mnemonicParsing="false" onAction="#BackButton" text="Back" />
+      <Label alignment="CENTER" contentDisplay="CENTER" layoutX="355.0" layoutY="32.0" prefHeight="69.0" prefWidth="90.0" text="Questions" textAlignment="CENTER" />
+      <Button layoutX="548.0" layoutY="503.0" mnemonicParsing="false" onAction="#DeleteButton" text="Delete" />
+      <Button layoutX="608.0" layoutY="503.0" mnemonicParsing="false" text="Add" />
    </children>
 </AnchorPane>

@@ -82,7 +82,7 @@ public class Piece extends ImageView {
         }
     }
 
-    public Tile getTileByName(String name) {
+    static public Tile getTileByName(String name) {
         for (Tile tile : GamePageController.cb.getTiles()){
             if (tile.getName().equals(name)) {
                 return tile;
@@ -92,7 +92,7 @@ public class Piece extends ImageView {
         return null;
     }
 
-    public Piece getPieceByName(String name) {
+    static public Piece getPieceByName(String name) {
         for (Tile tile : GamePageController.cb.getTiles()) {
             if (tile.getChildren().size() == 0) continue;
 

@@ -14,9 +14,13 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.event.EventTarget;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.input.MouseEvent;
@@ -29,14 +33,15 @@ import model.Piece;
 import model.Tile;
 
 public class GamePageController {
-//    @FXML private AnchorPane GameBoard;
-//    @FXML private Parent root;
-//    @FXML private Scene scene;
-//    @FXML private Stage stage;
+    @FXML private ChoiceBox<String> choiceTheme;
+    @FXML private AnchorPane GamePage;
+    @FXML private Scene scene;
+    @FXML private Stage stage;
     @FXML private GridPane chessBoard;
     @FXML private Label lbTimer;
     @FXML private Button btPlay;
-    public static Piece currentPiece;
+    public static Piece myPiece;
+    public static Piece computerPiece;
     public static String currentPlayer;
     private static final Integer STARTTIME = 0;
     private Timeline timeline;
@@ -51,15 +56,27 @@ public class GamePageController {
     void initialize() throws IOException {
 
         cb = new ChessBoard(chessBoard, "Marine");
-        currentPiece = null;
+        myPiece = cb.knight;
+        computerPiece = cb.king;
         currentPlayer = "black";
         this.game = true;
         lbTimer.setText(timeSeconds.toString());
         lbTimer.setTextFill(Color.BLUE);
         lbTimer.setStyle("-fx-font-size: 2em;");
-
+        chessBoard.setDisable(true);
+        String themes[] = {"Coral","Dusk","Wheat","Marine","Emerald","Sandcastle"};
+        choiceTheme.getItems().addAll(themes);
+        choiceTheme.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            // Code to execute when the user selects a different item from the ChoiceBox
+            System.out.println("You selected: " + newValue);
+            cb.setThemeBoard(choiceTheme.getValue());
+        });
     }
-
+    @FXML
+    void ClickTheme(MouseEvent event) {
+        System.out.println("yes");
+        cb.setThemeBoard(choiceTheme.getValue());
+    }
     @FXML
     void playButton(ActionEvent event){
 
@@ -86,84 +103,42 @@ public class GamePageController {
                                 }
                             }));
         timeline.playFromStart();
+        chessBoard.setDisable(false);
+        selectPiece(true);
     }
-
-
-
-
-
+    @FXML
+    void backButton(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("/view/HomePage.fxml"));
+        stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+        scene = (Scene)((Node)event.getSource()).getScene();
+        scene.setRoot(root);
+        stage.setScene(scene);
+        stage.show();
+    }
 
     @FXML
     void getOnMouseClicked(MouseEvent event) {
         EventTarget target = event.getTarget();
         System.out.println(target.toString());
-
-        // Clicked on square
+        // Clicked on Tile
         if (target.toString().equals("Tile")) {
             Tile tile = (Tile) target;
-            if (tile.isOccupied()) {
+            if (tile.isOccupied()) {//Kill piece
                 Piece newPiece = (Piece) tile.getChildren().get(0);
-
-                // Selecting a new piece
-                if (currentPiece == null) {
-                    currentPiece = newPiece;
-
-
-//                            currentPiece.getAllPossibleMoves();
-                    if (!currentPiece.getColor().equals(currentPlayer)) {
-                        currentPiece = null;
-                        return;
-                    }
-                    selectPiece(game);
-                }
-                // Selecting other piece of same color || Killing a piece
-                else {
-                    if (currentPiece.getColor().equals(newPiece.getColor())){
-                        deselectPiece(false);
-                        currentPiece = newPiece;
-//                                currentPiece.getAllPossibleMoves();
-                        selectPiece(game);
-                    } else {
-                        killPiece(tile);
-                    }
-                }
-
-            }
-            // Dropping a piece on blank square
-            else {
+                killPiece(tile);
+            } else { // Drop piece on blank tile
                 dropPiece(tile);
             }
-        }
-        // Clicked on piece
-        else {
+        } else { // Clicked on piece
             Piece newPiece = (Piece) target;
             Tile tile = (Tile) newPiece.getParent();
-            // Selecting a new piece
-            if (currentPiece == null) {
-                currentPiece = newPiece;
-                if (!currentPiece.getColor().equals(currentPlayer)) {
-                    currentPiece = null;
-                    return;
-                }
-                selectPiece(game);
+            killPiece(tile);
             }
-            // Selecting other piece of same color || Killing a piece
-            else {
-                if (currentPiece.getColor().equals(newPiece.getColor())) {
-                    deselectPiece(false);
-                    currentPiece = newPiece;
-                    selectPiece(game);
-                } else {
-                    killPiece(tile);
-                }
-            }
-
-        }
     }
 
     private void selectPiece(boolean game) {
         if (!game) {
-            currentPiece = null;
+            myPiece = null;
             return;
         }
 
@@ -171,63 +146,123 @@ public class GamePageController {
         borderGlow.setColor(Color.BLACK);
         borderGlow.setOffsetX(0f);
         borderGlow.setOffsetY(0f);
-        currentPiece.setEffect(borderGlow);
-        currentPiece.getAllPossibleMoves();
-        currentPiece.showAllPossibleMoves(true);
+        myPiece.setEffect(borderGlow);
+        myPiece.getAllPossibleMoves();
+        myPiece.showAllPossibleMoves(true);
     }
-
     private void deselectPiece(boolean changePlayer) {
-        currentPiece.setEffect(null);
-        currentPiece.showAllPossibleMoves(false);
-        currentPiece = null;
-        if (changePlayer) currentPlayer = currentPlayer.equals("white") ? "black" : "white";
-        if (currentPlayer.equals("white")){
-            autoMove();
+        myPiece.setEffect(null);
+        myPiece.showAllPossibleMoves(false);
+        selectPiece(true);
+    }
+    private void computerMove(){
+        computerPiece.getAllPossibleMoves();
+         ArrayList<String> moves = computerPiece.getPossibleMoves();
+         System.out.println(moves);
+        String str = bestMove(moves);
+        System.out.println("bestMove: "+str);
+        for (Tile t : cb.getTiles()){
+            if (t.getName().equals(str)) {
+                if (t.isOccupied()) {
+                    killMyPiece(t);
+                } else {
+                    dropComputer(t);
+                }
+            }
         }
     }
-    private void autoMove(){
-        cb.king.getAllPossibleMoves();
-         ArrayList<String> autoMove = cb.king.getPossibleMoves();
-         System.out.println(autoMove);
-        String str =  autoMove.get(1);
-
-        for (Tile t : cb.getTiles()){
-            if (t.getName().equals(str)){
-                currentPiece = cb.king;
-                dropPiece(t);
+    private String bestMove(ArrayList<String> moves){
+        int x=computerPiece.getPosX(),y=computerPiece.getPosY();
+        for (String move:moves) {
+            Tile tile = Piece.getTileByName(move);
+            if(Math.abs(tile.getX()-myPiece.getPosX()) < Math.abs(x-myPiece.getPosX())){
+                x = tile.getX();
+            }
+            if(Math.abs(tile.getY()-myPiece.getPosY()) < Math.abs(y-myPiece.getPosY())){
+                y = tile.getY();
             }
         }
 
+        return String.format("Tile%d%d",x,y);
     }
 
     private void dropPiece(Tile tile) {
-        if (!currentPiece.getPossibleMoves().contains(tile.getName())) return;
+        if (!myPiece.getPossibleMoves().contains(tile.getName())) return;
 
-        Tile initialSquare = (Tile) currentPiece.getParent();
-        tile.getChildren().add(currentPiece);
+        Tile initialSquare = (Tile) myPiece.getParent();
+        tile.getChildren().add(myPiece);
         tile.setOccupied(true);
         initialSquare.getChildren().removeAll();
         initialSquare.setOccupied(false);
-        currentPiece.setPosX(tile.getX());
-        currentPiece.setPosY(tile.getY());
+        myPiece.setPosX(tile.getX());
+        myPiece.setPosY(tile.getY());
+        if(computerPiece != null) computerMove();
+        deselectPiece(true);
+    }
+    private void dropComputer(Tile tile) {
+        if (!computerPiece.getPossibleMoves().contains(tile.getName())) return;
+
+        Tile initialSquare = (Tile) computerPiece.getParent();
+        tile.getChildren().add(computerPiece);
+        tile.setOccupied(true);
+        initialSquare.getChildren().removeAll();
+        initialSquare.setOccupied(false);
+        computerPiece.setPosX(tile.getX());
+        computerPiece.setPosY(tile.getY());
+    }
+    private void killMyPiece(Tile tile) {
+        if (!computerPiece.getPossibleMoves().contains(tile.getName())) return;
+
+        Piece killedPiece = (Piece) tile.getChildren().get(0);
+        if (killedPiece.getType().equals("Knight")){
+            this.game = false;
+            System.out.println("Game Over");
+            GameOver();
+        }
+
+        Tile initialSquare = (Tile) computerPiece.getParent();
+        tile.getChildren().remove(0);
+        tile.getChildren().add(computerPiece);
+        tile.setOccupied(true);
+        initialSquare.getChildren().removeAll();
+        initialSquare.setOccupied(false);
+        computerPiece.setPosX(tile.getX());
+        computerPiece.setPosY(tile.getY());
+        deselectPiece(true);
+    }
+    private void killPiece(Tile tile) {
+        if (!myPiece.getPossibleMoves().contains(tile.getName())) return;
+
+        Piece killedPiece = (Piece) tile.getChildren().get(0);
+        if (killedPiece.getType().equals("King")) computerPiece = null;
+        if (killedPiece.getType().equals("Queen")) computerPiece = null;
+
+        Tile initialSquare = (Tile) myPiece.getParent();
+        tile.getChildren().remove(0);
+        tile.getChildren().add(myPiece);
+        tile.setOccupied(true);
+        initialSquare.getChildren().removeAll();
+        initialSquare.setOccupied(false);
+        myPiece.setPosX(tile.getX());
+        myPiece.setPosY(tile.getY());
         deselectPiece(true);
     }
 
-    private void killPiece(Tile tile) {
-        if (!currentPiece.getPossibleMoves().contains(tile.getName())) return;
-
-        Piece killedPiece = (Piece) tile.getChildren().get(0);
-        if (killedPiece.getType().equals("Knight")) this.game = false;
-
-
-        Tile initialSquare = (Tile) currentPiece.getParent();
-        tile.getChildren().remove(0);
-        tile.getChildren().add(currentPiece);
-        tile.setOccupied(true);
-        initialSquare.getChildren().removeAll();
-        initialSquare.setOccupied(false);
-        currentPiece.setPosX(tile.getX());
-        currentPiece.setPosY(tile.getY());
-        deselectPiece(true);
+    private void GameOver() {
+        Alert gameOverAlert = new Alert(Alert.AlertType.INFORMATION);
+        gameOverAlert.setTitle("Game Over");
+        gameOverAlert.setHeaderText("Sorry, you lost the game!");
+        gameOverAlert.setContentText("Better luck next time!");
+        gameOverAlert.showAndWait();
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("/view/HomePage.fxml"));
+            stage = (Stage)GamePage.getScene().getWindow();
+            scene = (Scene)GamePage.getScene();
+            scene.setRoot(root);
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

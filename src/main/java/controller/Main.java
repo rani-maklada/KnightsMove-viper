@@ -4,8 +4,10 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-public class Main extends Application {
+import model.SysData;
 
+public class Main extends Application {
+    private static SysData sys = SysData.getInstance();
     public static void main(String[] args) {
         launch(args);
     }
