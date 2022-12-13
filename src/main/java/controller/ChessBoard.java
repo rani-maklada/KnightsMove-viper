@@ -110,11 +110,11 @@ public class ChessBoard {
             if(tile.isOccupied()) continue;
             if(tile.getY() == 0){
                 if(tile.getX() == 0){
-                    this.knight = new Knight("black", tile.getX(), tile.getY());
+                    this.knight = (Knight) PieceFactory.createPiece("Knight","black", tile.getX(), tile.getY());
                     addPiece(tile, this.knight);
                 }
-                if(tile.getX() == 1){
-                    this.king = new King("white", tile.getX(), tile.getY());
+                if(tile.getX() == 7){
+                    this.king = (King) PieceFactory.createPiece("King","white", tile.getX(), tile.getY());
                     addPiece(tile, king);
                 }
 //                if(tile.getX() == 7){

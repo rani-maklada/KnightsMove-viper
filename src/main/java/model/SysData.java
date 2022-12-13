@@ -23,7 +23,7 @@ public class SysData {
         return sys;
     }
     public SysData() {
-        resourceName = "/files/questions.json";
+        resourceName = "questions.json";
         questions = new ArrayList<>();
         history = new ArrayList<>();
         ImportQuestions();
@@ -50,31 +50,8 @@ public class SysData {
 
     }
     public void ImportQuestions(){
-        InputStream inputStream = QuestionsPageController.class.getResourceAsStream(resourceName);
-        if (inputStream == null) {
-            throw new NullPointerException("Cannot find resource file " + resourceName);
-        }
-        //JSONObject base = new JSONObject(new JSONTokener(inputStream));
-        //JSONObject base = new JSONObject("questions.json");
-        //JSONObject base = new JSONObject();
-        //StringBuilder sb = new StringBuilder();
-       /* try (FileReader reader = new FileReader("questions.json")) {
-            base = new JSONObject(reader);
-            System.out.println(reader);
-            System.out.println(base.getJSONArray("questions"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
-        //try {
-            //JSONObject json = new JSONObject(new FileReader("questions.json"));
-           // System.out.println(json.getJSONArray("questions"));
-        //} catch (FileNotFoundException e) {
-            //throw new RuntimeException(e);
-        //}
-
-        //System.out.println(base.getJSONArray("questions"));
-        /*
-        System.out.println(sb.toString());
+        JSONObject base = readJSONObject();
+        System.out.println(base.getJSONArray("questions"));
         Iterator<Object> iterator = ((JSONArray) base.get("questions")).iterator();
         while (iterator.hasNext()) {
             JSONObject jsonObject = (JSONObject) iterator.next();
@@ -91,50 +68,29 @@ public class SysData {
                     String.valueOf(jsonObject.get("team"))));
         }
         System.out.println(questions);
-
-         */
+    }
+    private JSONObject readJSONObject(){
+        InputStream stream;
+        try {
+            stream = new FileInputStream(resourceName);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        JSONObject base = new JSONObject(new JSONTokener(stream));
+        return base;
     }
 
     public void removeQuestion(String question){
-        InputStream inputStream = QuestionsPageController.class.getResourceAsStream(resourceName);
-        if (inputStream == null) {
-            throw new NullPointerException("Cannot find resource file " + resourceName);
-        }
-        JSONObject base = new JSONObject(new JSONTokener(inputStream));
+        JSONObject base = readJSONObject();
         JSONArray array = ((JSONArray) base.get("questions"));
         int index = questions.indexOf(new Question(question));
         array.remove(index);
         questions.remove(index);
-        /*
-        FileWriter file = null;
-        try {
-            file = new FileWriter("questions.json");
-            System.out.println(QuestionsPageController.class.getResourceAsStream(resourceName));
-            file.write(base.toString());
-            file.flush();
-            file.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        System.out.println(1);
-        Iterator<Object> iterator = ((JSONArray) base.get("questions")).iterator();
-        while (iterator.hasNext()) {
-            JSONObject jsonObject = (JSONObject) iterator.next();
-            System.out.println(jsonObject.get("question"));
-            if (jsonObject.get("question").equals(question)){
-                System.out.println(iterator);
-                iterator.remove();
-            }
-        }
-        JSONArray array1 = (JSONArray) base.get("questions");
-        System.out.println(array1);
-         */
         System.out.println(array);
-        //saveJSONObject(base,"questions.json");
-
+        saveJSONObject(base);
     }
-    private void saveJSONObject(JSONObject object, String fileName){
-        try (FileWriter file = new FileWriter(fileName)){
+    private void saveJSONObject(JSONObject object){
+        try (FileWriter file = new FileWriter(resourceName)){
             file.write(object.toString());
         } catch (IOException e) {
             e.printStackTrace();
