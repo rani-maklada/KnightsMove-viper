@@ -2,6 +2,7 @@ package controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Optional;
 
 import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;
@@ -18,10 +19,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
@@ -33,13 +31,24 @@ import model.Piece;
 import model.Tile;
 
 public class GamePageController {
-    @FXML private ChoiceBox<String> choiceTheme;
-    @FXML private AnchorPane GamePage;
-    @FXML private Scene scene;
-    @FXML private Stage stage;
-    @FXML private GridPane chessBoard;
-    @FXML private Label lbTimer;
-    @FXML private Button btPlay;
+    @FXML
+    private ChoiceBox<String> choiceTheme;
+    @FXML
+    private AnchorPane GamePage;
+    @FXML
+    private Scene scene;
+    @FXML
+    private Stage stage;
+    @FXML
+    private GridPane chessBoard;
+    @FXML
+    private Label lbTimer;
+    @FXML
+    private Button btPlay;
+
+    @FXML
+    private SplitPane splitPane;
+    @FXML private Label myNickName;
     public static Piece myPiece;
     public static Piece computerPiece;
     public static String currentPlayer;
@@ -47,13 +56,16 @@ public class GamePageController {
     private Timeline timeline;
     private Integer timeSeconds =
             (STARTTIME);
-
+    String myNickHolder;
     public static ChessBoard cb;
     private String theme;
     private ArrayList<Tile> tiles = new ArrayList<>();
     private boolean game;
+
     @FXML
     void initialize() throws IOException {
+
+        GameStarting();
 
         cb = new ChessBoard(chessBoard, "Marine");
         myPiece = cb.knight;
@@ -63,54 +75,90 @@ public class GamePageController {
         lbTimer.setText(timeSeconds.toString());
         lbTimer.setTextFill(Color.BLUE);
         lbTimer.setStyle("-fx-font-size: 2em;");
-        chessBoard.setDisable(true);
-        String themes[] = {"Coral","Dusk","Wheat","Marine","Emerald","Sandcastle"};
+      //  chessBoard.setDisable(true);
+        String themes[] = {"Coral", "Dusk", "Wheat", "Marine", "Emerald", "Sandcastle"};
         choiceTheme.getItems().addAll(themes);
         choiceTheme.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             // Code to execute when the user selects a different item from the ChoiceBox
             System.out.println("You selected: " + newValue);
             cb.setThemeBoard(choiceTheme.getValue());
         });
+        StartMyTimer();
+        myNickName.setText(myNickHolder);
     }
+
     @FXML
     void ClickTheme(MouseEvent event) {
         System.out.println("yes");
         cb.setThemeBoard(choiceTheme.getValue());
     }
+
     @FXML
-    void playButton(ActionEvent event){
+    void playButton(ActionEvent event) {
 
-            if (timeline != null) {
-                timeline.stop();
-            }
+        if (timeline != null) {
+            timeline.stop();
+        }
 
-            timeSeconds = STARTTIME;
+        timeSeconds = STARTTIME;
 
-            // update timerLabel
-                lbTimer.setText(timeSeconds.toString());
-            timeline = new Timeline();
-            timeline.setCycleCount(Timeline.INDEFINITE);
+        // update timerLabel
+        lbTimer.setText(timeSeconds.toString());
+        timeline = new Timeline();
+        timeline.setCycleCount(Timeline.INDEFINITE);
         // KeyFrame event handler
         timeline.getKeyFrames().add(
-                    new KeyFrame(Duration.seconds(1),
-                            (EventHandler) event1 -> {
-                                timeSeconds++;
-                                // update timerLabel
-                                lbTimer.setText(
-                                        timeSeconds.toString());
-                                if (timeSeconds >= 100) {
-                                    timeline.stop();
-                                }
-                            }));
+                new KeyFrame(Duration.seconds(1),
+                        (EventHandler) event1 -> {
+                            timeSeconds++;
+                            // update timerLabel
+                            lbTimer.setText(
+                                    timeSeconds.toString());
+                            if (timeSeconds >= 100) {
+                                timeline.stop();
+                            }
+                        }));
         timeline.playFromStart();
         chessBoard.setDisable(false);
         selectPiece(true);
     }
+
+
+    void StartMyTimer()
+    {
+        if (timeline != null) {
+            timeline.stop();
+        }
+
+        timeSeconds = STARTTIME;
+
+        // update timerLabel
+        lbTimer.setText(timeSeconds.toString());
+        timeline = new Timeline();
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        // KeyFrame event handler
+        timeline.getKeyFrames().add(
+                new KeyFrame(Duration.seconds(1),
+                        (EventHandler) event1 -> {
+                            timeSeconds++;
+                            // update timerLabel
+                            lbTimer.setText(
+                                    timeSeconds.toString());
+                            if (timeSeconds >= 100) {
+                                timeline.stop();
+                            }
+                        }));
+        timeline.playFromStart();
+        chessBoard.setDisable(false);
+        selectPiece(true);
+    }
+
+
     @FXML
     void backButton(ActionEvent event) throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("/view/HomePage.fxml"));
-        stage = (Stage)((Node)event.getSource()).getScene().getWindow();
-        scene = (Scene)((Node)event.getSource()).getScene();
+        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        scene = (Scene) ((Node) event.getSource()).getScene();
         scene.setRoot(root);
         stage.setScene(scene);
         stage.show();
@@ -133,7 +181,7 @@ public class GamePageController {
             Piece newPiece = (Piece) target;
             Tile tile = (Tile) newPiece.getParent();
             killPiece(tile);
-            }
+        }
     }
 
     private void selectPiece(boolean game) {
@@ -150,18 +198,20 @@ public class GamePageController {
         myPiece.getAllPossibleMoves();
         myPiece.showAllPossibleMoves(true);
     }
+
     private void deselectPiece(boolean changePlayer) {
         myPiece.setEffect(null);
         myPiece.showAllPossibleMoves(false);
         selectPiece(true);
     }
-    private void computerMove(){
+
+    private void computerMove() {
         computerPiece.getAllPossibleMoves();
-         ArrayList<String> moves = computerPiece.getPossibleMoves();
-         System.out.println(moves);
+        ArrayList<String> moves = computerPiece.getPossibleMoves();
+        System.out.println(moves);
         String str = bestMove(moves);
-        System.out.println("bestMove: "+str);
-        for (Tile t : cb.getTiles()){
+        System.out.println("bestMove: " + str);
+        for (Tile t : cb.getTiles()) {
             if (t.getName().equals(str)) {
                 if (t.isOccupied()) {
                     killMyPiece(t);
@@ -171,19 +221,20 @@ public class GamePageController {
             }
         }
     }
-    private String bestMove(ArrayList<String> moves){
-        int x=computerPiece.getPosX(),y=computerPiece.getPosY();
-        for (String move:moves) {
+
+    private String bestMove(ArrayList<String> moves) {
+        int x = computerPiece.getPosX(), y = computerPiece.getPosY();
+        for (String move : moves) {
             Tile tile = Piece.getTileByName(move);
-            if(Math.abs(tile.getX()-myPiece.getPosX()) < Math.abs(x-myPiece.getPosX())){
+            if (Math.abs(tile.getX() - myPiece.getPosX()) < Math.abs(x - myPiece.getPosX())) {
                 x = tile.getX();
             }
-            if(Math.abs(tile.getY()-myPiece.getPosY()) < Math.abs(y-myPiece.getPosY())){
+            if (Math.abs(tile.getY() - myPiece.getPosY()) < Math.abs(y - myPiece.getPosY())) {
                 y = tile.getY();
             }
         }
 
-        return String.format("Tile%d%d",x,y);
+        return String.format("Tile%d%d", x, y);
     }
 
     private void dropPiece(Tile tile) {
@@ -196,9 +247,10 @@ public class GamePageController {
         initialSquare.setOccupied(false);
         myPiece.setPosX(tile.getX());
         myPiece.setPosY(tile.getY());
-        if(computerPiece != null) computerMove();
+        if (computerPiece != null) computerMove();
         deselectPiece(true);
     }
+
     private void dropComputer(Tile tile) {
         if (!computerPiece.getPossibleMoves().contains(tile.getName())) return;
 
@@ -210,11 +262,12 @@ public class GamePageController {
         computerPiece.setPosX(tile.getX());
         computerPiece.setPosY(tile.getY());
     }
+
     private void killMyPiece(Tile tile) {
         if (!computerPiece.getPossibleMoves().contains(tile.getName())) return;
 
         Piece killedPiece = (Piece) tile.getChildren().get(0);
-        if (killedPiece.getType().equals("Knight")){
+        if (killedPiece.getType().equals("Knight")) {
             this.game = false;
             System.out.println("Game Over");
             GameOver();
@@ -230,6 +283,7 @@ public class GamePageController {
         computerPiece.setPosY(tile.getY());
         deselectPiece(true);
     }
+
     private void killPiece(Tile tile) {
         if (!myPiece.getPossibleMoves().contains(tile.getName())) return;
 
@@ -254,15 +308,41 @@ public class GamePageController {
         gameOverAlert.setHeaderText("Sorry, you lost the game!");
         gameOverAlert.setContentText("Better luck next time!");
         gameOverAlert.showAndWait();
+        homePage();
+    }
+    private void homePage(){
         try {
             Parent root = FXMLLoader.load(getClass().getResource("/view/HomePage.fxml"));
-            stage = (Stage)GamePage.getScene().getWindow();
-            scene = (Scene)GamePage.getScene();
+            stage = (Stage) GamePage.getScene().getWindow();
+            scene = (Scene) GamePage.getScene();
             scene.setRoot(root);
             stage.setScene(scene);
             stage.show();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+    private void GameStarting() {
+        // create an alert
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+
+        alert.setTitle("Let's Go");
+        alert.setHeaderText("Fill in your nickname please");
+
+        Label label = new Label("");
+
+        TextField textField = new TextField();
+
+        alert.getDialogPane().setContent(new VBox(label, textField));
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if(!result.isPresent()){
+            homePage();
+        } else if(result.get() == ButtonType.OK){
+            if (textField.getText().isEmpty()) {
+                GameStarting();
+            }
+        }
+        myNickHolder=textField.getText();
     }
 }

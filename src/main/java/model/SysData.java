@@ -51,6 +51,9 @@ public class SysData {
     }
     public void ImportQuestions(){
         JSONObject base = readJSONObject();
+        if(base == null){
+            return;
+        }
         System.out.println(base.getJSONArray("questions"));
         Iterator<Object> iterator = ((JSONArray) base.get("questions")).iterator();
         while (iterator.hasNext()) {
@@ -74,7 +77,8 @@ public class SysData {
         try {
             stream = new FileInputStream(resourceName);
         } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
+            //throw new RuntimeException(e);
+            return null;
         }
         JSONObject base = new JSONObject(new JSONTokener(stream));
         return base;

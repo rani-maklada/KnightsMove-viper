@@ -2,6 +2,10 @@
      -fx-background-image:url('images/knight-chess-attack.jpg');
      -fx-background-size:cover;
 }
+.myGameBackGround{
+     -fx-background-image:url('images/KnightsMoveBackGround.jpg');
+     -fx-background-size:cover;
+}
 .button {
     -fx-text-fill: white;
     -fx-font-family: "Arial Narrow";
@@ -26,4 +30,9 @@
 .list-cell:filled:hover {
     -fx-cell-hover-color: #0093ff;
     -fx-text-fill: white;
+}
+
+.myLabelsHome
+{
+
 }

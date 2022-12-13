@@ -67,6 +67,7 @@ public class QuestionsPageController {
 		System.out.println(listView.getSelectionModel().getSelectedItem());
 		SysData.getInstance().removeQuestion(listView.getSelectionModel().getSelectedItem().getText());
 		resetViewList();
+
 	}
 
     @FXML
