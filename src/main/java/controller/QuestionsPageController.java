@@ -17,13 +17,12 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import java.io.InputStream;
 
@@ -35,7 +34,7 @@ public class QuestionsPageController {
 	@FXML private Parent root;
 	@FXML private Scene scene;
 	@FXML private Stage stage;
-	@FXML  private ListView<Label> listViewQuestions;
+	@FXML  private ListView<String> listViewQuestions;
 	@FXML private ListView<Label> listViewAnswers;
 
 	@FXML private TextField tfCorrectAnswer;
@@ -49,34 +48,49 @@ public class QuestionsPageController {
 		listViewQuestions.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 			getAnswers();
 		});
+		listViewQuestions.setCellFactory(lv -> {
+			ListCell<String> cell = new ListCell<>();
+			Text text = new Text();
+			cell.setGraphic(text);
+			cell.setPrefHeight(Control.USE_COMPUTED_SIZE);
+			cell.setWrapText(true);
+			text.wrappingWidthProperty().bind(listViewQuestions.widthProperty());
+			text.textProperty().bind(cell.itemProperty());
+			return cell;
+		});
+		listViewQuestions.setOnMouseClicked(mouseEvent -> {
+			if(mouseEvent.getButton().equals(MouseButton.PRIMARY)){
+				if(mouseEvent.getClickCount() == 2){
+					System.out.println("Double clicked");
+				}
+			}
+		});
 	}
 	void resetViewList(){
 		listViewQuestions.getItems().clear();
 		for (Question q : SysData.getInstance().getQuestions()) {
-			Button myButton = new Button();
-			myButton.setText("Click me");
-			Label lbItem = new Label();
-			lbItem.setStyle("-fx-text-alignment: center;");
-			lbItem.setText(q.getQuestionID().toString());
-
-			if (q.getLevel() == 1) {
-				lbItem.setTextFill(Color.RED);
-			}
-			if (q.getLevel() == 2) {
-				lbItem.setTextFill(Color.GREEN);
-			}
-			if (q.getLevel() == 3) {
-				lbItem.setTextFill(Color.WHITE);
-			}
-
-			listViewQuestions.getItems().add(lbItem);
+//			Button myButton = new Button();
+//			myButton.setText("Click me");
+//			TextArea taItem = new TextArea();
+//			taItem.setStyle("-fx-text-alignment: center;");
+//			taItem.setText(q.getQuestionID().toString());
+//			if (q.getLevel() == 1) {
+//				taItem.setTextFill(Color.RED);
+//			}
+//			if (q.getLevel() == 2) {
+//				taItem.setTextFill(Color.GREEN);
+//			}
+//			if (q.getLevel() == 3) {
+//				taItem.setTextFill(Color.WHITE);
+//			}
+			listViewQuestions.getItems().add(q.getQuestionID());
 		}
 		listViewQuestions.refresh();
 	}
 	@FXML
 	void DeleteButton(ActionEvent event) {
 		System.out.println(listViewQuestions.getSelectionModel().getSelectedItem());
-		SysData.getInstance().removeQuestion(listViewQuestions.getSelectionModel().getSelectedItem().getText());
+		SysData.getInstance().removeQuestion(listViewQuestions.getSelectionModel().getSelectedItem());
 		resetViewList();
 
 	}
@@ -84,7 +98,7 @@ public class QuestionsPageController {
 	void getAnswers(){
 		listViewAnswers.getItems().clear();
 
-		int index = SysData.getInstance().getQuestions().indexOf(new Question(listViewQuestions.getSelectionModel().getSelectedItem().getText()));
+		int index = SysData.getInstance().getQuestions().indexOf(new Question(listViewQuestions.getSelectionModel().getSelectedItem()));
 		Question q = SysData.getInstance().getQuestions().get(index);
 		for (String answer : q.getAnswers().values()) {
 			Label lbItem = new Label();
