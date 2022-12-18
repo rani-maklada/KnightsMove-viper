@@ -4,14 +4,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.event.EventTarget;
 import javafx.fxml.FXML;
@@ -54,19 +49,17 @@ public class GamePageController {
     public static String currentPlayer;
     private static final Integer STARTTIME = 0;
     private Timeline timeline;
-    private Integer timeSeconds =
-            (STARTTIME);
+    private Integer timeSeconds = (STARTTIME);
     String myNickHolder;
     public static ChessBoard cb;
     private String theme;
     private ArrayList<Tile> tiles = new ArrayList<>();
     private boolean game;
+    private ArrayList<Tile> visitedTiles = new ArrayList<>();
 
     @FXML
     void initialize() throws IOException {
-
         GameStarting();
-
         cb = new ChessBoard(chessBoard, "Marine");
         myPiece = cb.knight;
         computerPiece = cb.king;
@@ -75,7 +68,6 @@ public class GamePageController {
         lbTimer.setText(timeSeconds.toString());
         lbTimer.setTextFill(Color.BLUE);
         lbTimer.setStyle("-fx-font-size: 2em;");
-      //  chessBoard.setDisable(true);
         String themes[] = {"Coral", "Dusk", "Wheat", "Marine", "Emerald", "Sandcastle"};
         choiceTheme.getItems().addAll(themes);
         choiceTheme.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
