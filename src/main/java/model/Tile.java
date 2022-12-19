@@ -6,10 +6,12 @@ public class Tile extends StackPane {
     private int x,y;
     private boolean occupied;
     private String name;
+    private boolean visited;
     public Tile(int x, int y){
         this.x = x;
         this.y = y;
         this.occupied = false;
+        this.visited = false;
     }
     public int getX() {
         return x;
@@ -30,9 +32,15 @@ public class Tile extends StackPane {
     public boolean isOccupied() {
         return occupied;
     }
+    public boolean isVisited() {
+        return visited;
+    }
 
     public void setOccupied(boolean occupied) {
         this.occupied = occupied;
+    }
+    public void setVisited(boolean visited) {
+        this.visited = visited;
     }
     public void setName(String name){
         this.name = name;

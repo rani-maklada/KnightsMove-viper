@@ -17,15 +17,15 @@ public class HighScorePageController {
     @FXML private Scene scene;
     @FXML private Stage stage;
     @FXML private TableView<String> tableView;
-    @FXML private Button Back;
+    @FXML
     void initialize() throws IOException {
         System.out.println(tableView);
     }
     @FXML
     void BackButton(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("/view/HomePage.fxml"));
+        root = FXMLLoader.load(getClass().getResource("/view/HomePage.fxml"));
         stage = (Stage)((Node)event.getSource()).getScene().getWindow();
-        scene = (Scene)((Node)event.getSource()).getScene();
+        scene = ((Node)event.getSource()).getScene();
         scene.setRoot(root);
         stage.setScene(scene);
         stage.show();

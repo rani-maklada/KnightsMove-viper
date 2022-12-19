@@ -15,17 +15,18 @@ public class ChessBoard {
     protected Knight knight;
     private String theme;
     private ArrayList<Tile> tiles = new ArrayList<>();
+    private int boardSize;
 
-    public ChessBoard(GridPane chessBoard, String theme){
+    public ChessBoard(GridPane chessBoard, String theme, int boardSize){
 
         this.chessBoard = chessBoard;
         this.theme = theme;
-
+        this.boardSize=boardSize;
         makeBoard(this.chessBoard, theme);
     }
     private void makeBoard(GridPane chessBoard, String theme){
-        for(int i=0; i<8; i++){
-            for(int j=0; j<8; j++){
+        for(int i=0; i<boardSize; i++){
+            for(int j=0; j<boardSize; j++){
                 Tile tile = new Tile(i,j);
                 tile.setName("Tile" + i + j);
                 tile.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
@@ -40,6 +41,7 @@ public class ChessBoard {
         for (Tile tile : tiles){
             setTheme(tile, theme, tile.getX(), tile.getY());
         }
+        this.theme=theme;
     }
 
     private void setTheme(Tile tile, String theme, int i, int j){
@@ -82,10 +84,6 @@ public class ChessBoard {
 
     public String getTheme() {
         return theme;
-    }
-
-    public void setTheme(String theme) {
-        this.theme = theme;
     }
 
     public GridPane getChessBoard() {

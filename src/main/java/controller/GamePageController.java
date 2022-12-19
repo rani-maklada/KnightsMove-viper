@@ -11,6 +11,7 @@ import javafx.event.EventHandler;
 import javafx.event.EventTarget;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -27,8 +28,6 @@ import model.Tile;
 
 public class GamePageController {
     @FXML
-    private ChoiceBox<String> choiceTheme;
-    @FXML
     private AnchorPane GamePage;
     @FXML
     private Scene scene;
@@ -38,12 +37,9 @@ public class GamePageController {
     private GridPane chessBoard;
     @FXML
     private Label lbTimer;
-    @FXML
-    private Button btPlay;
 
-    @FXML
-    private SplitPane splitPane;
     @FXML private Label myNickName;
+    @FXML private Label lblScore;
     public static Piece myPiece;
     public static Piece computerPiece;
     public static String currentPlayer;
@@ -56,11 +52,14 @@ public class GamePageController {
     private ArrayList<Tile> tiles = new ArrayList<>();
     private boolean game;
     private ArrayList<Tile> visitedTiles = new ArrayList<>();
-
+    private int myScore;
+    public GamePageController(String name,String theme){
+        this.myNickHolder = name;
+        this.theme = theme;
+    }
     @FXML
     void initialize() throws IOException {
-        GameStarting();
-        cb = new ChessBoard(chessBoard, "Marine");
+        cb = new ChessBoard(chessBoard, theme,8);
         myPiece = cb.knight;
         computerPiece = cb.king;
         currentPlayer = "black";
@@ -68,51 +67,14 @@ public class GamePageController {
         lbTimer.setText(timeSeconds.toString());
         lbTimer.setTextFill(Color.BLUE);
         lbTimer.setStyle("-fx-font-size: 2em;");
-        String themes[] = {"Coral", "Dusk", "Wheat", "Marine", "Emerald", "Sandcastle"};
-        choiceTheme.getItems().addAll(themes);
-        choiceTheme.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            // Code to execute when the user selects a different item from the ChoiceBox
-            System.out.println("You selected: " + newValue);
-            cb.setThemeBoard(choiceTheme.getValue());
-        });
         StartMyTimer();
         myNickName.setText(myNickHolder);
+        myScore=0;
+        lblScore.setText("Score: " + myScore);
     }
-
     @FXML
-    void ClickTheme(MouseEvent event) {
-        System.out.println("yes");
-        cb.setThemeBoard(choiceTheme.getValue());
-    }
-
-    @FXML
-    void playButton(ActionEvent event) {
-
-        if (timeline != null) {
-            timeline.stop();
-        }
-
-        timeSeconds = STARTTIME;
-
-        // update timerLabel
-        lbTimer.setText(timeSeconds.toString());
-        timeline = new Timeline();
-        timeline.setCycleCount(Timeline.INDEFINITE);
-        // KeyFrame event handler
-        timeline.getKeyFrames().add(
-                new KeyFrame(Duration.seconds(1),
-                        (EventHandler) event1 -> {
-                            timeSeconds++;
-                            // update timerLabel
-                            lbTimer.setText(
-                                    timeSeconds.toString());
-                            if (timeSeconds >= 100) {
-                                timeline.stop();
-                            }
-                        }));
-        timeline.playFromStart();
-        chessBoard.setDisable(false);
-        selectPiece(true);
+    void resetButton(ActionEvent event) throws IOException {
+        initialize();
     }
 
 
@@ -235,12 +197,41 @@ public class GamePageController {
         Tile initialSquare = (Tile) myPiece.getParent();
         tile.getChildren().add(myPiece);
         tile.setOccupied(true);
+        if(!tile.isVisited()){
+            tile.setVisited(true);
+//            tile.setBackground(new Background(new BackgroundFill(Color.web("#adbd90"), CornerRadii.EMPTY, Insets.EMPTY)));
+            setBackgroundVisited(tile);
+            myScore++;
+            lblScore.setText("Score: " + myScore);
+        }
         initialSquare.getChildren().removeAll();
         initialSquare.setOccupied(false);
         myPiece.setPosX(tile.getX());
         myPiece.setPosY(tile.getY());
         if (computerPiece != null) computerMove();
         deselectPiece(true);
+    }
+    private void setBackgroundVisited(Tile tile){
+        switch (cb.getTheme()) {
+            case "Coral" -> {
+                tile.setBackground(new Background(new BackgroundFill(Color.web("#e4c16f"), CornerRadii.EMPTY, Insets.EMPTY)));
+            }
+            case "Dusk" -> {
+                tile.setBackground(new Background(new BackgroundFill(Color.web("#b1e4b9"), CornerRadii.EMPTY, Insets.EMPTY)));
+            }
+            case "Wheat" -> {
+                tile.setBackground(new Background(new BackgroundFill(Color.web("#cbb7ae"), CornerRadii.EMPTY, Insets.EMPTY)));
+            }
+            case "Marine" -> {
+                tile.setBackground(new Background(new BackgroundFill(Color.web("#eaefce"), CornerRadii.EMPTY, Insets.EMPTY)));
+            }
+            case "Emerald" -> {
+                tile.setBackground(new Background(new BackgroundFill(Color.web("#9dacff"), CornerRadii.EMPTY, Insets.EMPTY)));
+            }
+            case "Sandcastle" -> {
+                tile.setBackground(new Background(new BackgroundFill(Color.web("#adbd90"), CornerRadii.EMPTY, Insets.EMPTY)));
+            }
+        }
     }
 
     private void dropComputer(Tile tile) {
@@ -306,35 +297,12 @@ public class GamePageController {
         try {
             Parent root = FXMLLoader.load(getClass().getResource("/view/HomePage.fxml"));
             stage = (Stage) GamePage.getScene().getWindow();
-            scene = (Scene) GamePage.getScene();
+            scene = GamePage.getScene();
             scene.setRoot(root);
             stage.setScene(scene);
             stage.show();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-    private void GameStarting() {
-        // create an alert
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-
-        alert.setTitle("Let's Go");
-        alert.setHeaderText("Fill in your nickname please");
-
-        Label label = new Label("");
-
-        TextField textField = new TextField();
-
-        alert.getDialogPane().setContent(new VBox(label, textField));
-
-        Optional<ButtonType> result = alert.showAndWait();
-        if(!result.isPresent()){
-            homePage();
-        } else if(result.get() == ButtonType.OK){
-            if (textField.getText().isEmpty()) {
-                GameStarting();
-            }
-        }
-        myNickHolder=textField.getText();
     }
 }

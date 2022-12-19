@@ -14,9 +14,9 @@ public class HomePageController{
 
     @FXML
     void HighScoreButton(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("/view/HighScorePage.fxml"));
+        root = FXMLLoader.load(getClass().getResource("/view/HighScorePage.fxml"));
         stage = (Stage)((Node)event.getSource()).getScene().getWindow();
-        scene = (Scene)((Node)event.getSource()).getScene();
+        scene = ((Node)event.getSource()).getScene();
         scene.setRoot(root);
         stage.setScene(scene);
         stage.show();
@@ -26,7 +26,7 @@ public class HomePageController{
     void QuestionButton(ActionEvent event) throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("/view/QuestionsPage.fxml"));
         stage = (Stage)((Node)event.getSource()).getScene().getWindow();
-        scene = (Scene)((Node)event.getSource()).getScene();
+        scene = ((Node)event.getSource()).getScene();
         scene.setRoot(root);
         stage.setScene(scene);
         stage.show();
@@ -34,9 +34,9 @@ public class HomePageController{
 
     @FXML
     void StartGameButton(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("/view/GamePage.fxml"));
+        root = FXMLLoader.load(getClass().getResource("/view/GameRegister.fxml"));
         stage = (Stage)((Node)event.getSource()).getScene().getWindow();
-        scene = (Scene)((Node)event.getSource()).getScene();
+        scene = ((Node)event.getSource()).getScene();
         scene.setRoot(root);
         stage.setScene(scene);
         stage.show();
