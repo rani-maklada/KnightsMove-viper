@@ -12,6 +12,7 @@ public class Tile extends StackPane {
         this.y = y;
         this.occupied = false;
         this.visited = false;
+        this.name ="Tile"+x+y;
     }
     public int getX() {
         return x;
@@ -47,6 +48,21 @@ public class Tile extends StackPane {
     }
     public String getName() {
         return name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Tile tile = (Tile) o;
+
+        return name.equals(tile.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return name.hashCode();
     }
 
     @Override

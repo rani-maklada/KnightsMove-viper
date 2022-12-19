@@ -3,7 +3,7 @@ package controller;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
-
+import java.util.Random;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
@@ -22,7 +22,6 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import model.King;
 import model.Piece;
 import model.Tile;
 
@@ -46,14 +45,15 @@ public class GamePageController {
     private static final Integer STARTTIME = 0;
     private Timeline timeline;
     private Integer timeSeconds = (STARTTIME);
-    String myNickHolder;
+    private String myNickHolder;
     public static ChessBoard cb;
     private String theme;
     private ArrayList<Tile> tiles = new ArrayList<>();
     private boolean game;
     private ArrayList<Tile> visitedTiles = new ArrayList<>();
     private int myScore;
-    private ArrayList<Integer> specialTiles;
+    private ArrayList<String> specialTiles;
+    private int stageGame;
     public GamePageController(String name,String theme){
         this.myNickHolder = name;
         this.theme = theme;
@@ -72,14 +72,82 @@ public class GamePageController {
         myNickName.setText(myNickHolder);
         myScore=0;
         lblScore.setText("Score: " + myScore);
-        firstStage();
+        stageGame=1;
+        stages();
+    }
+    void stages(){
+        Random rand = new Random();
+        specialTiles = new ArrayList<String>();
+        int rand_intX;
+        int rand_intY;
+        while(specialTiles.size()<3){
+            rand_intX = rand.nextInt(8);
+            rand_intY = rand.nextInt(8);
+            specialTiles.add("Tile"+rand_intX+rand_intY);
+        }
+        System.out.println(specialTiles);
+        switch(stageGame){
+            case 1 -> {
+                firstStage();
+            }
+            case 2 -> {
+                secondStage();
+            }
+            case 3 -> {
+                thirdStage();
+            }
+            case 4 -> {
+                thirdStage();
+            }
+        }
     }
 
     void firstStage(){
-        specialTiles = new ArrayList<>();
+        Random rand = new Random();
+        dropPiece(cb.getTiles().get(rand.nextInt(cb.getTiles().size())));
+        System.out.println("Randommmmm");
     }
     void secondStage(){
+        Dialog<String> dialog = new Dialog<>();
+        dialog.setTitle("Custom Dialog");
+        dialog.setHeaderText("Question");
+// Set the button types.
+        ButtonType okButtonType = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(okButtonType, ButtonType.CANCEL);
 
+// Create the radio buttons.
+        ToggleGroup group = new ToggleGroup();
+        RadioButton radioButton1 = new RadioButton("Option 1");
+        radioButton1.setToggleGroup(group);
+        RadioButton radioButton2 = new RadioButton("Option 2");
+        radioButton2.setToggleGroup(group);
+        RadioButton radioButton3 = new RadioButton("Option 3");
+        radioButton3.setToggleGroup(group);
+
+// Add the radio buttons to the dialog.
+        VBox vbox = new VBox(radioButton1, radioButton2, radioButton3);
+        dialog.getDialogPane().setContent(vbox);
+
+// Convert the result to a string when the OK button is clicked.
+        dialog.setResultConverter(buttonType -> {
+            if (buttonType == okButtonType) {
+                if (radioButton1.isSelected()) {
+                    return "Option 1";
+                } else if (radioButton2.isSelected()) {
+                    return "Option 2";
+                } else if (radioButton3.isSelected()) {
+                    return "Option 3";
+                }
+            }
+            return null;
+        });
+
+        Optional<String> result = dialog.showAndWait();
+        if (result.isPresent()) {
+            System.out.println("Selected option: " + result.get());
+        }
+
+        System.out.println("Questionnn");
     }
     void thirdStage(){
 
@@ -206,8 +274,7 @@ public class GamePageController {
     }
 
     private void dropPiece(Tile tile) {
-        if (!myPiece.getPossibleMoves().contains(tile.getName())) return;
-
+//        if (!myPiece.getPossibleMoves().contains(tile.getName())) return;
         Tile initialSquare = (Tile) myPiece.getParent();
         tile.getChildren().add(myPiece);
         tile.setOccupied(true);
@@ -224,7 +291,19 @@ public class GamePageController {
         myPiece.setPosY(tile.getY());
         if (computerPiece != null) computerMove();
         deselectPiece(true);
+        if(specialTiles.contains(tile.getName())){
+            stages();
+        }
     }
+//    private Tile generateRandomTile(){
+//
+//        int rand_intX;
+//        int rand_intY;
+//        rand_intX = rand.nextInt(8);
+//        rand_intY = rand.nextInt(8);
+//        Tile tile = new Tile(rand_intX,rand_intY);
+//        return tile;
+//    }
     private void setBackgroundVisited(Tile tile){
         switch (cb.getTheme()) {
             case "Coral" -> {
