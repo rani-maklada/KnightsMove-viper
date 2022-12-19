@@ -53,6 +53,7 @@ public class GamePageController {
     private boolean game;
     private ArrayList<Tile> visitedTiles = new ArrayList<>();
     private int myScore;
+    private ArrayList<Integer> specialTiles;
     public GamePageController(String name,String theme){
         this.myNickHolder = name;
         this.theme = theme;
@@ -71,12 +72,25 @@ public class GamePageController {
         myNickName.setText(myNickHolder);
         myScore=0;
         lblScore.setText("Score: " + myScore);
+        firstStage();
+    }
+
+    void firstStage(){
+        specialTiles = new ArrayList<>();
+    }
+    void secondStage(){
+
+    }
+    void thirdStage(){
+
+    }
+    void fourthStage(){
+
     }
     @FXML
     void resetButton(ActionEvent event) throws IOException {
         initialize();
     }
-
 
     void StartMyTimer()
     {
@@ -199,10 +213,10 @@ public class GamePageController {
         tile.setOccupied(true);
         if(!tile.isVisited()){
             tile.setVisited(true);
-//            tile.setBackground(new Background(new BackgroundFill(Color.web("#adbd90"), CornerRadii.EMPTY, Insets.EMPTY)));
             setBackgroundVisited(tile);
             myScore++;
             lblScore.setText("Score: " + myScore);
+            visitedTiles.add(tile);
         }
         initialSquare.getChildren().removeAll();
         initialSquare.setOccupied(false);
