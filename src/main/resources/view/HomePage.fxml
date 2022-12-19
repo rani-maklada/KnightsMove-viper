@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="449.0" prefWidth="496.0" stylesheets="@application.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.HomePageController">
+<AnchorPane prefHeight="600.0" prefWidth="800.0" stylesheets="@application.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.HomePageController">
     <children>
-        <BorderPane prefHeight="397.0" prefWidth="200.0">
-            <left>
-                <VBox alignment="TOP_CENTER" prefHeight="322.0" prefWidth="113.0" spacing="50.0" BorderPane.alignment="TOP_CENTER">
-                    <children>
-                        <Label text="Knight's Move" />
-                        <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#StartGameButton" prefHeight="40.0" prefWidth="105.0" text="Start Game" textAlignment="CENTER" />
-                        <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#QuestionButton" prefHeight="39.0" prefWidth="105.0" text="Question" textAlignment="CENTER" />
-                        <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#HighScoreButton" prefHeight="43.0" prefWidth="105.0" text="High Score" textAlignment="CENTER" />
-                    </children>
-                    <BorderPane.margin>
-                        <Insets top="70.0" />
-                    </BorderPane.margin>
-                </VBox>
-            </left>
-        </BorderPane>
+            <Label alignment="CENTER" contentDisplay="CENTER" layoutX="271.0" layoutY="54.0" prefHeight="58.0" prefWidth="257.0" text="Knight's Move" textAlignment="CENTER" textFill="WHITE">
+         <font>
+            <Font name="Bodoni MT Condensed Bold Italic" size="41.0" />
+         </font>
+         <effect>
+            <DropShadow height="255.0" radius="127.0" spread="0.63" width="255.0">
+               <color>
+                  <Color red="1.0" green="1.0" blue="1.0" />
+               </color>
+            </DropShadow>
+         </effect>
+      </Label>
+            <Button alignment="CENTER" contentDisplay="CENTER" layoutX="347.0" layoutY="339.0" mnemonicParsing="false" onAction="#StartGameButton" prefHeight="40.0" prefWidth="105.0" text="Start Game" textAlignment="CENTER" />
+            <Button alignment="CENTER" contentDisplay="CENTER" layoutX="241.0" layoutY="544.0" mnemonicParsing="false" onAction="#QuestionButton" prefHeight="39.0" prefWidth="105.0" text="Question" textAlignment="CENTER" />
+            <Button alignment="CENTER" contentDisplay="CENTER" layoutX="452.0" layoutY="542.0" mnemonicParsing="false" onAction="#HighScoreButton" prefHeight="43.0" prefWidth="105.0" text="High Score" textAlignment="CENTER" />
     </children>
 </AnchorPane>
