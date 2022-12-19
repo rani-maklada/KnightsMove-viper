@@ -9,7 +9,7 @@
 
 <AnchorPane prefHeight="600.0" prefWidth="800.0" stylesheets="@application.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.HomePageController">
     <children>
-            <Label alignment="CENTER" contentDisplay="CENTER" layoutX="271.0" layoutY="54.0" prefHeight="58.0" prefWidth="257.0" text="Knight's Move" textAlignment="CENTER" textFill="WHITE">
+            <Label alignment="CENTER" contentDisplay="CENTER" layoutX="228.0" layoutY="21.0" prefHeight="110.0" prefWidth="340.0" text="Knight's Move" textAlignment="CENTER" textFill="WHITE">
          <font>
             <Font name="Bodoni MT Condensed Bold Italic" size="41.0" />
          </font>
