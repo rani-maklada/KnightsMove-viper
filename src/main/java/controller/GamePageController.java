@@ -73,9 +73,9 @@ public class GamePageController {
         myScore=0;
         lblScore.setText("Score: " + myScore);
         stageGame=1;
-        stages();
+        generateRandomTile();
     }
-    void stages(){
+    void generateRandomTile(){
         Random rand = new Random();
         specialTiles = new ArrayList<String>();
         int rand_intX;
@@ -86,6 +86,8 @@ public class GamePageController {
             specialTiles.add("Tile"+rand_intX+rand_intY);
         }
         System.out.println(specialTiles);
+    }
+    void stages(){
         switch(stageGame){
             case 1 -> {
                 firstStage();
@@ -295,15 +297,6 @@ public class GamePageController {
             stages();
         }
     }
-//    private Tile generateRandomTile(){
-//
-//        int rand_intX;
-//        int rand_intY;
-//        rand_intX = rand.nextInt(8);
-//        rand_intY = rand.nextInt(8);
-//        Tile tile = new Tile(rand_intX,rand_intY);
-//        return tile;
-//    }
     private void setBackgroundVisited(Tile tile){
         switch (cb.getTheme()) {
             case "Coral" -> {
