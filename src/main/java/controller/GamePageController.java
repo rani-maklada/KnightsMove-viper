@@ -106,8 +106,29 @@ public class GamePageController {
 
     void firstStage(){
         Random rand = new Random();
-        dropPiece(cb.getTiles().get(rand.nextInt(cb.getTiles().size())));
+        dropRandomPiece(cb.getTiles().get(rand.nextInt(cb.getTiles().size())));
         System.out.println("Randommmmm");
+    }
+    void dropRandomPiece(Tile tile){
+        Tile initialSquare = (Tile) myPiece.getParent();
+        tile.getChildren().add(myPiece);
+        tile.setOccupied(true);
+        if(!tile.isVisited()){
+            tile.setVisited(true);
+            setBackgroundVisited(tile);
+            myScore++;
+            lblScore.setText("Score: " + myScore);
+            visitedTiles.add(tile);
+        }
+        initialSquare.getChildren().removeAll();
+        initialSquare.setOccupied(false);
+        myPiece.setPosX(tile.getX());
+        myPiece.setPosY(tile.getY());
+        if (computerPiece != null) computerMove();
+        deselectPiece(true);
+        if(specialTiles.contains(tile.getName())){
+            stages();
+        }
     }
     void secondStage(){
         Dialog<String> dialog = new Dialog<>();
@@ -276,7 +297,7 @@ public class GamePageController {
     }
 
     private void dropPiece(Tile tile) {
-//        if (!myPiece.getPossibleMoves().contains(tile.getName())) return;
+        if (!myPiece.getPossibleMoves().contains(tile.getName())) return;
         Tile initialSquare = (Tile) myPiece.getParent();
         tile.getChildren().add(myPiece);
         tile.setOccupied(true);
