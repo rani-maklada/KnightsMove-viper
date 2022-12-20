@@ -20,14 +20,14 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import model.AlertDisplayer;
-import model.Piece;
-import model.Tile;
+import model.*;
 
 import static java.lang.Thread.sleep;
 
@@ -61,6 +61,7 @@ public class GamePageController {
     private int myScore;
     private ArrayList<String> specialTiles;
     private int stageGame;
+    private Random rand = new Random();
     public GamePageController(String name,String theme){
         this.myNickHolder = name;
         this.theme = theme;
@@ -81,13 +82,23 @@ public class GamePageController {
         lblScore.setText("Score: " + myScore);
         stageGame=1;
         generateRandomTile();
+        questionMark();
+    }
+    void questionMark(){
+        for (int i=0 ; i<3 ; i++){
+            int x = rand.nextInt(8);
+            Image image = new Image(String.valueOf(getClass().getResource("/view/pieces/QuestionMark.png")));
+            ImageView imageView = new ImageView(image);
+            imageView.setFitWidth(20);
+            imageView.setFitHeight(20);
+            cb.getTiles().get(x).getChildren().add(imageView);
+        }
     }
     void generateRandomTile(){
-        Random rand = new Random();
         specialTiles = new ArrayList<String>();
         int rand_intX;
         int rand_intY;
-        while(specialTiles.size()<15){
+        while(specialTiles.size()<3){
             rand_intX = rand.nextInt(8);
             rand_intY = rand.nextInt(8);
             specialTiles.add("Tile"+rand_intX+rand_intY);
@@ -154,46 +165,79 @@ public class GamePageController {
         alert.close();
     }
     void secondStage(){
+        Question q = SysData.getInstance().getQuestions().get(rand.nextInt(SysData.getInstance().getQuestions().size()));
         Dialog<String> dialog = new Dialog<>();
-        dialog.setTitle("Custom Dialog");
-        dialog.setHeaderText("Question");
-// Set the button types.
+        dialog.setTitle("Question");
+        dialog.setHeaderText(q.getQuestionID());
+        // Set the button types.
         ButtonType okButtonType = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(okButtonType, ButtonType.CANCEL);
 
-// Create the radio buttons.
+        // Create the radio buttons.
         ToggleGroup group = new ToggleGroup();
-        RadioButton radioButton1 = new RadioButton("Option 1");
-        radioButton1.setToggleGroup(group);
-        RadioButton radioButton2 = new RadioButton("Option 2");
-        radioButton2.setToggleGroup(group);
-        RadioButton radioButton3 = new RadioButton("Option 3");
-        radioButton3.setToggleGroup(group);
+        RadioButton answer1 = new RadioButton(q.getAnswers().get(1));
+        answer1.setToggleGroup(group);
+        RadioButton answer2 = new RadioButton(q.getAnswers().get(2));
+        answer2.setToggleGroup(group);
+        RadioButton answer3 = new RadioButton(q.getAnswers().get(3));
+        answer3.setToggleGroup(group);
+        RadioButton answer4 = new RadioButton(q.getAnswers().get(4));
+        answer4.setToggleGroup(group);
 
 // Add the radio buttons to the dialog.
-        VBox vbox = new VBox(radioButton1, radioButton2, radioButton3);
+        VBox vbox = new VBox(answer1, answer2, answer3,answer4);
         dialog.getDialogPane().setContent(vbox);
 
 // Convert the result to a string when the OK button is clicked.
+        int correctAnswer = q.getCorrect_ans();
         dialog.setResultConverter(buttonType -> {
             if (buttonType == okButtonType) {
-                if (radioButton1.isSelected()) {
-                    return "Option 1";
-                } else if (radioButton2.isSelected()) {
-                    return "Option 2";
-                } else if (radioButton3.isSelected()) {
-                    return "Option 3";
+                if (answer1.isSelected()) {
+                    return String.valueOf(correctAnswer==1);
+                } else if (answer2.isSelected()) {
+                    return String.valueOf(correctAnswer==2);
+                } else if (answer3.isSelected()) {
+                    return String.valueOf(correctAnswer==3);
+                }else if (answer4.isSelected()){
+                    return String.valueOf(correctAnswer==4);
                 }
             }
             return null;
         });
-
         Optional<String> result = dialog.showAndWait();
         if (result.isPresent()) {
             System.out.println("Selected option: " + result.get());
-        }
+            if(result.get().equals("true")){
+                switch(q.getLevel()){
+                    case 1 -> {
+                        myScore++;
 
-        System.out.println("Questionnn");
+                    }
+                    case 2 -> {
+                        myScore=myScore+2;
+                    }
+                    case 3 -> {
+                        myScore=myScore+3;
+                    }
+                }
+            }else{
+                System.out.println(q.getLevel());
+                switch(q.getLevel()){
+                    case 1 -> {
+                        myScore = (myScore-2<0) ? 0:myScore-2;
+
+                    }
+                    case 2 -> {
+                        myScore = myScore-3<0 ? 0:myScore-3;
+                    }
+                    case 3 -> {
+                        myScore = (myScore-4<0) ? 0:myScore-4;
+                    }
+                }
+            }
+        }
+        System.out.println("myScore"+myScore);
+        lblScore.setText("Score: " + myScore);
     }
     void thirdStage(){
 
@@ -322,8 +366,13 @@ public class GamePageController {
 
     private void dropPiece(Tile tile) {
         if (!myPiece.getPossibleMoves().contains(tile.getName())) return;
+        if(tile.getChildren().size()>0){
+            System.out.println(tile.getChildren());
+            secondStage();
+            tile.getChildren().clear();
+        }
         Tile initialSquare = (Tile) myPiece.getParent();
-        tile.getChildren().add(myPiece);
+        tile.getChildren().add(0,myPiece);
         tile.setOccupied(true);
         if(tile.isVisited()){
             myScore = (myScore-1<0) ? 0:myScore-1;
@@ -374,7 +423,7 @@ public class GamePageController {
         if (!computerPiece.getPossibleMoves().contains(tile.getName())) return;
 
         Tile initialSquare = (Tile) computerPiece.getParent();
-        tile.getChildren().add(computerPiece);
+        tile.getChildren().add(0,computerPiece);
         tile.setOccupied(true);
         initialSquare.getChildren().removeAll();
         initialSquare.setOccupied(false);
@@ -384,7 +433,7 @@ public class GamePageController {
 
     private void killMyPiece(Tile tile) {
         if (!computerPiece.getPossibleMoves().contains(tile.getName())) return;
-
+        System.out.println(tile.getChildren());
         Piece killedPiece = (Piece) tile.getChildren().get(0);
         if (killedPiece.getType().equals("Knight")) {
             this.game = false;

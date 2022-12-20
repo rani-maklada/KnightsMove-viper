@@ -106,7 +106,8 @@ public class ChessBoard {
     }
 
     private void addPiece(Tile tile, Piece piece){
-        tile.getChildren().add(piece);
+        tile.getChildren().add(0,piece);
+//        tile.getChildren().add(piece);
         tile.setOccupied(true);
     }
 
