@@ -37,6 +37,13 @@ public class ChessBoard {
         }
         addPieces();
     }
+//    public void clickButton() {
+//        if(GridPane.getRowIndex(circle1) == 0){
+//            GridPane.setRowIndex(circle1, 1);
+//        } else {
+//            GridPane.setRowIndex(circle1, 0);
+//        }
+//    }
     public void setThemeBoard(String theme){
         for (Tile tile : tiles){
             setTheme(tile, theme, tile.getX(), tile.getY());
@@ -103,7 +110,7 @@ public class ChessBoard {
         tile.setOccupied(true);
     }
 
-    private void addPieces(){
+    public void addPieces(){
         for(Tile tile : tiles){
             if(tile.isOccupied()) continue;
             if(tile.getY() == 0){

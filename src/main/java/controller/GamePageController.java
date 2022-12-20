@@ -4,8 +4,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
+
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.event.EventTarget;
@@ -22,8 +25,11 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import model.AlertDisplayer;
 import model.Piece;
 import model.Tile;
+
+import static java.lang.Thread.sleep;
 
 public class GamePageController {
     @FXML
@@ -36,7 +42,8 @@ public class GamePageController {
     private GridPane chessBoard;
     @FXML
     private Label lbTimer;
-
+    @FXML
+    private TextArea textArea;
     @FXML private Label myNickName;
     @FXML private Label lblScore;
     public static Piece myPiece;
@@ -80,7 +87,7 @@ public class GamePageController {
         specialTiles = new ArrayList<String>();
         int rand_intX;
         int rand_intY;
-        while(specialTiles.size()<3){
+        while(specialTiles.size()<15){
             rand_intX = rand.nextInt(8);
             rand_intY = rand.nextInt(8);
             specialTiles.add("Tile"+rand_intX+rand_intY);
@@ -88,6 +95,7 @@ public class GamePageController {
         System.out.println(specialTiles);
     }
     void stages(){
+
         switch(stageGame){
             case 1 -> {
                 firstStage();
@@ -110,6 +118,7 @@ public class GamePageController {
         System.out.println("Randommmmm");
     }
     void dropRandomPiece(Tile tile){
+        textArea.setText(textArea.getText()+"\n jump to Randommmmm");
         Tile initialSquare = (Tile) myPiece.getParent();
         tile.getChildren().add(myPiece);
         tile.setOccupied(true);
@@ -129,6 +138,20 @@ public class GamePageController {
         if(specialTiles.contains(tile.getName())){
             stages();
         }
+    }
+    void alertDisplayer(){
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("title");
+        alert.setHeaderText(null);
+        alert.setContentText("message");
+        alert.showAndWait();
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            // We'll ignore this exception
+        }
+
+        alert.close();
     }
     void secondStage(){
         Dialog<String> dialog = new Dialog<>();
@@ -180,9 +203,9 @@ public class GamePageController {
     }
     @FXML
     void resetButton(ActionEvent event) throws IOException {
+        cb.getChessBoard().getChildren().clear();
         initialize();
     }
-
     void StartMyTimer()
     {
         if (timeline != null) {
@@ -231,16 +254,17 @@ public class GamePageController {
         if (target.toString().equals("Tile")) {
             Tile tile = (Tile) target;
             if (tile.isOccupied()) {//Kill piece
-                Piece newPiece = (Piece) tile.getChildren().get(0);
-                killPiece(tile);
+//                Piece newPiece = (Piece) tile.getChildren().get(0);
+//                killPiece(tile);
             } else { // Drop piece on blank tile
                 dropPiece(tile);
             }
-        } else { // Clicked on piece
-            Piece newPiece = (Piece) target;
-            Tile tile = (Tile) newPiece.getParent();
-            killPiece(tile);
         }
+//        else { // Clicked on piece
+//            Piece newPiece = (Piece) target;
+//            Tile tile = (Tile) newPiece.getParent();
+//            killPiece(tile);
+//        }
     }
 
     private void selectPiece(boolean game) {
@@ -301,13 +325,15 @@ public class GamePageController {
         Tile initialSquare = (Tile) myPiece.getParent();
         tile.getChildren().add(myPiece);
         tile.setOccupied(true);
-        if(!tile.isVisited()){
+        if(tile.isVisited()){
+            myScore = (myScore-1<0) ? 0:myScore-1;
+        }else{
             tile.setVisited(true);
             setBackgroundVisited(tile);
             myScore++;
-            lblScore.setText("Score: " + myScore);
             visitedTiles.add(tile);
         }
+        lblScore.setText("Score: " + myScore);
         initialSquare.getChildren().removeAll();
         initialSquare.setOccupied(false);
         myPiece.setPosX(tile.getX());
@@ -315,6 +341,9 @@ public class GamePageController {
         if (computerPiece != null) computerMove();
         deselectPiece(true);
         if(specialTiles.contains(tile.getName())){
+//            alertDisplayer();
+            AlertDisplayer alertDisplayer1 = new AlertDisplayer();
+            alertDisplayer1.showOneSecondAlert("","");
             stages();
         }
     }
@@ -374,23 +403,23 @@ public class GamePageController {
         deselectPiece(true);
     }
 
-    private void killPiece(Tile tile) {
-        if (!myPiece.getPossibleMoves().contains(tile.getName())) return;
-
-        Piece killedPiece = (Piece) tile.getChildren().get(0);
-        if (killedPiece.getType().equals("King")) computerPiece = null;
-        if (killedPiece.getType().equals("Queen")) computerPiece = null;
-
-        Tile initialSquare = (Tile) myPiece.getParent();
-        tile.getChildren().remove(0);
-        tile.getChildren().add(myPiece);
-        tile.setOccupied(true);
-        initialSquare.getChildren().removeAll();
-        initialSquare.setOccupied(false);
-        myPiece.setPosX(tile.getX());
-        myPiece.setPosY(tile.getY());
-        deselectPiece(true);
-    }
+//    private void killPiece(Tile tile) {
+//        if (!myPiece.getPossibleMoves().contains(tile.getName())) return;
+//
+//        Piece killedPiece = (Piece) tile.getChildren().get(0);
+//        if (killedPiece.getType().equals("King")) computerPiece = null;
+//        if (killedPiece.getType().equals("Queen")) computerPiece = null;
+//
+//        Tile initialSquare = (Tile) myPiece.getParent();
+//        tile.getChildren().remove(0);
+//        tile.getChildren().add(myPiece);
+//        tile.setOccupied(true);
+//        initialSquare.getChildren().removeAll();
+//        initialSquare.setOccupied(false);
+//        myPiece.setPosX(tile.getX());
+//        myPiece.setPosY(tile.getY());
+//        deselectPiece(true);
+//    }
 
     private void GameOver() {
         Alert gameOverAlert = new Alert(Alert.AlertType.INFORMATION);

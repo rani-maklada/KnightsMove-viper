@@ -61,16 +61,6 @@ public class Piece extends ImageView {
             for (String move : possibleMoves) {
                 Tile tile = getTileByName(move);
                 tile.setEffect(glow);
-
-                Piece piece = getPieceByName(move);
-                if (piece == null) continue;
-                if (piece.type.equals("King")) {
-                    tile.setBorder(new Border(new BorderStroke(Color.DARKRED,
-                            BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(1.5))));
-                } else {
-                    tile.setBorder(new Border(new BorderStroke(Color.BLACK,
-                            BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(1.2))));
-                }
             }
         } else {
             for (String move : possibleMoves) {
