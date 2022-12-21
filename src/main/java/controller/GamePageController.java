@@ -4,11 +4,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.event.EventTarget;
@@ -69,8 +67,8 @@ public class GamePageController {
     @FXML
     void initialize() throws IOException {
         cb = new ChessBoard(chessBoard, theme,8);
-        myPiece = cb.knight;
-        computerPiece = cb.king;
+        myPiece = cb.getKnight();
+        computerPiece = cb.getKing();
         currentPlayer = "black";
         this.game = true;
         lbTimer.setText(timeSeconds.toString());

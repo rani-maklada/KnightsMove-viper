@@ -1,4 +1,4 @@
-package controller;
+package model;
 
 import javafx.geometry.Insets;
 import javafx.scene.layout.*;
@@ -24,6 +24,31 @@ public class ChessBoard {
         this.boardSize=boardSize;
         makeBoard(this.chessBoard, theme);
     }
+
+    public King getKing() {
+        return king;
+    }
+
+    public void setKing(King king) {
+        this.king = king;
+    }
+
+    public Queen getQueen() {
+        return queen;
+    }
+
+    public void setQueen(Queen queen) {
+        this.queen = queen;
+    }
+
+    public Knight getKnight() {
+        return knight;
+    }
+
+    public void setKnight(Knight knight) {
+        this.knight = knight;
+    }
+
     private void makeBoard(GridPane chessBoard, String theme){
         for(int i=0; i<boardSize; i++){
             for(int j=0; j<boardSize; j++){
