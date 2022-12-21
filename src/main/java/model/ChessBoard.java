@@ -142,6 +142,7 @@ public class ChessBoard {
             if(tile.getY() == 0){
                 if(tile.getX() == 0){
                     this.knight = (Knight) PieceFactory.createPiece("Knight","black", tile.getX(), tile.getY());
+                    this.knight.setImage();
                     addPiece(tile, this.knight);
                 }
                 if(tile.getX() == 7){

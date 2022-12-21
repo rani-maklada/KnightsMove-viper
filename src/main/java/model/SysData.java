@@ -54,7 +54,6 @@ public class SysData {
         if(base == null){
             return;
         }
-        System.out.println(base.getJSONArray("questions"));
         Iterator<Object> iterator = ((JSONArray) base.get("questions")).iterator();
         while (iterator.hasNext()) {
             JSONObject jsonObject = (JSONObject) iterator.next();
@@ -70,7 +69,7 @@ public class SysData {
                     Integer.parseInt(String.valueOf(jsonObject.get("level"))),
                     String.valueOf(jsonObject.get("team"))));
         }
-        System.out.println(questions);
+
     }
     private JSONObject readJSONObject(){
         InputStream stream;

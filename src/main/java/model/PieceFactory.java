@@ -6,11 +6,11 @@ public class PieceFactory {
             return null;
         }
         if (pieceType.equalsIgnoreCase("knight")) {
-            return new Knight(color,x,y);
+            return new Knight(color);
         } else if (pieceType.equalsIgnoreCase("queen")) {
-            return new Queen(color,x,y);
+            return new Queen(color);
         }else if (pieceType.equalsIgnoreCase("king")) {
-            return new King(color,x,y);
+            return new King(color);
         }
         return null;
     }

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="600.0" prefWidth="800.0" stylesheets="@application.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.HomePageController">
+    <children>
+            <Label alignment="CENTER" contentDisplay="CENTER" layoutX="228.0" layoutY="21.0" prefHeight="110.0" prefWidth="340.0" text="Knight's Move" textAlignment="CENTER" textFill="WHITE">
+         <font>
+            <Font name="Bodoni MT Condensed Bold Italic" size="41.0" />
+         </font>
+         <effect>
+            <DropShadow height="255.0" radius="127.0" spread="0.63" width="255.0">
+               <color>
+                  <Color red="1.0" green="1.0" blue="1.0" />
+               </color>
+            </DropShadow>
+         </effect>
+      </Label>
+            <Button alignment="CENTER" contentDisplay="CENTER" layoutX="347.0" layoutY="339.0" mnemonicParsing="false" onAction="#StartGameButton" prefHeight="40.0" prefWidth="105.0" text="Start Game" textAlignment="CENTER" />
+            <Button alignment="CENTER" contentDisplay="CENTER" layoutX="241.0" layoutY="544.0" mnemonicParsing="false" onAction="#QuestionButton" prefHeight="39.0" prefWidth="105.0" text="Question" textAlignment="CENTER" />
+            <Button alignment="CENTER" contentDisplay="CENTER" layoutX="452.0" layoutY="542.0" mnemonicParsing="false" onAction="#HighScoreButton" prefHeight="43.0" prefWidth="105.0" text="High Score" textAlignment="CENTER" />
+    </children>
+</AnchorPane>
