@@ -29,9 +29,17 @@ class SysDataTest {
         for (int i=0; i<sysData.getQuestions().size(); i++){
             Assertions.assertEquals(sysData.getQuestions().get(i).getQuestionID(),questions.get(i));
         }
-
-
-
+    }
+    @Test
+    void testJsonInSysData(){
+        SysData sysData = SysData.getInstance();
+        String actualSysDataJsonToString = "SysData{questions=" +
+                "[Which Design Pattern should you use when a class wants its subclasses to specify" +
+                " the objects it creates?, Which of the following are examples of traditional" +
+                " process models?, is an entity that has a state and a defined set of operations" +
+                ", which operate on that state., White-Box testing sometimes called _____ testing" +
+                "., In object-oriented design of software,objects have], history=[]}";
+        Assertions.assertEquals(actualSysDataJsonToString,sysData.toString());
     }
 
 }
