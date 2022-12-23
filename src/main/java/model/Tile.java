@@ -7,16 +7,18 @@ public class Tile extends StackPane {
     private boolean occupied;
     private String name;
     private boolean visited;
+    private String type;
     public Tile(int x, int y){
-        if ((x>8 || x<0) || (y>8 || y<0)){
-            System.out.println("Can't create a tile outside of borders");
-            return;
-        }
+//        if ((x>8 || x<0) || (y>8 || y<0)){
+//            System.out.println("Can't create a tile outside of borders");
+//            return;
+//        }
         this.x = x;
         this.y = y;
         this.occupied = false;
         this.visited = false;
         this.name ="Tile"+x+y;
+        this.type = null;
     }
      void checkValidPosition(int x, int y){
 
@@ -55,6 +57,14 @@ public class Tile extends StackPane {
     }
     public String getName() {
         return name;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     @Override

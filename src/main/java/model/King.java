@@ -7,7 +7,7 @@ import java.util.ArrayList;
 public class King extends Piece{
 
     public King(String color) {
-        super(color, 0, 0, "King");
+        super(color, 7, 0, "King");
     }
 
     @Override

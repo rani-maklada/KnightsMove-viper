@@ -25,6 +25,7 @@ public class Knight extends Piece{
 //        moves.add("Tile" + (x+1)%8 + (y-2));
 //        moves.add("Tile" + (x-1) + (y-2));
 //        System.out.println(moves);
+
         moves.add("Tile" + (x+2)%8 + (y+1)%8);
         moves.add("Tile" + (x+2)%8 + getPosition(y,-1));
         moves.add("Tile" + (x+1)%8 + (y+2)%8);

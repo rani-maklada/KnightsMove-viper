@@ -7,6 +7,7 @@ import java.util.Random;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.event.EventTarget;
@@ -26,6 +27,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import model.*;
+import javafx.animation.AnimationTimer;
 
 import static java.lang.Thread.sleep;
 
@@ -44,53 +46,168 @@ public class GamePageController {
     private TextArea textArea;
     @FXML private Label myNickName;
     @FXML private Label lblScore;
+    @FXML private Label lblStage;
+    @FXML private ColorPicker colorPicker;
     public static Piece myPiece;
     public static Piece computerPiece;
     public static String currentPlayer;
-    private static final Integer STARTTIME = 0;
+//    private static final Integer STARTTIME = 0;
     private Timeline timeline;
-    private Integer timeSeconds = (STARTTIME);
+//    private Integer timeSeconds = (STARTTIME);
     private String myNickHolder;
     public static ChessBoard cb;
     private String theme;
-    private ArrayList<Tile> tiles = new ArrayList<>();
     private boolean game;
     private ArrayList<Tile> visitedTiles = new ArrayList<>();
     private int myScore;
     private ArrayList<String> specialTiles;
     private int stageGame;
     private Random rand = new Random();
+    private ArrayList<Question> questions = new ArrayList<>();
+    private int myStage;
+    private long startTime;
+    private long currentTime;
+    private AnimationTimer timer;
+    private boolean paused = false;
+    private long elapsedTime = 0;
+
     public GamePageController(String name,String theme){
         this.myNickHolder = name;
         this.theme = theme;
     }
     @FXML
     void initialize() throws IOException {
+
+        questions = SysData.getInstance().getQuestions();
+//        colorPicker.getCustomColors();
         cb = new ChessBoard(chessBoard, theme,8);
         myPiece = cb.getKnight();
-        computerPiece = cb.getKing();
+        computerPiece = cb.getQueen();
         currentPlayer = "black";
         this.game = true;
-        lbTimer.setText(timeSeconds.toString());
+//        lbTimer.setText(timeSeconds.toString());
         lbTimer.setTextFill(Color.BLUE);
         lbTimer.setStyle("-fx-font-size: 2em;");
-        StartMyTimer();
         myNickName.setText(myNickHolder);
         myScore=0;
         lblScore.setText("Score: " + myScore);
-        stageGame=1;
+        myStage=1;
+        lblStage.setText("Stage: " + myStage);
+//        StartMyTimer();
         generateRandomTile();
         questionMark();
+        questionMark();
+        questionMark();
+        timer();
+        selectPiece(true);
+//        myPiece.getAllPossibleMoves();
     }
+
+//    void timer() {
+//        startTime = System.currentTimeMillis();
+        // Create a new AnimationTimer
+//        timer = new AnimationTimer() {
+//            @Override
+//            public void handle(long now) {
+//                if (!paused) {
+//                    currentTime = System.currentTimeMillis();
+//                    long elapsedTime = currentTime - startTime;
+//                    int seconds = (int) (60 - elapsedTime / 1000);
+//                    lbTimer.setText(String.valueOf(seconds));
+//                    if (seconds <= 0) {
+//                        this.stop();
+//                        timeOut();
+//                    }
+//                    if (game == false) {
+//                        this.stop();
+//                    }
+//                }
+//            }
+//        };
+void timer(){
+    startTime = System.currentTimeMillis();
+    timer = new AnimationTimer() {
+            private long countDown = 60000;  // 60 seconds in milliseconds
+            @Override
+            public void handle(long now) {
+                if (!paused) {
+                    elapsedTime += System.currentTimeMillis() - startTime;
+                    startTime = System.currentTimeMillis();
+                    long remainingTime = countDown - elapsedTime;
+                    int seconds = (int) (60 - elapsedTime / 1000);
+                    lbTimer.setText(String.valueOf(seconds));
+                    System.out.println("elapsedTime:"+elapsedTime);
+                    System.out.println("countDown:"+countDown);
+                    System.out.println("startTime:"+startTime);
+                    if (remainingTime <= 0) {
+                        // countdown is finished, stop the timer
+                        stop();
+                    }
+                }
+            }
+        };
+        timer.start();
+        // Start the timer
+    }
+    public void pauseTimer() {
+        paused = true;  // pause the countdown timer
+        elapsedTime += System.currentTimeMillis() - startTime;  // update elapsed time
+        System.out.println("pauseTimer");
+    }
+    public void resumeTimer() {
+        paused = false;  // resume the countdown timer
+        startTime = System.currentTimeMillis();  // reset start time
+        System.out.println("resumeTimer");
+    }
+    public void someMethod(){
+        pauseTimer();
+        System.out.println("Wait");
+        resumeTimer();
+    }
+
+    private void timeOut() {
+        // Create a new alert
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+
+        // Set the message for the alert
+        alert.setContentText("This is a message to the user");
+
+        // Set the timeout for the alert
+        alert.setOnCloseRequest(event -> {
+            // Get the stage of the alert
+            Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+
+            // Set the timeout for the stage
+            stage.setOnCloseRequest(timeoutEvent -> {
+                // Close the alert after a specified timeout period
+                stage.close();
+            });
+            resetBoard();
+        });
+        // Show the dialog to the user
+        Platform.runLater(() -> alert.showAndWait());
+    }
+
     void questionMark(){
-        for (int i=0 ; i<3 ; i++){
-            int x = rand.nextInt(8);
-            Image image = new Image(String.valueOf(getClass().getResource("/view/pieces/QuestionMark.png")));
-            ImageView imageView = new ImageView(image);
-            imageView.setFitWidth(20);
-            imageView.setFitHeight(20);
-            cb.getTiles().get(x).getChildren().add(imageView);
+        Tile tile = selectRandomEmptyTile();
+        Image image = new Image(String.valueOf(getClass().getResource("/view/pieces/QuestionMark.png")));
+        ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(20);
+        imageView.setFitHeight(20);
+//        cb.getTiles().get(x).getChildren().add(imageView);
+//        cb.getTiles().get(x).setType("Question");
+        tile.getChildren().add(imageView);
+        tile.setType("Question");
+    }
+    Tile selectRandomEmptyTile(){
+        int index = rand.nextInt(cb.getTiles().size());
+        Tile tile = cb.getTiles().get(index);
+        if (tile.getType() == null){
+            return tile;
+        }else{
+            selectRandomEmptyTile();
         }
+        return null;
     }
     void generateRandomTile(){
         specialTiles = new ArrayList<String>();
@@ -101,11 +218,15 @@ public class GamePageController {
             rand_intY = rand.nextInt(8);
             specialTiles.add("Tile"+rand_intX+rand_intY);
         }
+        for (Tile tile:cb.getTiles()) {
+            if(specialTiles.contains(tile.getName())){
+                tile.setType("RandomJump");
+            }
+        }
         System.out.println(specialTiles);
     }
     void stages(){
-
-        switch(stageGame){
+        switch(myStage){
             case 1 -> {
                 firstStage();
             }
@@ -163,7 +284,11 @@ public class GamePageController {
         alert.close();
     }
     void secondStage(){
-        Question q = SysData.getInstance().getQuestions().get(rand.nextInt(SysData.getInstance().getQuestions().size()));
+        pauseTimer();
+        if(questions.isEmpty()){
+            questions = SysData.getInstance().getQuestions();
+        }
+        Question q = questions.get(rand.nextInt(SysData.getInstance().getQuestions().size()));
         Dialog<String> dialog = new Dialog<>();
         dialog.setTitle("Question");
         dialog.setHeaderText(q.getQuestionID());
@@ -233,9 +358,12 @@ public class GamePageController {
                     }
                 }
             }
+            resumeTimer();
         }
         System.out.println("myScore"+myScore);
         lblScore.setText("Score: " + myScore);
+        questions.remove(q);
+        questionMark();
     }
     void thirdStage(){
 
@@ -248,34 +376,61 @@ public class GamePageController {
         cb.getChessBoard().getChildren().clear();
         initialize();
     }
-    void StartMyTimer()
-    {
-        if (timeline != null) {
-            timeline.stop();
-        }
-
-        timeSeconds = STARTTIME;
-
-        // update timerLabel
-        lbTimer.setText(timeSeconds.toString());
-        timeline = new Timeline();
-        timeline.setCycleCount(Timeline.INDEFINITE);
-        // KeyFrame event handler
-        timeline.getKeyFrames().add(
-                new KeyFrame(Duration.seconds(1),
-                        (EventHandler) event1 -> {
-                            timeSeconds++;
-                            // update timerLabel
-                            lbTimer.setText(
-                                    timeSeconds.toString());
-                            if (timeSeconds >= 100) {
-                                timeline.stop();
-                            }
-                        }));
-        timeline.playFromStart();
-        chessBoard.setDisable(false);
+    void resetBoard(){
+        cb.getChessBoard().getChildren().clear();
+        cb = new ChessBoard(chessBoard, theme,8);
+        myPiece = cb.getKnight();
+        computerPiece = cb.getQueen();
+        currentPlayer = "black";
+        myStage++;
+        myScore=0;
+        lblStage.setText("Stage: " + myStage);
+//        StartMyTimer();
+        generateRandomTile();
+        questionMark();
+        questionMark();
+        questionMark();
         selectPiece(true);
+        timer();
     }
+//    void StartMyTimer()
+//    {
+//        if (timeline != null) {
+//            timeline.stop();
+//        }
+//
+//        timeSeconds = STARTTIME;
+//
+//        // update timerLabel
+//        lbTimer.setText(timeSeconds.toString());
+//        timeline = new Timeline();
+//        timeline.setCycleCount(Timeline.INDEFINITE);
+//        // KeyFrame event handler
+//        timeline.getKeyFrames().add(
+//                new KeyFrame(Duration.seconds(1),
+//                        (EventHandler) event1 -> {
+//                            timeSeconds++;
+//                            // update timerLabel
+//                            lbTimer.setText(
+//                                    timeSeconds.toString());
+//                            System.out.println(timeSeconds);
+//                            if (timeSeconds >= 20){
+//                                timeline.stop();
+////                                if(myScore<15){
+////                                    this.game=false;
+////                                    resetBoard();
+////                                    GameOver();
+////                                }else if(myStage<4){
+////                                    resetBoard();
+////                                }else{
+////                                    GameOver();
+////                                }
+//                            }
+//                        }));
+//        timeline.playFromStart();
+//        chessBoard.setDisable(false);
+//        selectPiece(true);
+//    }
 
 
     @FXML
@@ -351,12 +506,18 @@ public class GamePageController {
         int x = computerPiece.getPosX(), y = computerPiece.getPosY();
         for (String move : moves) {
             Tile tile = Piece.getTileByName(move);
-            if (Math.abs(tile.getX() - myPiece.getPosX()) < Math.abs(x - myPiece.getPosX())) {
-                x = tile.getX();
+            if((tile.getX() == myPiece.getPosX()) && (tile.getY() == myPiece.getPosY())){
+                System.out.println("Kill!!!");
+                return String.format("Tile%d%d", tile.getX(), tile.getY());
             }
-            if (Math.abs(tile.getY() - myPiece.getPosY()) < Math.abs(y - myPiece.getPosY())) {
+            if ((Math.abs(tile.getX() - myPiece.getPosX()) < Math.abs(x - myPiece.getPosX()))
+            && (Math.abs(tile.getY() - myPiece.getPosY()) < Math.abs(y - myPiece.getPosY()))) {
+                x = tile.getX();
                 y = tile.getY();
             }
+//            if (Math.abs(tile.getY() - myPiece.getPosY()) < Math.abs(y - myPiece.getPosY())) {
+//                y = tile.getY();
+//            }
         }
 
         return String.format("Tile%d%d", x, y);
@@ -419,7 +580,7 @@ public class GamePageController {
 
     private void dropComputer(Tile tile) {
         if (!computerPiece.getPossibleMoves().contains(tile.getName())) return;
-
+        System.out.println("dropComputer");
         Tile initialSquare = (Tile) computerPiece.getParent();
         tile.getChildren().add(0,computerPiece);
         tile.setOccupied(true);
@@ -436,9 +597,7 @@ public class GamePageController {
         if (killedPiece.getType().equals("Knight")) {
             this.game = false;
             System.out.println("Game Over");
-            GameOver();
         }
-
         Tile initialSquare = (Tile) computerPiece.getParent();
         tile.getChildren().remove(0);
         tile.getChildren().add(computerPiece);
@@ -448,8 +607,10 @@ public class GamePageController {
         computerPiece.setPosX(tile.getX());
         computerPiece.setPosY(tile.getY());
         deselectPiece(true);
+        if(this.game == false){
+            GameOver();
+        }
     }
-
 //    private void killPiece(Tile tile) {
 //        if (!myPiece.getPossibleMoves().contains(tile.getName())) return;
 //
@@ -469,12 +630,24 @@ public class GamePageController {
 //    }
 
     private void GameOver() {
-        Alert gameOverAlert = new Alert(Alert.AlertType.INFORMATION);
-        gameOverAlert.setTitle("Game Over");
-        gameOverAlert.setHeaderText("Sorry, you lost the game!");
-        gameOverAlert.setContentText("Better luck next time!");
-        gameOverAlert.showAndWait();
-        homePage();
+        if(game==false){
+            Alert gameOverAlert = new Alert(Alert.AlertType.INFORMATION);
+            gameOverAlert.setTitle("Game Over");
+            gameOverAlert.setHeaderText("Sorry, you lost the game!");
+            gameOverAlert.setContentText("Better luck next time!");
+//            gameOverAlert.showAndWait();
+//            gameOverAlert.setOnHidden(evt -> Platform);
+            gameOverAlert.showAndWait();
+            homePage();
+        }else{
+            Alert gameOverAlert = new Alert(Alert.AlertType.INFORMATION);
+            gameOverAlert.setTitle("Game Over");
+            gameOverAlert.setHeaderText("you Won the game!");
+            gameOverAlert.setContentText("Your Score Is"+myScore);
+            gameOverAlert.showAndWait();
+            homePage();
+        }
+//        timeline.stop();
     }
     private void homePage(){
         try {

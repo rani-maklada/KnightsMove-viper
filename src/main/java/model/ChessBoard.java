@@ -17,8 +17,7 @@ public class ChessBoard {
     private ArrayList<Tile> tiles = new ArrayList<>();
     private int boardSize;
 
-    public ChessBoard(GridPane chessBoard, String theme, int boardSize){
-
+    public ChessBoard(GridPane chessBoard, String theme,int boardSize){
         this.chessBoard = chessBoard;
         this.theme = theme;
         this.boardSize=boardSize;
@@ -145,14 +144,14 @@ public class ChessBoard {
                     this.knight.setImage();
                     addPiece(tile, this.knight);
                 }
-                if(tile.getX() == 7){
-                    this.king = (King) PieceFactory.createPiece("King","white", tile.getX(), tile.getY());
-                    addPiece(tile, king);
-                }
 //                if(tile.getX() == 7){
-//                    this.queen = new Queen("white", tile.getX(), tile.getY());
-//                    addPiece(tile,queen );
+//                    this.king = (King) PieceFactory.createPiece("King","white", tile.getX(), tile.getY());
+//                    addPiece(tile, king);
 //                }
+                if(tile.getX() == 7){
+                    this.queen = (Queen) PieceFactory.createPiece("Queen","white", tile.getX(), tile.getY());
+                    addPiece(tile,this.queen );
+                }
             }
         }
     }
