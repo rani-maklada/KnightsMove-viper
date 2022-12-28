@@ -35,7 +35,7 @@ public class Knight extends Piece{
         moves.add("Tile" + getPosition(x,-2) + getPosition(y,-1));
         moves.add("Tile" + (x+1)%8 + getPosition(y,-2));
         moves.add("Tile" + getPosition(x,-1) + (getPosition(y,-2)));
-        System.out.println(moves);
+        System.out.println("Knight Moves:"+moves);
         for(String move : moves){
 
             if(getTileByName(move) != null){

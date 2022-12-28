@@ -2,9 +2,14 @@ package controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
-
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import javafx.scene.effect.ColorAdjust;
+import org.controlsfx.control.Notifications;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -70,6 +75,7 @@ public class GamePageController {
     private AnimationTimer timer;
     private boolean paused = false;
     private long elapsedTime = 0;
+    private int numberOfGlow;
 
     public GamePageController(String name,String theme){
         this.myNickHolder = name;
@@ -77,8 +83,7 @@ public class GamePageController {
     }
     @FXML
     void initialize() throws IOException {
-
-        questions = SysData.getInstance().getQuestions();
+        questions = (ArrayList<Question>) SysData.getInstance().getQuestions().clone();
 //        colorPicker.getCustomColors();
         cb = new ChessBoard(chessBoard, theme,8);
         myPiece = cb.getKnight();
@@ -95,11 +100,11 @@ public class GamePageController {
         lblStage.setText("Stage: " + myStage);
 //        StartMyTimer();
         generateRandomTile();
+        selectPiece(true);
         questionMark();
         questionMark();
         questionMark();
         timer();
-        selectPiece(true);
 //        myPiece.getAllPossibleMoves();
     }
 
@@ -126,22 +131,27 @@ public class GamePageController {
 //        };
 void timer(){
     startTime = System.currentTimeMillis();
+    elapsedTime=0;
     timer = new AnimationTimer() {
-            private long countDown = 60000;  // 60 seconds in milliseconds
-            @Override
+        @Override
             public void handle(long now) {
                 if (!paused) {
                     elapsedTime += System.currentTimeMillis() - startTime;
                     startTime = System.currentTimeMillis();
+                    // 60 seconds in milliseconds
+                    long countDown = 60000;
                     long remainingTime = countDown - elapsedTime;
                     int seconds = (int) (60 - elapsedTime / 1000);
                     lbTimer.setText(String.valueOf(seconds));
-                    System.out.println("elapsedTime:"+elapsedTime);
-                    System.out.println("countDown:"+countDown);
-                    System.out.println("startTime:"+startTime);
                     if (remainingTime <= 0) {
-                        // countdown is finished, stop the timer
-                        stop();
+                        if (myScore < 15){
+                            game=false;
+                            GameOver();
+                        }else{
+                            // countdown is finished, stop the timer
+                            resetTimer();
+                        }
+
                     }
                 }
             }
@@ -159,11 +169,44 @@ void timer(){
         startTime = System.currentTimeMillis();  // reset start time
         System.out.println("resumeTimer");
     }
+    void resetTimer() {
+        timer.stop();
+        timer();
+    }
     public void someMethod(){
         pauseTimer();
         System.out.println("Wait");
         resumeTimer();
     }
+
+    void kingTimer() {
+        timer = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                if (!paused) {
+                    elapsedTime += System.currentTimeMillis() - startTime;
+                    startTime = System.currentTimeMillis();
+                    // 10 seconds in milliseconds
+                    long kingCountDown = 10000;
+                    long remainingTime = kingCountDown - elapsedTime;
+                    if (remainingTime <= 0) {
+                        // countdown is finished, move the king
+                        moveKing();
+                        // reset the timer
+                        elapsedTime = 0;
+                        startTime = System.currentTimeMillis();
+                    }
+                }
+            }
+        };
+        timer.start();
+        // Start the timer
+    }
+
+    private void moveKing() {
+
+    }
+
 
     private void timeOut() {
         // Create a new alert
@@ -185,7 +228,7 @@ void timer(){
             resetBoard();
         });
         // Show the dialog to the user
-        Platform.runLater(() -> alert.showAndWait());
+        Platform.runLater(alert::showAndWait);
     }
 
     void questionMark(){
@@ -196,24 +239,38 @@ void timer(){
         imageView.setFitHeight(20);
 //        cb.getTiles().get(x).getChildren().add(imageView);
 //        cb.getTiles().get(x).setType("Question");
+        System.out.println(tile);
         tile.getChildren().add(imageView);
         tile.setType("Question");
     }
-    Tile selectRandomEmptyTile(){
-        int index = rand.nextInt(cb.getTiles().size());
-        Tile tile = cb.getTiles().get(index);
-        if (tile.getType() == null){
-            return tile;
-        }else{
-            selectRandomEmptyTile();
+    Tile selectRandomEmptyTile() {
+        // Set a maximum number of iterations
+        int maxIterations = cb.getTiles().size();
+
+        // Try to find an empty tile a maximum of maxIterations times
+        for (int i = 0; i < maxIterations; i++) {
+            // Select a random index from the list of tiles
+            int index = rand.nextInt(cb.getTiles().size());
+
+            // Make sure the index is within the bounds of the list
+            if (index < cb.getTiles().size()) {
+                // Get the tile at the selected index
+                Tile tile = cb.getTiles().get(index);
+
+                // If the tile is empty, return it
+                if (tile.getType() == null) {
+                    return tile;
+                }
+            }
         }
+        // If no empty tiles were found after maxIterations iterations, return null
         return null;
     }
     void generateRandomTile(){
         specialTiles = new ArrayList<String>();
         int rand_intX;
         int rand_intY;
-        while(specialTiles.size()<3){
+        while(specialTiles.size()<20){
             rand_intX = rand.nextInt(8);
             rand_intY = rand.nextInt(8);
             specialTiles.add("Tile"+rand_intX+rand_intY);
@@ -223,7 +280,7 @@ void timer(){
                 tile.setType("RandomJump");
             }
         }
-        System.out.println(specialTiles);
+        System.out.println("specialTiles:"+specialTiles);
     }
     void stages(){
         switch(myStage){
@@ -243,15 +300,85 @@ void timer(){
     }
 
     void firstStage(){
-        Random rand = new Random();
-        dropRandomPiece(cb.getTiles().get(rand.nextInt(cb.getTiles().size())));
-        System.out.println("Randommmmm");
+        numberOfGlow = 5;
+        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+        animationRandom();
+        executor.schedule(() -> {
+            System.out.println("Randommmmm!!!");
+
+        }, 4000, TimeUnit.MILLISECONDS);
+        executor.shutdown();
     }
+    void randomTimer() {
+        timer = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                if (!paused) {
+                    elapsedTime += System.currentTimeMillis() - startTime;
+                    startTime = System.currentTimeMillis();
+                    // 10 seconds in milliseconds
+                    long randomCountDown = 500;
+                    long remainingTime = randomCountDown - elapsedTime;
+                    if (remainingTime <= 0) {
+                        // countdown is finished, move the king
+
+
+                            animationRandom();
+
+                        // reset the timer
+                        elapsedTime = 0;
+                        startTime = System.currentTimeMillis();
+                    }
+                }
+            }
+        };
+        timer.start();
+        // Start the timer
+    }
+    void animationRandom(){
+//        Tile tile = cb.getTiles().get(0);
+            Random rand = new Random();
+            Tile tile = cb.getTiles().get(rand.nextInt(cb.getTiles().size()));
+            ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+            ColorAdjust colorAdjust = new ColorAdjust();
+            colorAdjust.setHue(0.9);  // shift the hue towards red
+            colorAdjust.setSaturation(1.0);  // increase the saturation
+            colorAdjust.setBrightness(0.5);  // increase the brightness by 0.5
+            colorAdjust.setContrast(0.5);  // increase the contrast by 0.5
+            tile.setEffect(colorAdjust);
+            numberOfGlow--;
+            executor.schedule(() -> {
+                tile.setEffect(null);
+                if(numberOfGlow > 0){
+                    animationRandom();
+                }
+                else
+                {
+                    dropRandomPiece(cb.getTiles().get(rand.nextInt(cb.getTiles().size())));
+                }
+            }, 325, TimeUnit.MILLISECONDS);
+            executor.shutdown();
+        }
+
+//        for (Tile tile:cb.getTiles()) {
+//            tile.setBorder(new Border(new BorderStroke(Color.BLACK,
+//                    BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+//        }
+
     void dropRandomPiece(Tile tile){
         textArea.setText(textArea.getText()+"\n jump to Randommmmm");
+        System.out.println("0 of func");
         Tile initialSquare = (Tile) myPiece.getParent();
+        System.out.println(initialSquare);
+        System.out.println(initialSquare.getX());
+        System.out.println(initialSquare.getY());
+        System.out.println(tile);
+        System.out.println(tile.getX());
+        System.out.println(tile.getY());
         tile.getChildren().add(myPiece);
+        System.out.println("0.7 of func");
         tile.setOccupied(true);
+        System.out.println("1 of func");
         if(!tile.isVisited()){
             tile.setVisited(true);
             setBackgroundVisited(tile);
@@ -259,15 +386,18 @@ void timer(){
             lblScore.setText("Score: " + myScore);
             visitedTiles.add(tile);
         }
+        System.out.println("2 of func");
         initialSquare.getChildren().removeAll();
         initialSquare.setOccupied(false);
         myPiece.setPosX(tile.getX());
         myPiece.setPosY(tile.getY());
         if (computerPiece != null) computerMove();
         deselectPiece(true);
+        System.out.println("3 of func");
         if(specialTiles.contains(tile.getName())){
             stages();
         }
+        System.out.println("end of func");
     }
     void alertDisplayer(){
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -286,9 +416,9 @@ void timer(){
     void secondStage(){
         pauseTimer();
         if(questions.isEmpty()){
-            questions = SysData.getInstance().getQuestions();
+            questions = (ArrayList<Question>) SysData.getInstance().getQuestions().clone();
         }
-        Question q = questions.get(rand.nextInt(SysData.getInstance().getQuestions().size()));
+        Question q = questions.get(rand.nextInt(questions.size()));
         Dialog<String> dialog = new Dialog<>();
         dialog.setTitle("Question");
         dialog.setHeaderText(q.getQuestionID());
@@ -347,14 +477,14 @@ void timer(){
                 System.out.println(q.getLevel());
                 switch(q.getLevel()){
                     case 1 -> {
-                        myScore = (myScore-2<0) ? 0:myScore-2;
+                        myScore = Math.max(myScore - 2, 0);
 
                     }
                     case 2 -> {
-                        myScore = myScore-3<0 ? 0:myScore-3;
+                        myScore = Math.max(myScore - 3, 0);
                     }
                     case 3 -> {
-                        myScore = (myScore-4<0) ? 0:myScore-4;
+                        myScore = Math.max(myScore - 4, 0);
                     }
                 }
             }
@@ -435,7 +565,7 @@ void timer(){
 
     @FXML
     void backButton(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("/view/HomePage.fxml"));
+        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/view/HomePage.fxml")));
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         scene = (Scene) ((Node) event.getSource()).getScene();
         scene.setRoot(root);
@@ -450,18 +580,10 @@ void timer(){
         // Clicked on Tile
         if (target.toString().equals("Tile")) {
             Tile tile = (Tile) target;
-            if (tile.isOccupied()) {//Kill piece
-//                Piece newPiece = (Piece) tile.getChildren().get(0);
-//                killPiece(tile);
-            } else { // Drop piece on blank tile
+            if (!tile.isOccupied()) {// Drop piece on blank tile
                 dropPiece(tile);
             }
         }
-//        else { // Clicked on piece
-//            Piece newPiece = (Piece) target;
-//            Tile tile = (Tile) newPiece.getParent();
-//            killPiece(tile);
-//        }
     }
 
     private void selectPiece(boolean game) {
@@ -488,8 +610,8 @@ void timer(){
     private void computerMove() {
         computerPiece.getAllPossibleMoves();
         ArrayList<String> moves = computerPiece.getPossibleMoves();
-        System.out.println(moves);
-        String str = bestMove(moves);
+        System.out.println("computerMove:"+moves);
+        String str = findBestMove(moves);
         System.out.println("bestMove: " + str);
         for (Tile t : cb.getTiles()) {
             if (t.getName().equals(str)) {
@@ -502,13 +624,21 @@ void timer(){
         }
     }
 
-    private String bestMove(ArrayList<String> moves) {
+    private String findBestMove(ArrayList<String> moves) {
         int x = computerPiece.getPosX(), y = computerPiece.getPosY();
+        int score = 0;
+        int maxScore = score;
+        String bestMove = null;
         for (String move : moves) {
             Tile tile = Piece.getTileByName(move);
-            if((tile.getX() == myPiece.getPosX()) && (tile.getY() == myPiece.getPosY())){
+            if (tile != null && (tile.getX() == myPiece.getPosX()) && (tile.getY() == myPiece.getPosY())) {
                 System.out.println("Kill!!!");
                 return String.format("Tile%d%d", tile.getX(), tile.getY());
+            }
+            score = evaluateMove(tile);
+            if (score > maxScore){
+                maxScore = score;
+                bestMove = move;
             }
             if ((Math.abs(tile.getX() - myPiece.getPosX()) < Math.abs(x - myPiece.getPosX()))
             && (Math.abs(tile.getY() - myPiece.getPosY()) < Math.abs(y - myPiece.getPosY()))) {
@@ -519,22 +649,43 @@ void timer(){
 //                y = tile.getY();
 //            }
         }
-
-        return String.format("Tile%d%d", x, y);
+//        return String.format("Tile%d%d", x, y);
+        return bestMove;
+    }
+    
+    private int evaluateMove(Tile tile){
+        Piece myKnight = PieceFactory.createPiece(myPiece.getType(),"black",myPiece.getPosX(),myPiece.getPosY());
+        int score = 0;
+        Piece piece = PieceFactory.createPiece(computerPiece.getType(),"white",tile.getX(),tile.getY());
+        piece.setPosX(tile.getX());
+        piece.setPosY(tile.getY());
+        piece.getAllPossibleMoves();
+        System.out.println("myPieceMove"+myPiece.getPossibleMoves());
+        System.out.println("computerMove:"+piece.getPossibleMoves());
+        for (String move:piece.getPossibleMoves()) {
+            if(myPiece.getPossibleMoves().contains(move)){
+                System.out.println("move:"+move);
+                score++;
+            }
+        }
+        System.out.println(tile.getName()+" Score:"+score);
+        return score;
     }
 
     private void dropPiece(Tile tile) {
+        boolean questionTile = false;
         if (!myPiece.getPossibleMoves().contains(tile.getName())) return;
         if(tile.getChildren().size()>0){
-            System.out.println(tile.getChildren());
-            secondStage();
+            System.out.println("secondStage():"+tile.getChildren());
+//            secondStage();
             tile.getChildren().clear();
+            questionTile = true;
         }
         Tile initialSquare = (Tile) myPiece.getParent();
         tile.getChildren().add(0,myPiece);
         tile.setOccupied(true);
         if(tile.isVisited()){
-            myScore = (myScore-1<0) ? 0:myScore-1;
+            myScore = Math.max(myScore - 1, 0);
         }else{
             tile.setVisited(true);
             setBackgroundVisited(tile);
@@ -546,12 +697,15 @@ void timer(){
         initialSquare.setOccupied(false);
         myPiece.setPosX(tile.getX());
         myPiece.setPosY(tile.getY());
-        if (computerPiece != null) computerMove();
+        if(questionTile){
+            secondStage();
+        }
         deselectPiece(true);
+        if (computerPiece != null) computerMove();
         if(specialTiles.contains(tile.getName())){
 //            alertDisplayer();
             AlertDisplayer alertDisplayer1 = new AlertDisplayer();
-            alertDisplayer1.showOneSecondAlert("","");
+//            alertDisplayer1.showOneSecondAlert("","");
             stages();
         }
     }
@@ -592,7 +746,7 @@ void timer(){
 
     private void killMyPiece(Tile tile) {
         if (!computerPiece.getPossibleMoves().contains(tile.getName())) return;
-        System.out.println(tile.getChildren());
+        System.out.println("killMyPiece:"+tile.getChildren());
         Piece killedPiece = (Piece) tile.getChildren().get(0);
         if (killedPiece.getType().equals("Knight")) {
             this.game = false;
@@ -607,7 +761,7 @@ void timer(){
         computerPiece.setPosX(tile.getX());
         computerPiece.setPosY(tile.getY());
         deselectPiece(true);
-        if(this.game == false){
+        if(!this.game){
             GameOver();
         }
     }
@@ -630,7 +784,7 @@ void timer(){
 //    }
 
     private void GameOver() {
-        if(game==false){
+        if(!game){
             Alert gameOverAlert = new Alert(Alert.AlertType.INFORMATION);
             gameOverAlert.setTitle("Game Over");
             gameOverAlert.setHeaderText("Sorry, you lost the game!");
@@ -647,11 +801,11 @@ void timer(){
             gameOverAlert.showAndWait();
             homePage();
         }
-//        timeline.stop();
+        timer.stop();
     }
     private void homePage(){
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("/view/HomePage.fxml"));
+            Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/view/HomePage.fxml")));
             stage = (Stage) GamePage.getScene().getWindow();
             scene = GamePage.getScene();
             scene.setRoot(root);
