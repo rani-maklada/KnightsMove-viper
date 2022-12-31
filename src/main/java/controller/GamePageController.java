@@ -40,6 +40,9 @@ public class GamePageController {
     @FXML
     private AnchorPane GamePage;
     @FXML
+    private ImageView imgTimer;
+
+    @FXML
     private Scene scene;
     @FXML
     private Stage stage;
@@ -87,7 +90,7 @@ public class GamePageController {
 //        colorPicker.getCustomColors();
         cb = new ChessBoard(chessBoard, theme,8);
         myPiece = cb.getKnight();
-        computerPiece = cb.getQueen();
+        computerPiece = cb.getKing();
         currentPlayer = "black";
         this.game = true;
 //        lbTimer.setText(timeSeconds.toString());
@@ -106,6 +109,30 @@ public class GamePageController {
         questionMark();
         timer();
 //        myPiece.getAllPossibleMoves();
+
+        Timeline mytimeline = new Timeline();
+
+// Set the duration between each execution to 2 seconds
+        Duration duration = Duration.seconds(2);
+
+// Create a KeyFrame object that specifies the code to be executed
+// and the duration to wait before executing it
+        KeyFrame keyFrame = new KeyFrame(duration, event -> {
+            // This code will be executed every 2 seconds
+            computerMove();
+            System.out.println("Executing code");
+        });
+        // Add the KeyFrame to the Timeline
+        mytimeline.getKeyFrames().add(keyFrame);
+
+// Set the number of times the Timeline should repeat
+// Use Timeline.INDEFINITE to repeat indefinitely
+        mytimeline.setCycleCount(Timeline.INDEFINITE);
+
+// Start the Timeline
+        mytimeline.play();
+
+
     }
 
 //    void timer() {
@@ -158,6 +185,7 @@ void timer(){
         };
         timer.start();
         // Start the timer
+
     }
     public void pauseTimer() {
         paused = true;  // pause the countdown timer
@@ -299,16 +327,30 @@ void timer(){
         }
     }
 
-    void firstStage(){
-        numberOfGlow = 5;
-        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-        animationRandom();
-        executor.schedule(() -> {
-            System.out.println("Randommmmm!!!");
+    void firstStage() {
 
-        }, 4000, TimeUnit.MILLISECONDS);
-        executor.shutdown();
+
+        numberOfGlow = 8;
+        pauseTimer();
+        Image image = new Image("C:\\Users\\the_l\\Documents\\GitHub\\KnightsMove-viper\\src\\main\\resources\\view\\images\\giphy.gif");
+
+
+        ImageView imageView = new ImageView(image);
+        imgTimer.setImage(image);
+        animationRandom();
+        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1.7), event -> {
+            // code to execute after the pause
+            dropRandomPiece(cb.getTiles().get(rand.nextInt(cb.getTiles().size())));
+            System.out.println("Randommmmm!!!");
+            imgTimer.setImage(null);
+            resumeTimer();
+        }));
+        timeline.play();
+
+
+
     }
+
     void randomTimer() {
         timer = new AnimationTimer() {
             @Override
@@ -336,28 +378,29 @@ void timer(){
         // Start the timer
     }
     void animationRandom(){
-//        Tile tile = cb.getTiles().get(0);
-            Random rand = new Random();
-            Tile tile = cb.getTiles().get(rand.nextInt(cb.getTiles().size()));
-            ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-            ColorAdjust colorAdjust = new ColorAdjust();
-            colorAdjust.setHue(0.9);  // shift the hue towards red
-            colorAdjust.setSaturation(1.0);  // increase the saturation
-            colorAdjust.setBrightness(0.5);  // increase the brightness by 0.5
-            colorAdjust.setContrast(0.5);  // increase the contrast by 0.5
-            tile.setEffect(colorAdjust);
-            numberOfGlow--;
-            executor.schedule(() -> {
-                tile.setEffect(null);
-                if(numberOfGlow > 0){
-                    animationRandom();
-                }
-                else
-                {
-                    dropRandomPiece(cb.getTiles().get(rand.nextInt(cb.getTiles().size())));
-                }
-            }, 325, TimeUnit.MILLISECONDS);
-            executor.shutdown();
+        Random rand = new Random();
+        Tile tile = cb.getTiles().get(rand.nextInt(cb.getTiles().size()));
+        ColorAdjust colorAdjust = new ColorAdjust();
+        colorAdjust.setHue(0.9);  // shift the hue towards red
+        colorAdjust.setSaturation(1.0);  // increase the saturation
+        colorAdjust.setBrightness(0.5);  // increase the brightness by 0.5
+        colorAdjust.setContrast(0.5);  // increase the contrast by 0.5
+        tile.setEffect(colorAdjust);
+        numberOfGlow--;
+        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(0.2), event -> {
+            tile.setEffect(null);
+            if(numberOfGlow>0)
+                animationRandom();
+
+
+        }));
+        timeline.play();
+
+
+
+
+
+
         }
 
 //        for (Tile tile:cb.getTiles()) {
@@ -701,7 +744,13 @@ void timer(){
             secondStage();
         }
         deselectPiece(true);
-        if (computerPiece != null) computerMove();
+
+
+
+
+
+
+
         if(specialTiles.contains(tile.getName())){
 //            alertDisplayer();
             AlertDisplayer alertDisplayer1 = new AlertDisplayer();

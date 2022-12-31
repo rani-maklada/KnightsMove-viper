@@ -139,19 +139,19 @@ public class ChessBoard {
         for(Tile tile : tiles){
             if(tile.isOccupied()) continue;
             if(tile.getY() == 0){
-                if(tile.getX() == 0){
+              if(tile.getX() == 0){
                     this.knight = (Knight) PieceFactory.createPiece("Knight","black", tile.getX(), tile.getY());
                     this.knight.setImage();
                     addPiece(tile, this.knight);
                 }
-//                if(tile.getX() == 7){
-//                    this.king = (King) PieceFactory.createPiece("King","white", tile.getX(), tile.getY());
-//                    addPiece(tile, king);
-//                }
-                if(tile.getX() == 7){
-                    this.queen = (Queen) PieceFactory.createPiece("Queen","white", tile.getX(), tile.getY());
-                    addPiece(tile,this.queen );
-                }
+               if(tile.getX() == 7){
+                  this.king = (King) PieceFactory.createPiece("King","white", tile.getX(), tile.getY());
+                   addPiece(tile, king);
+               }
+            //    if(tile.getX() == 7){
+               //     this.queen = (Queen) PieceFactory.createPiece("Queen","white", tile.getX(), tile.getY());
+                 //   addPiece(tile,this.queen );
+               // }
             }
         }
     }

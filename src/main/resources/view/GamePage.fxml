@@ -9,6 +9,7 @@
 <?import javafx.scene.effect.Light.Distant?>
 <?import javafx.scene.effect.Lighting?>
 <?import javafx.scene.effect.Shadow?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -85,5 +86,6 @@
             </font>
         </Label>
         <ColorPicker fx:id="colorPicker" layoutX="32.0" layoutY="466.0" />
+      <ImageView fx:id="imgTimer" fitHeight="41.0" fitWidth="57.0" layoutX="256.0" layoutY="76.0" pickOnBounds="true" preserveRatio="true" />
     </children>
 </AnchorPane>
