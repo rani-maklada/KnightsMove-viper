@@ -8,6 +8,11 @@ import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.scene.effect.ColorAdjust;
 import org.controlsfx.control.Notifications;
 import javafx.animation.KeyFrame;
@@ -76,9 +81,12 @@ public class GamePageController {
     private long startTime;
     private long currentTime;
     private AnimationTimer timer;
+    private Timeline mytimeline;
     private boolean paused = false;
     private long elapsedTime = 0;
     private int numberOfGlow;
+    private double myRate;
+    private Timeline updateTimeline;
 
     public GamePageController(String name,String theme){
         this.myNickHolder = name;
@@ -102,6 +110,7 @@ public class GamePageController {
         myStage=1;
         lblStage.setText("Stage: " + myStage);
 //        StartMyTimer();
+        startMyTimeLine();
         generateRandomTile();
         selectPiece(true);
         questionMark();
@@ -109,30 +118,51 @@ public class GamePageController {
         questionMark();
         timer();
 //        myPiece.getAllPossibleMoves();
+    }
+    private void startMyTimeLine(){
+        updatemytimeline();
+//        double myRate = 4;
+//        mytimeline = new Timeline();
+//        int frameCount = 0;
+//         // Set the duration between each execution to 2 seconds
+////        Duration duration = Duration.seconds(2);
+//        // Create a KeyFrame object that specifies the code to be executed
+//        // and the duration to wait before executing it
+//        KeyFrame keyFrame = new KeyFrame(Duration.seconds(myRate), event -> {
+//            // This code will be executed every 2 seconds
+//            computerMove();
+//            System.out.println("Executing code");
+//        });
+//        // Add the KeyFrame to the Timeline
+//        mytimeline.getKeyFrames().add(keyFrame);
+//        // Set the number of times the Timeline should repeat
+//        // Use Timeline.INDEFINITE to repeat indefinitely
+//        mytimeline.setCycleCount(Timeline.INDEFINITE);
+//        // Start the Timeline
+//        mytimeline.play();
+    }
 
-        Timeline mytimeline = new Timeline();
-
-// Set the duration between each execution to 2 seconds
-        Duration duration = Duration.seconds(2);
-
-// Create a KeyFrame object that specifies the code to be executed
-// and the duration to wait before executing it
-        KeyFrame keyFrame = new KeyFrame(duration, event -> {
-            // This code will be executed every 2 seconds
+    private void updatemytimeline(){
+        myRate = 5;
+        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(myRate), event -> {
             computerMove();
-            System.out.println("Executing code");
-        });
-        // Add the KeyFrame to the Timeline
-        mytimeline.getKeyFrames().add(keyFrame);
+        }));
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.play();
 
-// Set the number of times the Timeline should repeat
-// Use Timeline.INDEFINITE to repeat indefinitely
+// Every 10 seconds, change the original timeline rate of X
+        //rateChanger
+        mytimeline = new Timeline(new KeyFrame(Duration.seconds(5), event -> {
+            myRate = Math.max(1,myRate-1);
+            timeline.stop();
+            timeline.getKeyFrames().clear();
+            timeline.getKeyFrames().add(new KeyFrame(Duration.seconds(myRate), event2 -> {
+                computerMove();
+            }));
+            timeline.play();
+        }));
         mytimeline.setCycleCount(Timeline.INDEFINITE);
-
-// Start the Timeline
         mytimeline.play();
-
-
     }
 
 //    void timer() {
@@ -191,14 +221,17 @@ void timer(){
         paused = true;  // pause the countdown timer
         elapsedTime += System.currentTimeMillis() - startTime;  // update elapsed time
         System.out.println("pauseTimer");
+        mytimeline.stop();
     }
     public void resumeTimer() {
         paused = false;  // resume the countdown timer
         startTime = System.currentTimeMillis();  // reset start time
         System.out.println("resumeTimer");
+        mytimeline.play();
     }
     void resetTimer() {
         timer.stop();
+        mytimeline.stop();
         timer();
     }
     public void someMethod(){
@@ -328,12 +361,10 @@ void timer(){
     }
 
     void firstStage() {
-
-
+        chessBoard.setDisable(true);
         numberOfGlow = 8;
         pauseTimer();
-        Image image = new Image("C:\\Users\\the_l\\Documents\\GitHub\\KnightsMove-viper\\src\\main\\resources\\view\\images\\giphy.gif");
-
+        Image image = new Image(String.valueOf(getClass().getResource("/view/images/giphy.gif")));
 
         ImageView imageView = new ImageView(image);
         imgTimer.setImage(image);
@@ -344,12 +375,11 @@ void timer(){
             System.out.println("Randommmmm!!!");
             imgTimer.setImage(null);
             resumeTimer();
+            chessBoard.setDisable(false);
         }));
         timeline.play();
-
-
-
     }
+    private
 
     void randomTimer() {
         timer = new AnimationTimer() {
@@ -391,17 +421,9 @@ void timer(){
             tile.setEffect(null);
             if(numberOfGlow>0)
                 animationRandom();
-
-
         }));
         timeline.play();
-
-
-
-
-
-
-        }
+    }
 
 //        for (Tile tile:cb.getTiles()) {
 //            tile.setBorder(new Border(new BorderStroke(Color.BLACK,
@@ -434,13 +456,23 @@ void timer(){
         initialSquare.setOccupied(false);
         myPiece.setPosX(tile.getX());
         myPiece.setPosY(tile.getY());
-        if (computerPiece != null) computerMove();
-        deselectPiece(true);
-        System.out.println("3 of func");
-        if(specialTiles.contains(tile.getName())){
-            stages();
+        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
+            if (computerPiece != null && computerPiece.getType().equals("Queen")){
+                computerMove();
+            }else{
+                mytimeline.play();
+            }
+            deselectPiece(true);
+            System.out.println("3 of func");
+            if(specialTiles.contains(tile.getName())){
+                stages();
+            }
+            System.out.println("end of func");
+        }));
+        timeline.play();
+        if(computerPiece.getType().equals("King")){
+            mytimeline.stop();
         }
-        System.out.println("end of func");
     }
     void alertDisplayer(){
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -547,9 +579,12 @@ void timer(){
     @FXML
     void resetButton(ActionEvent event) throws IOException {
         cb.getChessBoard().getChildren().clear();
+        mytimeline.stop();
         initialize();
+//        resetBoard();
     }
     void resetBoard(){
+        mytimeline.stop();
         cb.getChessBoard().getChildren().clear();
         cb = new ChessBoard(chessBoard, theme,8);
         myPiece = cb.getKnight();
@@ -565,6 +600,7 @@ void timer(){
         questionMark();
         selectPiece(true);
         timer();
+        mytimeline.playFromStart();
     }
 //    void StartMyTimer()
 //    {
@@ -608,6 +644,8 @@ void timer(){
 
     @FXML
     void backButton(ActionEvent event) throws IOException {
+        mytimeline.stop();
+        timer.stop();
         Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/view/HomePage.fxml")));
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         scene = (Scene) ((Node) event.getSource()).getScene();
@@ -654,7 +692,13 @@ void timer(){
         computerPiece.getAllPossibleMoves();
         ArrayList<String> moves = computerPiece.getPossibleMoves();
         System.out.println("computerMove:"+moves);
-        String str = findBestMove(moves);
+        String str ="";
+        if(computerPiece.getStyleClass().equals("Queen")){
+            str = findBestMove(moves,"Queen");
+        }else{
+            str = findBestMove(moves,"King");
+        }
+
         System.out.println("bestMove: " + str);
         for (Tile t : cb.getTiles()) {
             if (t.getName().equals(str)) {
@@ -666,9 +710,7 @@ void timer(){
             }
         }
     }
-
-    private String findBestMove(ArrayList<String> moves) {
-        int x = computerPiece.getPosX(), y = computerPiece.getPosY();
+    private String queenBestMove(ArrayList<String> moves){
         int score = 0;
         int maxScore = score;
         String bestMove = null;
@@ -683,17 +725,34 @@ void timer(){
                 maxScore = score;
                 bestMove = move;
             }
-            if ((Math.abs(tile.getX() - myPiece.getPosX()) < Math.abs(x - myPiece.getPosX()))
-            && (Math.abs(tile.getY() - myPiece.getPosY()) < Math.abs(y - myPiece.getPosY()))) {
+        }
+        return bestMove;
+    }
+    private String kingBestMove(ArrayList<String> moves){
+        int x = computerPiece.getPosX(), y = computerPiece.getPosY();
+        System.out.println("myPiece.getPosX():"+myPiece.getPosX());
+        System.out.println("myPiece.getPosY():"+myPiece.getPosY());
+        for (String move : moves) {
+            Tile tile = Piece.getTileByName(move);
+            if((tile.getX() == myPiece.getPosX()) && (tile.getY() == myPiece.getPosY())){
+                System.out.println("Kill!!!");
+                return String.format("Tile%d%d", tile.getX(), tile.getY());
+            }
+            if ((Math.abs(tile.getX() - myPiece.getPosX()) <= Math.abs(x - myPiece.getPosX()))
+                    && (Math.abs(tile.getY() - myPiece.getPosY()) <= Math.abs(y - myPiece.getPosY()))) {
                 x = tile.getX();
                 y = tile.getY();
             }
-//            if (Math.abs(tile.getY() - myPiece.getPosY()) < Math.abs(y - myPiece.getPosY())) {
-//                y = tile.getY();
-//            }
         }
-//        return String.format("Tile%d%d", x, y);
-        return bestMove;
+        return String.format("Tile%d%d", x, y);
+    }
+    private String findBestMove(ArrayList<String> moves,String pieceType) {
+        System.out.println("Computer Piece:"+pieceType);
+        if(pieceType.equals("Queen")){
+            return queenBestMove(moves);
+        }else{//pieceType.equals("King")
+            return kingBestMove(moves);
+        }
     }
     
     private int evaluateMove(Tile tile){
@@ -744,13 +803,7 @@ void timer(){
             secondStage();
         }
         deselectPiece(true);
-
-
-
-
-
-
-
+//        if (computerPiece != null) computerMove();
         if(specialTiles.contains(tile.getName())){
 //            alertDisplayer();
             AlertDisplayer alertDisplayer1 = new AlertDisplayer();
@@ -833,6 +886,8 @@ void timer(){
 //    }
 
     private void GameOver() {
+        mytimeline.stop();
+        timer.stop();
         if(!game){
             Alert gameOverAlert = new Alert(Alert.AlertType.INFORMATION);
             gameOverAlert.setTitle("Game Over");
@@ -840,7 +895,7 @@ void timer(){
             gameOverAlert.setContentText("Better luck next time!");
 //            gameOverAlert.showAndWait();
 //            gameOverAlert.setOnHidden(evt -> Platform);
-            gameOverAlert.showAndWait();
+//            gameOverAlert.showAndWait();
             homePage();
         }else{
             Alert gameOverAlert = new Alert(Alert.AlertType.INFORMATION);
@@ -850,7 +905,7 @@ void timer(){
             gameOverAlert.showAndWait();
             homePage();
         }
-        timer.stop();
+
     }
     private void homePage(){
         try {
