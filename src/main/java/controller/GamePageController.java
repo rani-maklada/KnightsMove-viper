@@ -99,7 +99,7 @@ public class GamePageController {
 //        colorPicker.getCustomColors();
         cb = new ChessBoard(chessBoard, theme,8);
         myPiece = cb.getKnight();
-        computerPiece = cb.getKing();
+        computerPiece = cb.getQueen();
         currentPlayer = "black";
         this.game = true;
 //        lbTimer.setText(timeSeconds.toString());
@@ -111,7 +111,7 @@ public class GamePageController {
         myStage=1;
         lblStage.setText("Stage: " + myStage);
 //        StartMyTimer();
-        startMyTimeLine();
+
         generateRandomTile();
         selectPiece(true);
         questionMark();
@@ -222,12 +222,14 @@ void timer(){
         paused = true;  // pause the countdown timer
         elapsedTime += System.currentTimeMillis() - startTime;  // update elapsed time
         System.out.println("pauseTimer");
+        if(myStage>=3)
         mytimeline.stop();
     }
     public void resumeTimer() {
         paused = false;  // resume the countdown timer
         startTime = System.currentTimeMillis();  // reset start time
         System.out.println("resumeTimer");
+        if(myStage>=3)
         mytimeline.play();
     }
     void resetTimer() {
@@ -602,7 +604,7 @@ void timer(){
     @FXML
     void resetButton(ActionEvent event) throws IOException {
         cb.getChessBoard().getChildren().clear();
-        mytimeline.stop();
+//        mytimeline.stop();
         initialize();
 //        resetBoard();
     }
@@ -667,6 +669,7 @@ void timer(){
 
     @FXML
     void backButton(ActionEvent event) throws IOException {
+        if(myStage>=3)
         mytimeline.stop();
         timer.stop();
         Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/view/HomePage.fxml")));
@@ -716,7 +719,7 @@ void timer(){
         ArrayList<String> moves = computerPiece.getPossibleMoves();
         System.out.println("computerMove:"+moves);
         String str ="";
-        if(computerPiece.getStyleClass().equals("Queen")){
+        if(computerPiece.getType().equals("Queen")){
             str = findBestMove(moves,"Queen");
         }else{
             str = findBestMove(moves,"King");
@@ -826,7 +829,13 @@ void timer(){
             secondStage();
         }
         deselectPiece(true);
-//        if (computerPiece != null) computerMove();
+
+        if (computerPiece != null)
+        {
+            if(!tile.getType().equals(TileType.RandomTiles))
+            computerMove();
+
+        }
         if(!tile.getType().equals(TileType.Nothing)){
 //            alertDisplayer();
             AlertDisplayer alertDisplayer1 = new AlertDisplayer();
@@ -909,6 +918,7 @@ void timer(){
 //    }
 
     private void GameOver() {
+        if(myStage>=3)
         mytimeline.stop();
         timer.stop();
         if(!game){

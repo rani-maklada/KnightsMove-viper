@@ -144,14 +144,14 @@ public class ChessBoard {
                     this.knight.setImage();
                     addPiece(tile, this.knight);
                 }
-               if(tile.getX() == 7){
-                  this.king = (King) PieceFactory.createPiece("King","white", tile.getX(), tile.getY());
-                   addPiece(tile, king);
-               }
-            //    if(tile.getX() == 7){
-               //     this.queen = (Queen) PieceFactory.createPiece("Queen","white", tile.getX(), tile.getY());
-                 //   addPiece(tile,this.queen );
-               // }
+            //   if(tile.getX() == 7){
+              //    this.king = (King) PieceFactory.createPiece("King","white", tile.getX(), tile.getY());
+                //   addPiece(tile, king);
+               //}
+                if(tile.getX() == 7){
+                    this.queen = (Queen) PieceFactory.createPiece("Queen","white", tile.getX(), tile.getY());
+                    addPiece(tile,this.queen);
+                }
             }
         }
     }
