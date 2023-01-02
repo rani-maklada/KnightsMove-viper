@@ -34,11 +34,20 @@ public class HighScorePageController {
     private TableColumn<GameHistory, LocalDate> colDate;
     @FXML
     void initialize() throws IOException {
+        // Change the font of the table view
+        tableView.setStyle("-fx-font-family: Arial; -fx-font-size: 14pt; -fx-alignment: center;");
+
+        // Change the font of the table columns
+        for (TableColumn column : tableView.getColumns()) {
+            column.setStyle("-fx-font-family: Arial; -fx-font-size: 14pt; -fx-alignment: center;");
+        }
+//        for (TableColumn column : tableView.getColumns()) {
+//            column.setResizable(false);
+//        }
         // Set the cell value factories
         colPlayerName.setCellValueFactory(new PropertyValueFactory<>("playerName"));
         colScore.setCellValueFactory(new PropertyValueFactory<>("score"));
         colDate.setCellValueFactory(new PropertyValueFactory<>("date"));
-
         ObservableList<GameHistory> data = FXCollections.observableArrayList(SysData.getInstance().getHistory());
         tableView.setItems(data);
         System.out.println(SysData.getInstance().getHistory());
