@@ -26,6 +26,7 @@ public class SysData {
         return sys;
     }
     public SysData() {
+        System.out.println("SysData");
         resourceName = "questions.json";
         questions = new ArrayList<>();
         history = new ArrayList<>();
@@ -47,6 +48,28 @@ public class SysData {
 
     public void setHistory(ArrayList<GameHistory> history) {
         this.history = history;
+    }
+
+    public void addHighScore(String mynickname, int myscore) throws IOException {
+        String jsonString = String.valueOf(readJSONObject("history.json"));
+
+// Parse the JSON string into a JSON object
+        JSONObject json = new JSONObject(jsonString);
+
+// Get the "history" array from the JSON object
+        JSONArray history = json.getJSONArray("history");
+
+// Create a new JSON object for the new score
+        JSONObject newScore = new JSONObject();
+        newScore.put("player", mynickname);
+        newScore.put("score", myscore);
+        newScore.put("date", LocalDate.now());
+
+// Add the new score to the history array
+        history.put(newScore);
+
+// Write the updated JSON object back to the file
+        saveJSONObject(json, "history.json");
     }
 
     public void ImportHistory(){
@@ -101,6 +124,7 @@ public class SysData {
             //throw new RuntimeException(e);
             return null;
         }
+        System.out.println(stream);
         JSONObject base = new JSONObject(new JSONTokener(stream));
         return base;
     }
@@ -112,10 +136,10 @@ public class SysData {
         array.remove(index);
         questions.remove(index);
         System.out.println(array);
-        saveJSONObject(base);
+        saveJSONObject(base,"questions.json");
     }
-    private void saveJSONObject(JSONObject object){
-        try (FileWriter file = new FileWriter(resourceName)){
+    private void saveJSONObject(JSONObject object, String resource){
+        try (FileWriter file = new FileWriter(resource)){
             file.write(object.toString());
         } catch (IOException e) {
             e.printStackTrace();

@@ -905,6 +905,12 @@ void timer(){
             gameOverAlert.showAndWait();
             homePage();
         }
+        try {
+            SysData.getInstance().addHighScore(myNickName.getText(), myScore);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
 
     }
     private void homePage(){
