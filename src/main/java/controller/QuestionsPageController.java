@@ -3,11 +3,9 @@ package controller;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.*;
 
+import javafx.application.Application;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -20,12 +18,14 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import java.io.InputStream;
 
+import javafx.stage.Window;
 import model.Question;
 import model.SysData;
 import org.controlsfx.control.PropertySheet;
@@ -36,7 +36,8 @@ public class QuestionsPageController {
 	@FXML private Stage stage;
 	@FXML  private ListView<String> listViewQuestions;
 	@FXML private ListView<Label> listViewAnswers;
-
+	@FXML
+	private AnchorPane QuestionsPage;
 	@FXML private TextField tfCorrectAnswer;
 
 	@FXML private TextField tfLevel;
@@ -61,38 +62,81 @@ public class QuestionsPageController {
 		listViewQuestions.setOnMouseClicked(mouseEvent -> {
 			if(mouseEvent.getButton().equals(MouseButton.PRIMARY)){
 				if(mouseEvent.getClickCount() == 2){
+					String selectedItem = (String) listViewQuestions.getSelectionModel().getSelectedItem();
+					try {
+						RunToEdit(selectedItem);
+					} catch (IOException e) {
+						throw new RuntimeException(e);
+					}
 					System.out.println("Double clicked");
 				}
 			}
 		});
 	}
-	void resetViewList(){
-		listViewQuestions.getItems().clear();
-		for (Question q : SysData.getInstance().getQuestions()) {
-//			Button myButton = new Button();
-//			myButton.setText("Click me");
-//			TextArea taItem = new TextArea();
-//			taItem.setStyle("-fx-text-alignment: center;");
-//			taItem.setText(q.getQuestionID().toString());
-//			if (q.getLevel() == 1) {
-//				taItem.setTextFill(Color.RED);
-//			}
-//			if (q.getLevel() == 2) {
-//				taItem.setTextFill(Color.GREEN);
-//			}
-//			if (q.getLevel() == 3) {
-//				taItem.setTextFill(Color.WHITE);
-//			}
-			listViewQuestions.getItems().add(q.getQuestionID());
+
+	@FXML
+	public void RunToEdit(String question) throws IOException {
+
+		if(question == null){return;}
+		int index = SysData.getInstance().getQuestions().indexOf(new Question(question));
+		Question q = SysData.getInstance().getQuestions().get(index);
+
+
+
+
+
+
+		try {
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/EditQuestion.fxml"));
+			loader.setControllerFactory((Class<?> type) -> {
+				if (type == EditQuestion.class) {
+					return new EditQuestion(q);
+				} else {
+					try {
+						return type.newInstance();
+					} catch (Exception e) {
+						throw new RuntimeException(e);
+					}
+				}
+			});
+		    Parent root = loader.load();
+			stage = (Stage) QuestionsPage.getScene().getWindow();
+			scene = QuestionsPage.getScene();
+			scene.setRoot(root);
+			stage.setScene(scene);
+			stage.show();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
 		}
+	}
+
+
+	void resetViewList(){
+	listViewQuestions.getItems().clear();
+		for (Question q : SysData.getInstance().getQuestions()) {
+			listViewQuestions.getItems().add(q.getQuestionID());
+	}
 		listViewQuestions.refresh();
 	}
 	@FXML
-	void DeleteButton(ActionEvent event) {
+	void DeleteButton(ActionEvent event) throws IOException {
 		System.out.println(listViewQuestions.getSelectionModel().getSelectedItem());
 		SysData.getInstance().removeQuestion(listViewQuestions.getSelectionModel().getSelectedItem());
-		resetViewList();
-
+		Parent root = FXMLLoader.load(getClass().getResource("/view/QuestionsPage.fxml"));
+		stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+		scene = (Scene)((Node)event.getSource()).getScene();
+		scene.setRoot(root);
+		stage.setScene(scene);
+		stage.show();
+	}
+	@FXML
+	void addButton(ActionEvent event) throws IOException {
+		Parent root = FXMLLoader.load(getClass().getResource("/view/addQuestion.fxml"));
+		stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+		scene = (Scene)((Node)event.getSource()).getScene();
+		scene.setRoot(root);
+		stage.setScene(scene);
+		stage.show();
 	}
 
 	void getAnswers(){

@@ -32,6 +32,7 @@ public class SysData {
     }
 
     public ArrayList<Question> getQuestions() {
+
         return questions;
     }
 
@@ -45,6 +46,31 @@ public class SysData {
 
     }
 
+    public void addQuestion(Question question){
+        String jsonString = String.valueOf(readJSONObject("questions.json"));
+
+        // Parse the JSON string into a JSON object
+        JSONObject json = new JSONObject(jsonString);
+
+        // Get the "questions" array from the JSON object
+        JSONArray jsonQuestions = json.getJSONArray("questions");
+        JSONArray jsonAnswers = new JSONArray();
+        HashMap<Integer, String> answers = question.getAnswers();
+        for(String answer : answers.values()){
+            jsonAnswers.put(answer);
+        }
+        // Create a new JSON object for the new score
+        JSONObject newQuestion = new JSONObject();
+        newQuestion.put("question", question.getQuestionID());
+        newQuestion.put("level", question.getLevel());
+        newQuestion.put("answers", jsonAnswers);
+        newQuestion.put("team", question.getTeam());
+        newQuestion.put("correct_ans", question.getCorrect_ans());
+        jsonQuestions.put(newQuestion);
+        questions.add(question);
+        // Write the updated JSON object back to the file
+        saveJSONObject(json, "questions.json");
+    }
     public void addHighScore(String mynickname, int myscore) throws IOException {
         String jsonString = String.valueOf(readJSONObject("history.json"));
 
@@ -66,9 +92,13 @@ public class SysData {
 // Write the updated JSON object back to the file
         saveJSONObject(json, "history.json");
     }
+<<<<<<< Updated upstream
 
     public ArrayList<GameHistory> ImportHistory(){
         ArrayList<GameHistory> history = new ArrayList<>();
+=======
+    public void ImportHistory(){
+>>>>>>> Stashed changes
         JSONObject base = readJSONObject("history.json");
         if(base == null){
             return null;
@@ -102,6 +132,7 @@ public class SysData {
             JSONArray jsonArray = jsonObject.getJSONArray("answers");
             HashMap<Integer, String> answers = new HashMap<Integer, String>();
             for (int i = 0; i < jsonObject.length() - 1; i++) {
+                System.out.println(jsonArray.get(i).toString());
                 answers.put(i + 1, jsonArray.get(i).toString());
             }
             questions.add(new Question(
@@ -112,7 +143,6 @@ public class SysData {
                     String.valueOf(jsonObject.get("team"))));
         }
         System.out.println(questions);
-
     }
     private JSONObject readJSONObject(String jsonFile){
         InputStream stream;
