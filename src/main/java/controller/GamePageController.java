@@ -9,6 +9,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import Enums.TileType;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -302,7 +303,7 @@ void timer(){
 //        cb.getTiles().get(x).setType("Question");
         System.out.println(tile);
         tile.getChildren().add(imageView);
-        tile.setType("Question");
+        tile.setType(TileType.QuestionTile);
     }
     Tile selectRandomEmptyTile() {
         // Set a maximum number of iterations
@@ -319,7 +320,7 @@ void timer(){
                 Tile tile = cb.getTiles().get(index);
 
                 // If the tile is empty, return it
-                if (tile.getType() == null) {
+                if (tile.getType() == TileType.Nothing) {
                     return tile;
                 }
             }
@@ -328,20 +329,20 @@ void timer(){
         return null;
     }
     void generateRandomTile(){
-        specialTiles = new ArrayList<String>();
-        int rand_intX;
-        int rand_intY;
-        while(specialTiles.size()<20){
-            rand_intX = rand.nextInt(8);
-            rand_intY = rand.nextInt(8);
-            specialTiles.add("Tile"+rand_intX+rand_intY);
-        }
-        for (Tile tile:cb.getTiles()) {
-            if(specialTiles.contains(tile.getName())){
-                tile.setType("RandomJump");
-            }
-        }
-        System.out.println("specialTiles:"+specialTiles);
+    ArrayList<Tile> myTiles = emptyTiles();
+    int x=20;
+    while(x>0)
+    {
+       Tile tile = myTiles.get(rand.nextInt(myTiles.size()));
+       if(tile.getType()==TileType.Nothing)
+       {
+           tile.setType(TileType.RandomTiles);
+           x--;
+       }
+
+    }
+
+
     }
     void stages(){
         switch(myStage){
@@ -371,7 +372,8 @@ void timer(){
         animationRandom();
         Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1.7), event -> {
             // code to execute after the pause
-            dropRandomPiece(cb.getTiles().get(rand.nextInt(cb.getTiles().size())));
+            Tile randomTile = dropToRandomTile();
+            dropRandomPiece(randomTile);
             System.out.println("Randommmmm!!!");
             imgTimer.setImage(null);
             resumeTimer();
@@ -379,9 +381,30 @@ void timer(){
         }));
         timeline.play();
     }
-    private
 
-    void randomTimer() {
+
+   private ArrayList<Tile> emptyTiles()
+    {
+        ArrayList<Tile> emptyTiles = new ArrayList<>();
+        for (Tile tile : cb.getTiles()) {
+            if (tile.getType() == TileType.Nothing) ;
+            {
+                emptyTiles.add(tile);
+            }
+
+        }
+        return emptyTiles;
+    }
+
+
+    private Tile dropToRandomTile() {
+
+        ArrayList<Tile>  myTiles = emptyTiles();
+        return myTiles.get(rand.nextInt(myTiles.size()));
+    }
+
+
+    private void randomTimer() {
         timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
@@ -464,7 +487,7 @@ void timer(){
             }
             deselectPiece(true);
             System.out.println("3 of func");
-            if(specialTiles.contains(tile.getName())){
+            if(!tile.getType().equals(TileType.Nothing)){
                 stages();
             }
             System.out.println("end of func");
@@ -804,7 +827,7 @@ void timer(){
         }
         deselectPiece(true);
 //        if (computerPiece != null) computerMove();
-        if(specialTiles.contains(tile.getName())){
+        if(!tile.getType().equals(TileType.Nothing)){
 //            alertDisplayer();
             AlertDisplayer alertDisplayer1 = new AlertDisplayer();
 //            alertDisplayer1.showOneSecondAlert("","");
