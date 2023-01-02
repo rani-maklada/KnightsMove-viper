@@ -3,19 +3,19 @@
     {
       "player": "Rani",
       "score": "15",
-      "date":"02/01/2023 "
+      "date":"2023-01-02"
     },
     {"player": "jeries",
       "score": "1",
-      "date":""
+      "date":"2023-01-02"
     },
     {"player": "neil",
       "score": "1",
-      "date":""
+      "date":"2023-01-01"
     },
     {"player": "bashar",
       "score": "1",
-      "date":""
+      "date":"2023-01-01"
     }
   ]
 }

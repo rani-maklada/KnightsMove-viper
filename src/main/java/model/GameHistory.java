@@ -1,13 +1,14 @@
 package model;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 public class GameHistory {
     private String playerName;
     private int score;
-    private Date date;
+    private LocalDate date;
 
-    public GameHistory(String playerName, int score, Date date) {
+    public GameHistory(String playerName, int score, LocalDate date) {
         this.playerName = playerName;
         this.score = score;
         this.date = date;
@@ -29,11 +30,11 @@ public class GameHistory {
         this.score = score;
     }
 
-    public Date getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(LocalDate date) {
         this.date = date;
     }
 

@@ -6,6 +6,9 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 import java.io.*;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -47,10 +50,28 @@ public class SysData {
     }
 
     public void ImportHistory(){
-
+        JSONObject base = readJSONObject("history.json");
+        if(base == null){
+            return;
+        }
+        Iterator<Object> iterator = ((JSONArray) base.get("history")).iterator();
+        while (iterator.hasNext()) {
+            JSONObject jsonObject = (JSONObject) iterator.next();
+            history.add(new GameHistory(
+                    String.valueOf(jsonObject.get("player")),
+                    Integer.parseInt(String.valueOf(jsonObject.get("score"))),
+                    parseDate((String.valueOf(jsonObject.get("date"))))
+            ));
+        }
+        System.out.println(history);
+    }
+    private LocalDate parseDate(String dateString){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate date = LocalDate.parse(dateString, formatter);
+        return date;
     }
     public void ImportQuestions(){
-        JSONObject base = readJSONObject();
+        JSONObject base = readJSONObject("questions.json");
         if(base == null){
             return;
         }
@@ -69,12 +90,13 @@ public class SysData {
                     Integer.parseInt(String.valueOf(jsonObject.get("level"))),
                     String.valueOf(jsonObject.get("team"))));
         }
+        System.out.println(questions);
 
     }
-    private JSONObject readJSONObject(){
+    private JSONObject readJSONObject(String jsonFile){
         InputStream stream;
         try {
-            stream = new FileInputStream(resourceName);
+            stream = new FileInputStream(jsonFile);
         } catch (FileNotFoundException e) {
             //throw new RuntimeException(e);
             return null;
@@ -84,7 +106,7 @@ public class SysData {
     }
 
     public void removeQuestion(String question){
-        JSONObject base = readJSONObject();
+        JSONObject base = readJSONObject("questions.json");
         JSONArray array = ((JSONArray) base.get("questions"));
         int index = questions.indexOf(new Question(question));
         array.remove(index);
