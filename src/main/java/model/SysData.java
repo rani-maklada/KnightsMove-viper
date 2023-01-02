@@ -18,12 +18,12 @@ public class SysData {
     private ArrayList<Question> questions;
     private String resourceName;
 
-    public static SysData getInstance()
-    {
-        if(sys == null)
+    public static SysData getInstance() {
+        if (sys == null)
             sys = new SysData();
         return sys;
     }
+
     public SysData() {
         System.out.println("SysData");
         resourceName = "questions.json";
@@ -45,8 +45,7 @@ public class SysData {
 
 
     }
-
-    public void addQuestion(Question question){
+    public void addQuestion(Question question) {
         String jsonString = String.valueOf(readJSONObject("questions.json"));
 
         // Parse the JSON string into a JSON object
@@ -56,7 +55,7 @@ public class SysData {
         JSONArray jsonQuestions = json.getJSONArray("questions");
         JSONArray jsonAnswers = new JSONArray();
         HashMap<Integer, String> answers = question.getAnswers();
-        for(String answer : answers.values()){
+        for (String answer : answers.values()) {
             jsonAnswers.put(answer);
         }
         // Create a new JSON object for the new score
@@ -71,6 +70,7 @@ public class SysData {
         // Write the updated JSON object back to the file
         saveJSONObject(json, "questions.json");
     }
+
     public void addHighScore(String mynickname, int myscore) throws IOException {
         String jsonString = String.valueOf(readJSONObject("history.json"));
 
@@ -92,13 +92,9 @@ public class SysData {
 // Write the updated JSON object back to the file
         saveJSONObject(json, "history.json");
     }
-<<<<<<< Updated upstream
 
     public ArrayList<GameHistory> ImportHistory(){
         ArrayList<GameHistory> history = new ArrayList<>();
-=======
-    public void ImportHistory(){
->>>>>>> Stashed changes
         JSONObject base = readJSONObject("history.json");
         if(base == null){
             return null;
@@ -111,8 +107,8 @@ public class SysData {
                     Integer.parseInt(String.valueOf(jsonObject.get("score"))),
                     parseDate((String.valueOf(jsonObject.get("date"))))
             ));
-
         }
+        System.out.println(history);
         return history;
 
     }
@@ -177,7 +173,7 @@ public class SysData {
     public String toString() {
         return "SysData{" +
                 "questions=" + questions +
-                ", history=" + getInstance().ImportHistory() +
+                ", history=" + getHistory() +
                 '}';
     }
 }
