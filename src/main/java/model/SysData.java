@@ -16,7 +16,6 @@ import java.util.Iterator;
 public class SysData {
     private static SysData sys = null;
     private ArrayList<Question> questions;
-    private ArrayList<GameHistory> history;
     private String resourceName;
 
     public static SysData getInstance()
@@ -29,9 +28,7 @@ public class SysData {
         System.out.println("SysData");
         resourceName = "questions.json";
         questions = new ArrayList<>();
-        history = new ArrayList<>();
         ImportQuestions();
-        ImportHistory();
     }
 
     public ArrayList<Question> getQuestions() {
@@ -43,11 +40,9 @@ public class SysData {
     }
 
     public ArrayList<GameHistory> getHistory() {
-        return history;
-    }
+        return ImportHistory();
 
-    public void setHistory(ArrayList<GameHistory> history) {
-        this.history = history;
+
     }
 
     public void addHighScore(String mynickname, int myscore) throws IOException {
@@ -72,10 +67,11 @@ public class SysData {
         saveJSONObject(json, "history.json");
     }
 
-    public void ImportHistory(){
+    public ArrayList<GameHistory> ImportHistory(){
+        ArrayList<GameHistory> history = new ArrayList<>();
         JSONObject base = readJSONObject("history.json");
         if(base == null){
-            return;
+            return null;
         }
         Iterator<Object> iterator = ((JSONArray) base.get("history")).iterator();
         while (iterator.hasNext()) {
@@ -85,8 +81,10 @@ public class SysData {
                     Integer.parseInt(String.valueOf(jsonObject.get("score"))),
                     parseDate((String.valueOf(jsonObject.get("date"))))
             ));
+
         }
-        System.out.println(history);
+        return history;
+
     }
     private LocalDate parseDate(String dateString){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -149,7 +147,7 @@ public class SysData {
     public String toString() {
         return "SysData{" +
                 "questions=" + questions +
-                ", history=" + history +
+                ", history=" + getInstance().ImportHistory() +
                 '}';
     }
 }
