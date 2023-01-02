@@ -1,0 +1,64 @@
+{
+  "questions": [
+    {
+      "question": "Which Design Pattern should you use when a class wants its subclasses to specify the objects it creates?",
+      "level": "1",
+      "answers": [
+        "Bridge",
+        "Strategy",
+        "Builder",
+        "Factory Method"
+      ],
+      "team": "viper",
+      "correct_ans": "4"
+    },
+    {
+      "question": "Which of the following are examples of traditional process models?",
+      "level": "2",
+      "answers": [
+        "Spiral, XP, Agile",
+        "Waterfall, XP, Spiral",
+        "Waterfall, Incremental, Spiral",
+        "None of the above"
+      ],
+      "team": "viper",
+      "correct_ans": "3"
+    },
+    {
+      "question": "is an entity that has a state and a defined set of operations, which operate on that state.",
+      "level": "2",
+      "answers": [
+        "Object",
+        "Interface",
+        "Message",
+        "Class"
+      ],
+      "team": "viper",
+      "correct_ans": "1"
+    },
+    {
+      "question": "White-Box testing sometimes called _____ testing.",
+      "level": "2",
+      "answers": [
+        "Plastic-box testing",
+        "Iron-box testing",
+        "Metal-box testing",
+        "Glass-box testing"
+      ],
+      "team": "viper",
+      "correct_ans": "4"
+    },
+    {
+      "question": "In object-oriented design of software,objects have",
+      "level": "2",
+      "answers": [
+        "Attributes and names only",
+        "Operations and names only",
+        "Attributes,operations and names",
+        "None of the above"
+      ],
+      "team": "viper",
+      "correct_ans": "3"
+    }
+  ]
+}
