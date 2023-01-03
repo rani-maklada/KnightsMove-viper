@@ -1,9 +1,22 @@
+.gameOverBack
+{
+
+        -fx-background-size: cover;
+}
 .root{
      -fx-background-image:url('images/knight-chess-attack.jpg');
      -fx-background-size:cover;
 }
 .myGameBackGround{
      -fx-background-image:url('images/KnightsMoveBackGround.jpg');
+     -fx-background-size:cover;
+}
+.goToGameOver{
+     -fx-background-image:url('images/gameOverGif.gif');
+     -fx-background-size:cover;
+}
+.GameOverBackGround{
+     -fx-background-image:url('images/WoodenGame.jpg');
      -fx-background-size:cover;
 }
 .button {
