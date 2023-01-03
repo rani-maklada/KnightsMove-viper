@@ -78,7 +78,7 @@ public class GamePageController {
     private int stageGame;
     private Random rand = new Random();
     private ArrayList<Question> questions = new ArrayList<>();
-    private int myStage;
+    public static int myStage;
     private long startTime;
     private long currentTime;
     private AnimationTimer timer;
@@ -88,6 +88,7 @@ public class GamePageController {
     private int numberOfGlow;
     private double myRate;
     private Timeline updateTimeline;
+    private ArrayList<Question> stageQuestions = new ArrayList<>();
 
     public GamePageController(String name,String theme){
         this.myNickHolder = name;
@@ -96,13 +97,12 @@ public class GamePageController {
     @FXML
     void initialize() throws IOException {
         questions = (ArrayList<Question>) SysData.getInstance().getQuestions().clone();
-//        colorPicker.getCustomColors();
+        randomQuestions();
         cb = new ChessBoard(chessBoard, theme,8);
         myPiece = cb.getKnight();
         computerPiece = cb.getQueen();
         currentPlayer = "black";
         this.game = true;
-//        lbTimer.setText(timeSeconds.toString());
         lbTimer.setTextFill(Color.BLUE);
         lbTimer.setStyle("-fx-font-size: 2em;");
         myNickName.setText(myNickHolder);
@@ -111,14 +111,39 @@ public class GamePageController {
         myStage=1;
         lblStage.setText("Stage: " + myStage);
 //        StartMyTimer();
-
         generateRandomTile();
         selectPiece(true);
         questionMark();
-        questionMark();
-        questionMark();
         timer();
 //        myPiece.getAllPossibleMoves();
+    }
+
+    private ArrayList<Question> randomQuestions() {
+        ArrayList<Question>  q;
+        stageQuestions
+    }
+    Tile selectRandomEmptyTile() {
+        // Set a maximum number of iterations
+        int maxIterations = cb.getTiles().size();
+
+        // Try to find an empty tile a maximum of maxIterations times
+        for (int i = 0; i < maxIterations; i++) {
+            // Select a random index from the list of tiles
+            int index = rand.nextInt(cb.getTiles().size());
+
+            // Make sure the index is within the bounds of the list
+            if (index < cb.getTiles().size()) {
+                // Get the tile at the selected index
+                Tile tile = cb.getTiles().get(index);
+
+                // If the tile is empty, return it
+                if (tile.getType() == TileType.Nothing) {
+                    return tile;
+                }
+            }
+        }
+        // If no empty tiles were found after maxIterations iterations, return null
+        return null;
     }
     private void startMyTimeLine(){
         updatemytimeline();
@@ -294,7 +319,14 @@ void timer(){
         // Show the dialog to the user
         Platform.runLater(alert::showAndWait);
     }
-
+    void blockedTiles(){
+        Tile tile = selectRandomEmptyTile();
+        Image image = new Image(String.valueOf(getClass().getResource("/view/pieces/Blocked.png")));
+        ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(50);
+        imageView.setFitHeight(50);
+    }
+    //generate 3 quastions in the Game with different levels
     void questionMark(){
         Tile tile = selectRandomEmptyTile();
         Image image = new Image(String.valueOf(getClass().getResource("/view/pieces/QuestionMark.png")));
