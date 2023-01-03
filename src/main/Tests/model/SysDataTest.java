@@ -1,11 +1,11 @@
 package model;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
+
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -16,30 +16,26 @@ class SysDataTest {
         SysData sysData = SysData.getInstance();
         ArrayList<Question> ques = sysData.getQuestions();
         Assertions.assertTrue(ques.size()>0);
+        //if the json size is zero it is handled in the code
     }
     @Test
-    void testImportQuestionEqualsToJson() {
-        ArrayList<String> questions =  new ArrayList();
-        questions.add("Which Design Pattern should you use when a class wants its subclasses to specify the objects it creates?");
-        questions.add("Which of the following are examples of traditional process models?");
-        questions.add("is an entity that has a state and a defined set of operations, which operate on that state.");
-        questions.add("White-Box testing sometimes called _____ testing.");
-        questions.add("In object-oriented design of software,objects have");
+    void testAddAndRemoveQuestionFromJson() {
+        //initializing sysdata
         SysData sysData = SysData.getInstance();
-        for (int i=0; i<sysData.getQuestions().size(); i++){
-            Assertions.assertEquals(sysData.getQuestions().get(i).getQuestionID(),questions.get(i));
-        }
-    }
-    @Test
-    void testJsonInSysData(){
-        SysData sysData = SysData.getInstance();
-        String actualSysDataJsonToString = "SysData{questions=" +
-                "[Which Design Pattern should you use when a class wants its subclasses to specify" +
-                " the objects it creates?, Which of the following are examples of traditional" +
-                " process models?, is an entity that has a state and a defined set of operations" +
-                ", which operate on that state., White-Box testing sometimes called _____ testing" +
-                "., In object-oriented design of software,objects have], history=[]}";
-        Assertions.assertEquals(actualSysDataJsonToString,sysData.toString());
+        HashMap <Integer,String> testAnswers = new HashMap<>();
+        testAnswers.put(1,"test1");
+        testAnswers.put(2,"test2");
+        testAnswers.put(3,"test3");
+        testAnswers.put(4,"test4");
+        //creating new question to add to json
+        Question question = new Question("Does this question appear in the Json?",testAnswers,1,1,"test");
+        ArrayList<Question> testQuestions;
+        sysData.addQuestion(question);
+        testQuestions = sysData.getQuestions();
+        System.out.println(testQuestions);
+       Assertions.assertTrue(testQuestions.contains(question));
+       sysData.removeQuestion("Does this question appear in the Json?");
+       Assertions.assertFalse(sysData.getQuestions().contains(question));
     }
 
 }

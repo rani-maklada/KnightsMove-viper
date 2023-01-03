@@ -12,6 +12,7 @@ class GameHistoryTest {
 
     @Test
     void testPlayerHistory(){
+        //initializing game history with a player and asserting if fields are correct
         LocalDate date = LocalDate.now();
         String actualDate = date.toString();
         GameHistory gameHistory = new GameHistory("Neil",12,date);

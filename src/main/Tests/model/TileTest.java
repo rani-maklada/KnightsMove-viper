@@ -9,6 +9,8 @@ public class TileTest {
 
     @Test
     void tileTestPositionAndFunctions() throws IOException {
+        //initializing tile and checking field including assert false that tile is not occupied
+        //because it is not supposed to be
         Tile tile = new Tile(7,3);
         int x = tile.getX();
         int y = tile.getY();
