@@ -64,7 +64,6 @@ public class GamePageController {
     @FXML private ColorPicker colorPicker;
     public static Piece myPiece;
     public static Piece computerPiece;
-    public static String currentPlayer;
 //    private static final Integer STARTTIME = 0;
     private Timeline timeline;
 //    private Integer timeSeconds = (STARTTIME);
@@ -87,8 +86,8 @@ public class GamePageController {
     private long elapsedTime = 0;
     private int numberOfGlow;
     private double myRate;
-    private Timeline updateTimeline;
     private ArrayList<Question> stageQuestions = new ArrayList<>();
+    private int totalScore;
 
     public GamePageController(String name,String theme){
         this.myNickHolder = name;
@@ -96,12 +95,11 @@ public class GamePageController {
     }
     @FXML
     void initialize() throws IOException {
+        totalScore=0;
         questions = (ArrayList<Question>) SysData.getInstance().getQuestions().clone();
-        randomQuestions();
         cb = new ChessBoard(chessBoard, theme,8);
         myPiece = cb.getKnight();
         computerPiece = cb.getQueen();
-        currentPlayer = "black";
         this.game = true;
         lbTimer.setTextFill(Color.BLUE);
         lbTimer.setStyle("-fx-font-size: 2em;");
@@ -111,66 +109,37 @@ public class GamePageController {
         myStage=1;
         lblStage.setText("Stage: " + myStage);
 //        StartMyTimer();
+        visitedTile(cb.getTiles().get(0));
+        generateRandomTile();
+        generateRandomTile();
         generateRandomTile();
         selectPiece(true);
-        questionMark();
+        questionMarkByLevel(1);
+        questionMarkByLevel(2);
+        questionMarkByLevel(3);
         timer();
 //        myPiece.getAllPossibleMoves();
     }
-
-    private ArrayList<Question> randomQuestions() {
-        ArrayList<Question>  q;
-        stageQuestions
-    }
-    Tile selectRandomEmptyTile() {
-        // Set a maximum number of iterations
-        int maxIterations = cb.getTiles().size();
-
-        // Try to find an empty tile a maximum of maxIterations times
-        for (int i = 0; i < maxIterations; i++) {
-            // Select a random index from the list of tiles
-            int index = rand.nextInt(cb.getTiles().size());
-
-            // Make sure the index is within the bounds of the list
-            if (index < cb.getTiles().size()) {
-                // Get the tile at the selected index
-                Tile tile = cb.getTiles().get(index);
-
-                // If the tile is empty, return it
-                if (tile.getType() == TileType.Nothing) {
-                    return tile;
-                }
+    private ArrayList<Question> questionsByLevel(int level){
+        ArrayList<Question> q = new ArrayList<>();
+        for (Question question : questions) {
+            if(question.getLevel() == level){
+                q.add(question);
             }
         }
-        // If no empty tiles were found after maxIterations iterations, return null
-        return null;
+        return q;
+    }
+    private Question selectRandomQuestionByLevel(int level) {
+        ArrayList<Question> q = questionsByLevel(level);
+        return q.get(rand.nextInt(q.size()));
     }
     private void startMyTimeLine(){
         updatemytimeline();
-//        double myRate = 4;
-//        mytimeline = new Timeline();
-//        int frameCount = 0;
-//         // Set the duration between each execution to 2 seconds
-////        Duration duration = Duration.seconds(2);
-//        // Create a KeyFrame object that specifies the code to be executed
-//        // and the duration to wait before executing it
-//        KeyFrame keyFrame = new KeyFrame(Duration.seconds(myRate), event -> {
-//            // This code will be executed every 2 seconds
-//            computerMove();
-//            System.out.println("Executing code");
-//        });
-//        // Add the KeyFrame to the Timeline
-//        mytimeline.getKeyFrames().add(keyFrame);
-//        // Set the number of times the Timeline should repeat
-//        // Use Timeline.INDEFINITE to repeat indefinitely
-//        mytimeline.setCycleCount(Timeline.INDEFINITE);
-//        // Start the Timeline
-//        mytimeline.play();
     }
 
     private void updatemytimeline(){
         myRate = 5;
-        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(myRate), event -> {
+        timeline = new Timeline(new KeyFrame(Duration.seconds(myRate), event -> {
             computerMove();
         }));
         timeline.setCycleCount(Timeline.INDEFINITE);
@@ -222,17 +191,20 @@ void timer(){
                     elapsedTime += System.currentTimeMillis() - startTime;
                     startTime = System.currentTimeMillis();
                     // 60 seconds in milliseconds
-                    long countDown = 60000;
+                    long countDown = 10000;
                     long remainingTime = countDown - elapsedTime;
-                    int seconds = (int) (60 - elapsedTime / 1000);
+                    int seconds = (int) (10 - elapsedTime / 1000);
                     lbTimer.setText(String.valueOf(seconds));
                     if (remainingTime <= 0) {
-                        if (myScore < 15){
+                        if(myStage == 4){
+                            GameOver();
+                        } else if (myScore < 0){
                             game=false;
                             GameOver();
                         }else{
                             // countdown is finished, stop the timer
-                            resetTimer();
+                            resetBoard();
+
                         }
 
                     }
@@ -247,56 +219,30 @@ void timer(){
         paused = true;  // pause the countdown timer
         elapsedTime += System.currentTimeMillis() - startTime;  // update elapsed time
         System.out.println("pauseTimer");
-        if(myStage>=3)
-        mytimeline.stop();
+        if(myStage>=3){
+            mytimeline.stop();
+            timeline.stop();
+        }
     }
     public void resumeTimer() {
         paused = false;  // resume the countdown timer
         startTime = System.currentTimeMillis();  // reset start time
         System.out.println("resumeTimer");
         if(myStage>=3)
-        mytimeline.play();
+            mytimeline.play();
     }
     void resetTimer() {
         timer.stop();
-        mytimeline.stop();
+        if(myStage==3){
+            startMyTimeLine();
+        }
+        if(myStage==4){
+            timeline.stop();
+            mytimeline.stop();
+            mytimeline.playFromStart();
+        }
         timer();
     }
-    public void someMethod(){
-        pauseTimer();
-        System.out.println("Wait");
-        resumeTimer();
-    }
-
-    void kingTimer() {
-        timer = new AnimationTimer() {
-            @Override
-            public void handle(long now) {
-                if (!paused) {
-                    elapsedTime += System.currentTimeMillis() - startTime;
-                    startTime = System.currentTimeMillis();
-                    // 10 seconds in milliseconds
-                    long kingCountDown = 10000;
-                    long remainingTime = kingCountDown - elapsedTime;
-                    if (remainingTime <= 0) {
-                        // countdown is finished, move the king
-                        moveKing();
-                        // reset the timer
-                        elapsedTime = 0;
-                        startTime = System.currentTimeMillis();
-                    }
-                }
-            }
-        };
-        timer.start();
-        // Start the timer
-    }
-
-    private void moveKing() {
-
-    }
-
-
     private void timeOut() {
         // Create a new alert
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -319,27 +265,28 @@ void timer(){
         // Show the dialog to the user
         Platform.runLater(alert::showAndWait);
     }
-    void blockedTiles(){
+    void generateBlockedTiles(){
         Tile tile = selectRandomEmptyTile();
         Image image = new Image(String.valueOf(getClass().getResource("/view/pieces/Blocked.png")));
         ImageView imageView = new ImageView(image);
         imageView.setFitWidth(50);
         imageView.setFitHeight(50);
+        tile.getChildren().add(imageView);
+        tile.setType(TileType.BlockedTile);
     }
     //generate 3 quastions in the Game with different levels
-    void questionMark(){
+    private void questionMarkByLevel(int level){
         Tile tile = selectRandomEmptyTile();
         Image image = new Image(String.valueOf(getClass().getResource("/view/pieces/QuestionMark.png")));
         ImageView imageView = new ImageView(image);
         imageView.setFitWidth(20);
         imageView.setFitHeight(20);
-//        cb.getTiles().get(x).getChildren().add(imageView);
-//        cb.getTiles().get(x).setType("Question");
         System.out.println(tile);
         tile.getChildren().add(imageView);
         tile.setType(TileType.QuestionTile);
+        tile.setQuestion(selectRandomQuestionByLevel(level));
     }
-    Tile selectRandomEmptyTile() {
+    private Tile selectRandomEmptyTile() {
         // Set a maximum number of iterations
         int maxIterations = cb.getTiles().size();
 
@@ -354,7 +301,7 @@ void timer(){
                 Tile tile = cb.getTiles().get(index);
 
                 // If the tile is empty, return it
-                if (tile.getType() == TileType.Nothing) {
+                if (tile.getType() == TileType.Nothing && !tile.isOccupied()) {
                     return tile;
                 }
             }
@@ -362,23 +309,20 @@ void timer(){
         // If no empty tiles were found after maxIterations iterations, return null
         return null;
     }
-    void generateRandomTile(){
-    ArrayList<Tile> myTiles = emptyTiles();
-    int x=20;
-    while(x>0)
-    {
-       Tile tile = myTiles.get(rand.nextInt(myTiles.size()));
-       if(tile.getType()==TileType.Nothing)
-       {
-           tile.setType(TileType.RandomTiles);
-           x--;
-       }
+    private void generateRandomTile() {
+        Tile tile = selectRandomEmptyTile();
+        if (tile.getType() == TileType.Nothing) {
+            tile.setType(TileType.RandomTile);
+        }
+    }
+    private void generateQuestionTile(){
 
     }
-
-
+    private void generateForgetTile(){
+        Tile tile = selectRandomEmptyTile();
+        tile.setType(TileType.ForgetTile);
     }
-    void stages(){
+    private void stages(){
         switch(myStage){
             case 1 -> {
                 firstStage();
@@ -406,7 +350,8 @@ void timer(){
         animationRandom();
         Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1.7), event -> {
             // code to execute after the pause
-            Tile randomTile = dropToRandomTile();
+//            Tile randomTile = dropToRandomTile();
+            Tile randomTile = selectRandomEmptyTile();
             dropRandomPiece(randomTile);
             System.out.println("Randommmmm!!!");
             imgTimer.setImage(null);
@@ -417,26 +362,23 @@ void timer(){
     }
 
 
-   private ArrayList<Tile> emptyTiles()
-    {
-        ArrayList<Tile> emptyTiles = new ArrayList<>();
-        for (Tile tile : cb.getTiles()) {
-            if (tile.getType() == TileType.Nothing) ;
-            {
-                emptyTiles.add(tile);
-            }
+//   private ArrayList<Tile> emptyTiles()
+//    {
+//        ArrayList<Tile> emptyTiles = new ArrayList<>();
+//        for (Tile tile : cb.getTiles()) {
+//            if (tile.getType() == TileType.Nothing && !tile.isOccupied()) ;
+//            {
+//                emptyTiles.add(tile);
+//            }
+//
+//        }
+//        return emptyTiles;
+//    }
 
-        }
-        return emptyTiles;
-    }
-
-
-    private Tile dropToRandomTile() {
-
-        ArrayList<Tile>  myTiles = emptyTiles();
-        return myTiles.get(rand.nextInt(myTiles.size()));
-    }
-
+//    private Tile dropToRandomTile() {
+//        ArrayList<Tile>  myTiles = emptyTiles();
+//        return myTiles.get(rand.nextInt(myTiles.size()));
+//    }
 
     private void randomTimer() {
         timer = new AnimationTimer() {
@@ -486,7 +428,6 @@ void timer(){
 //            tile.setBorder(new Border(new BorderStroke(Color.BLACK,
 //                    BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
 //        }
-
     void dropRandomPiece(Tile tile){
         textArea.setText(textArea.getText()+"\n jump to Randommmmm");
         System.out.println("0 of func");
@@ -502,11 +443,7 @@ void timer(){
         tile.setOccupied(true);
         System.out.println("1 of func");
         if(!tile.isVisited()){
-            tile.setVisited(true);
-            setBackgroundVisited(tile);
-            myScore++;
-            lblScore.setText("Score: " + myScore);
-            visitedTiles.add(tile);
+            visitedTile(tile);
         }
         System.out.println("2 of func");
         initialSquare.getChildren().removeAll();
@@ -528,8 +465,16 @@ void timer(){
         }));
         timeline.play();
         if(computerPiece.getType().equals("King")){
+            this.timeline.stop();
             mytimeline.stop();
         }
+    }
+    void visitedTile(Tile tile){
+        tile.setVisited(true);
+        setBackgroundVisited(tile);
+        myScore++;
+        lblScore.setText("Score: " + myScore);
+        visitedTiles.add(tile);
     }
     void alertDisplayer(){
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -546,86 +491,6 @@ void timer(){
         alert.close();
     }
     void secondStage(){
-        pauseTimer();
-        if(questions.isEmpty()){
-            questions = (ArrayList<Question>) SysData.getInstance().getQuestions().clone();
-        }
-        Question q = questions.get(rand.nextInt(questions.size()));
-        Dialog<String> dialog = new Dialog<>();
-        dialog.setTitle("Question");
-        dialog.setHeaderText(q.getQuestionID());
-        // Set the button types.
-        ButtonType okButtonType = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(okButtonType, ButtonType.CANCEL);
-
-        // Create the radio buttons.
-        ToggleGroup group = new ToggleGroup();
-        RadioButton answer1 = new RadioButton(q.getAnswers().get(1));
-        answer1.setToggleGroup(group);
-        RadioButton answer2 = new RadioButton(q.getAnswers().get(2));
-        answer2.setToggleGroup(group);
-        RadioButton answer3 = new RadioButton(q.getAnswers().get(3));
-        answer3.setToggleGroup(group);
-        RadioButton answer4 = new RadioButton(q.getAnswers().get(4));
-        answer4.setToggleGroup(group);
-
-// Add the radio buttons to the dialog.
-        VBox vbox = new VBox(answer1, answer2, answer3,answer4);
-        dialog.getDialogPane().setContent(vbox);
-
-// Convert the result to a string when the OK button is clicked.
-        int correctAnswer = q.getCorrect_ans();
-        dialog.setResultConverter(buttonType -> {
-            if (buttonType == okButtonType) {
-                if (answer1.isSelected()) {
-                    return String.valueOf(correctAnswer==1);
-                } else if (answer2.isSelected()) {
-                    return String.valueOf(correctAnswer==2);
-                } else if (answer3.isSelected()) {
-                    return String.valueOf(correctAnswer==3);
-                }else if (answer4.isSelected()){
-                    return String.valueOf(correctAnswer==4);
-                }
-            }
-            return null;
-        });
-        Optional<String> result = dialog.showAndWait();
-        if (result.isPresent()) {
-            System.out.println("Selected option: " + result.get());
-            if(result.get().equals("true")){
-                switch(q.getLevel()){
-                    case 1 -> {
-                        myScore++;
-
-                    }
-                    case 2 -> {
-                        myScore=myScore+2;
-                    }
-                    case 3 -> {
-                        myScore=myScore+3;
-                    }
-                }
-            }else{
-                System.out.println(q.getLevel());
-                switch(q.getLevel()){
-                    case 1 -> {
-                        myScore = Math.max(myScore - 2, 0);
-
-                    }
-                    case 2 -> {
-                        myScore = Math.max(myScore - 3, 0);
-                    }
-                    case 3 -> {
-                        myScore = Math.max(myScore - 4, 0);
-                    }
-                }
-            }
-            resumeTimer();
-        }
-        System.out.println("myScore"+myScore);
-        lblScore.setText("Score: " + myScore);
-        questions.remove(q);
-        questionMark();
     }
     void thirdStage(){
 
@@ -636,73 +501,69 @@ void timer(){
     @FXML
     void resetButton(ActionEvent event) throws IOException {
         cb.getChessBoard().getChildren().clear();
-//        mytimeline.stop();
+        if(myStage>2){
+            timeline.stop();
+            mytimeline.stop();
+        }
         initialize();
-//        resetBoard();
     }
+    @FXML
+    void stageTwo(){
+        //        StartMyTimer();
+        computerPiece = cb.getQueen();
+        generateForgetTile();
+        generateForgetTile();
+        generateForgetTile();
+        questionMarkByLevel(1);
+        questionMarkByLevel(2);
+        questionMarkByLevel(3);
+    }
+    @FXML
+    void stageThree(){
+        computerPiece = cb.getKing();
+        generateForgetTile();
+        generateForgetTile();
+        generateRandomTile();
+        generateRandomTile();
+    }
+    @FXML
+    void stageFour(){
+        computerPiece = cb.getKing();
+        for(int i=0;i<8;i++) {generateBlockedTiles();}
+
+    }
+    @FXML
     void resetBoard(){
-        mytimeline.stop();
+        chessBoard.setDisable(true);
         cb.getChessBoard().getChildren().clear();
         cb = new ChessBoard(chessBoard, theme,8);
         myPiece = cb.getKnight();
-        computerPiece = cb.getQueen();
-        currentPlayer = "black";
+        switch(myStage) {
+            case 1 -> {
+                stageTwo();
+            }
+            case 2 -> {
+                stageThree();
+            }
+            case 3 -> {
+                stageFour();
+            }
+        }
         myStage++;
-        myScore=0;
+        totalScore = myScore+totalScore;
+        myScore=1;
         lblStage.setText("Stage: " + myStage);
-//        StartMyTimer();
-        generateRandomTile();
-        questionMark();
-        questionMark();
-        questionMark();
+        lblScore.setText("Score: " + myScore);
+        visitedTile(cb.getTiles().get(0));
+        resetTimer();
         selectPiece(true);
-        timer();
-        mytimeline.playFromStart();
+        chessBoard.setDisable(false);
     }
-//    void StartMyTimer()
-//    {
-//        if (timeline != null) {
-//            timeline.stop();
-//        }
-//
-//        timeSeconds = STARTTIME;
-//
-//        // update timerLabel
-//        lbTimer.setText(timeSeconds.toString());
-//        timeline = new Timeline();
-//        timeline.setCycleCount(Timeline.INDEFINITE);
-//        // KeyFrame event handler
-//        timeline.getKeyFrames().add(
-//                new KeyFrame(Duration.seconds(1),
-//                        (EventHandler) event1 -> {
-//                            timeSeconds++;
-//                            // update timerLabel
-//                            lbTimer.setText(
-//                                    timeSeconds.toString());
-//                            System.out.println(timeSeconds);
-//                            if (timeSeconds >= 20){
-//                                timeline.stop();
-////                                if(myScore<15){
-////                                    this.game=false;
-////                                    resetBoard();
-////                                    GameOver();
-////                                }else if(myStage<4){
-////                                    resetBoard();
-////                                }else{
-////                                    GameOver();
-////                                }
-//                            }
-//                        }));
-//        timeline.playFromStart();
-//        chessBoard.setDisable(false);
-//        selectPiece(true);
-//    }
-
-
     @FXML
     void backButton(ActionEvent event) throws IOException {
-        if(myStage>=3)
-        mytimeline.stop();
+        if(myStage>=3){
+            pauseTimer();
+        }
         timer.stop();
         Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/view/HomePage.fxml")));
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
@@ -833,13 +694,9 @@ void timer(){
     }
 
     private void dropPiece(Tile tile) {
-        boolean questionTile = false;
         if (!myPiece.getPossibleMoves().contains(tile.getName())) return;
         if(tile.getChildren().size()>0){
-            System.out.println("secondStage():"+tile.getChildren());
-//            secondStage();
             tile.getChildren().clear();
-            questionTile = true;
         }
         Tile initialSquare = (Tile) myPiece.getParent();
         tile.getChildren().add(0,myPiece);
@@ -857,24 +714,149 @@ void timer(){
         initialSquare.setOccupied(false);
         myPiece.setPosX(tile.getX());
         myPiece.setPosY(tile.getY());
-        if(questionTile){
-            secondStage();
+        if(!tile.getType().equals(TileType.Nothing)){
+            System.out.println(tile.getType());
+            handleSpecialTiles(tile);
         }
         deselectPiece(true);
-
         if (computerPiece != null)
         {
-            if(!tile.getType().equals(TileType.RandomTiles))
-            computerMove();
-
+            if(!tile.getType().equals(TileType.RandomTile))
+                computerMove();
         }
-        if(!tile.getType().equals(TileType.Nothing)){
-//            alertDisplayer();
-            AlertDisplayer alertDisplayer1 = new AlertDisplayer();
-//            alertDisplayer1.showOneSecondAlert("","");
-            stages();
-        }
+//        if(!tile.getType().equals(TileType.Nothing)){
+////            alertDisplayer();
+//            AlertDisplayer alertDisplayer1 = new AlertDisplayer();
+////            alertDisplayer1.showOneSecondAlert("","");
+//            stages();
+//        }
     }
+
+    private void handleSpecialTiles(Tile tile) {
+        switch (tile.getType()){
+            case ForgetTile -> {forgetTile();}
+            case RandomTile ->{randomTile();}
+            case QuestionTile -> {questionTile(tile.getQuestion());}
+        }
+        tile.setType(TileType.Nothing);
+    }
+    private void forgetTile(){
+        int count=3;
+        while(visitedTiles.size()>0 && count>0){
+            Tile tile = visitedTiles.get(visitedTiles.size()-1);
+            visitedTiles.remove(visitedTiles.size()-1);
+            tile.setVisited(false);
+            setBackgroundNotVisited(tile);
+            count--;
+        }
+        Tile tile = selectRandomEmptyTile();
+        tile.setType(TileType.ForgetTile);
+    }
+    private void questionTile(Question q){
+        pauseTimer();
+//        if(questions.isEmpty()){
+//            questions = (ArrayList<Question>) SysData.getInstance().getQuestions().clone();
+//        }
+//        Question q = questions.get(rand.nextInt(questions.size()));
+        Dialog<String> dialog = new Dialog<>();
+        dialog.setTitle("Question");
+        dialog.setHeaderText(q.getQuestionID());
+        // Set the button types.
+        ButtonType okButtonType = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(okButtonType, ButtonType.CANCEL);
+
+        // Create the radio buttons.
+        ToggleGroup group = new ToggleGroup();
+        RadioButton answer1 = new RadioButton(q.getAnswers().get(1));
+        answer1.setToggleGroup(group);
+        RadioButton answer2 = new RadioButton(q.getAnswers().get(2));
+        answer2.setToggleGroup(group);
+        RadioButton answer3 = new RadioButton(q.getAnswers().get(3));
+        answer3.setToggleGroup(group);
+        RadioButton answer4 = new RadioButton(q.getAnswers().get(4));
+        answer4.setToggleGroup(group);
+
+// Add the radio buttons to the dialog.
+        VBox vbox = new VBox(answer1, answer2, answer3,answer4);
+        dialog.getDialogPane().setContent(vbox);
+
+// Convert the result to a string when the OK button is clicked.
+        int correctAnswer = q.getCorrect_ans();
+        dialog.setResultConverter(buttonType -> {
+            if (buttonType == okButtonType) {
+                if (answer1.isSelected()) {
+                    return String.valueOf(correctAnswer==1);
+                } else if (answer2.isSelected()) {
+                    return String.valueOf(correctAnswer==2);
+                } else if (answer3.isSelected()) {
+                    return String.valueOf(correctAnswer==3);
+                }else if (answer4.isSelected()){
+                    return String.valueOf(correctAnswer==4);
+                }
+            }
+            return null;
+        });
+        Optional<String> result = dialog.showAndWait();
+        if (result.isPresent()) {
+            System.out.println("Selected option: " + result.get());
+            if(result.get().equals("true")){
+                switch(q.getLevel()){
+                    case 1 -> {
+                        myScore++;
+
+                    }
+                    case 2 -> {
+                        myScore=myScore+2;
+                    }
+                    case 3 -> {
+                        myScore=myScore+3;
+                    }
+                }
+            }else{
+                System.out.println(q.getLevel());
+                switch(q.getLevel()){
+                    case 1 -> {
+                        myScore = Math.max(myScore - 2, 0);
+
+                    }
+                    case 2 -> {
+                        myScore = Math.max(myScore - 3, 0);
+                    }
+                    case 3 -> {
+                        myScore = Math.max(myScore - 4, 0);
+                    }
+                }
+            }
+            resumeTimer();
+        }
+        System.out.println("myScore"+myScore);
+        lblScore.setText("Score: " + myScore);
+        questions.remove(q);
+        questionMarkByLevel(q.getLevel());
+        //////////////////////////////////////
+    }
+    private void randomTile(){
+        chessBoard.setDisable(true);
+        numberOfGlow = 8;
+        pauseTimer();
+        Image image = new Image(String.valueOf(getClass().getResource("/view/images/giphy.gif")));
+        ImageView imageView = new ImageView(image);
+        imgTimer.setImage(image);
+        animationRandom();
+        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1.7), event -> {
+            // code to execute after the pause
+//            Tile randomTile = dropToRandomTile();
+            Tile randomTile = selectRandomEmptyTile();
+            dropRandomPiece(randomTile);
+            System.out.println("Randommmmm!!!");
+            imgTimer.setImage(null);
+            resumeTimer();
+            chessBoard.setDisable(false);
+        }));
+        generateRandomTile();
+        timeline.play();
+    }
+
     private void setBackgroundVisited(Tile tile){
         switch (cb.getTheme()) {
             case "Coral" -> {
@@ -897,6 +879,10 @@ void timer(){
             }
         }
     }
+    private void setBackgroundNotVisited(Tile tile){
+        cb.setTheme(tile,cb.getTheme(),tile.getX(),tile.getY());
+    }
+
 
     private void dropComputer(Tile tile) {
         if (!computerPiece.getPossibleMoves().contains(tile.getName())) return;
@@ -950,32 +936,31 @@ void timer(){
 //    }
 
     private void GameOver() {
-        if(myStage>=3)
-        mytimeline.stop();
-        timer.stop();
+        if(myStage>=3){
+            mytimeline.stop();
+            timer.stop();
+        }
         if(!game){
             Alert gameOverAlert = new Alert(Alert.AlertType.INFORMATION);
             gameOverAlert.setTitle("Game Over");
             gameOverAlert.setHeaderText("Sorry, you lost the game!");
             gameOverAlert.setContentText("Better luck next time!");
-//            gameOverAlert.showAndWait();
-//            gameOverAlert.setOnHidden(evt -> Platform);
-//            gameOverAlert.showAndWait();
+            pauseTimer();
+            gameOverAlert.showAndWait();
             homePage();
         }else{
             Alert gameOverAlert = new Alert(Alert.AlertType.INFORMATION);
             gameOverAlert.setTitle("Game Over");
             gameOverAlert.setHeaderText("you Won the game!");
-            gameOverAlert.setContentText("Your Score Is"+myScore);
+            gameOverAlert.setContentText("Your Score Is"+totalScore);
             gameOverAlert.showAndWait();
             homePage();
         }
         try {
-            SysData.getInstance().addHighScore(myNickName.getText(), myScore);
+            SysData.getInstance().addHighScore(myNickName.getText(), totalScore);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
 
     }
     private void homePage(){

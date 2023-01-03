@@ -52,11 +52,11 @@ public class HighScorePageController {
         colDate.setCellValueFactory(new PropertyValueFactory<>("date"));
         ObservableList<GameHistory> data = FXCollections.observableArrayList(SysData.getInstance().getHistory());
         Collections.sort(data, new Comparator<GameHistory>() {
-
             public int compare(GameHistory h1, GameHistory h2) {
                 return Integer.compare(h2.getScore(), h1.getScore());
             }
-        });        tableView.setItems(data);
+        });
+        tableView.setItems(data);
         System.out.println(SysData.getInstance().getHistory());
     }
     @FXML

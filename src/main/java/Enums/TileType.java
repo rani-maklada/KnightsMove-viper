@@ -1,8 +1,8 @@
 package Enums;
 
 public enum TileType {
-    RandomTiles,
-    LockedTiles,
+    RandomTile,
+    BlockedTile,
     Nothing,
     ForgetTile,
     QuestionTile

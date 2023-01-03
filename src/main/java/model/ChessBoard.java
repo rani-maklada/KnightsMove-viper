@@ -1,5 +1,6 @@
 package model;
 
+import controller.GamePageController;
 import javafx.geometry.Insets;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -75,7 +76,7 @@ public class ChessBoard {
         this.theme=theme;
     }
 
-    private void setTheme(Tile tile, String theme, int i, int j){
+    public void setTheme(Tile tile, String theme, int i, int j){
         Color color1 = Color.web("#ffffff00");
         Color color2 = Color.web("#ffffff00");
 
@@ -144,14 +145,17 @@ public class ChessBoard {
                     this.knight.setImage();
                     addPiece(tile, this.knight);
                 }
-            //   if(tile.getX() == 7){
-              //    this.king = (King) PieceFactory.createPiece("King","white", tile.getX(), tile.getY());
-                //   addPiece(tile, king);
-               //}
-                if(tile.getX() == 7){
-                    this.queen = (Queen) PieceFactory.createPiece("Queen","white", tile.getX(), tile.getY());
-                    addPiece(tile,this.queen);
-                }
+              if(GamePageController.myStage < 2){
+                  if(tile.getX() == 7){
+                      this.queen = (Queen) PieceFactory.createPiece("Queen","white", tile.getX(), tile.getY());
+                      addPiece(tile,this.queen);
+                  }
+              }else{
+                  if(tile.getX() == 7){
+                      this.king = (King) PieceFactory.createPiece("King","white", tile.getX(), tile.getY());
+                      addPiece(tile, king);
+                  }
+              }
             }
         }
     }

@@ -1,5 +1,6 @@
 package model;
 
+import Enums.QuestionLevel;
 import Enums.TileType;
 import javafx.scene.layout.StackPane;
 
@@ -9,6 +10,8 @@ public class Tile extends StackPane {
     private String name;
     private boolean visited;
     private TileType type;
+    private Question question;
+    private QuestionLevel level;
     public Tile(int x, int y){
 //        if ((x>8 || x<0) || (y>8 || y<0)){
 //            System.out.println("Can't create a tile outside of borders");
@@ -20,6 +23,27 @@ public class Tile extends StackPane {
         this.visited = false;
         this.name ="Tile"+x+y;
         this.type = TileType.Nothing;
+        question = null;
+    }
+    public Question getQuestion(){
+        if(this.type == TileType.QuestionTile){
+            return question;
+        }
+        return null;
+    }
+    public void setQuestion(Question q){
+        this.question = q;
+        switch (q.getLevel()){
+            case 1->{
+                level = QuestionLevel.Easy;
+            }
+            case 2->{
+                level = QuestionLevel.Medium;
+            }
+            case 3->{
+                level = QuestionLevel.Hard;
+            }
+        }
     }
      void checkValidPosition(int x, int y){
 

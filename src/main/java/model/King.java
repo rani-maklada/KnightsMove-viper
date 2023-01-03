@@ -1,8 +1,10 @@
 package model;
 
+import Enums.TileType;
 import controller.GamePageController;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class King extends Piece{
 
@@ -28,7 +30,7 @@ public class King extends Piece{
 
         for(String move : moves){
             if(getTileByName(move) != null){
-//                if(getTileByName(move).isOccupied() && getPieceByName(move).getColor().equals(GamePageController.currentPlayer)) continue;
+                if(Objects.requireNonNull(getTileByName(move)).getType().equals(TileType.BlockedTile))continue;
                 getPossibleMoves().add(move);
 
             }

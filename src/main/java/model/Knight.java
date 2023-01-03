@@ -1,5 +1,6 @@
 package model;
 
+import Enums.TileType;
 import controller.GamePageController;
 
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ public class Knight extends Piece{
         System.out.println("Knight Moves:"+moves);
         for(String move : moves){
             if(getTileByName(move) != null){
-                if(getTileByName(move).isOccupied() && getPieceByName(move).getColor().equals(GamePageController.currentPlayer)) continue;
+                if(getTileByName(move).isOccupied() || getTileByName(move).getType() == TileType.BlockedTile) continue;
                 getPossibleMoves().add(move);
             }
         }
