@@ -18,6 +18,8 @@ import model.SysData;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class HighScorePageController {
     @FXML private Parent root;
@@ -49,7 +51,12 @@ public class HighScorePageController {
         colScore.setCellValueFactory(new PropertyValueFactory<>("score"));
         colDate.setCellValueFactory(new PropertyValueFactory<>("date"));
         ObservableList<GameHistory> data = FXCollections.observableArrayList(SysData.getInstance().getHistory());
-        tableView.setItems(data);
+        Collections.sort(data, new Comparator<GameHistory>() {
+
+            public int compare(GameHistory h1, GameHistory h2) {
+                return Integer.compare(h2.getScore(), h1.getScore());
+            }
+        });        tableView.setItems(data);
         System.out.println(SysData.getInstance().getHistory());
     }
     @FXML
