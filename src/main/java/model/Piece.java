@@ -57,7 +57,7 @@ public class Piece extends ImageView {
     public void showAllPossibleMoves(boolean val) {
         if (val) {
             Glow glow = new Glow();
-            glow.setLevel(1);
+            glow.setLevel(0.7);
             for (String move : possibleMoves) {
                 Tile tile = getTileByName(move);
                 tile.setEffect(glow);
@@ -66,8 +66,8 @@ public class Piece extends ImageView {
             for (String move : possibleMoves) {
                 Tile tile = getTileByName(move);
                 tile.setEffect(null);
-                tile.setBorder(new Border(new BorderStroke(Color.BLACK,
-                        BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+//                tile.setBorder(new Border(new BorderStroke(Color.BLACK,
+//                        BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
             }
         }
     }

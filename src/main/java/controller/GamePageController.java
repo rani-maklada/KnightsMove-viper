@@ -49,6 +49,8 @@ public class GamePageController {
     private ImageView imgTimer;
 
     @FXML
+    private Parent root;
+    @FXML
     private Scene scene;
     @FXML
     private Stage stage;
@@ -58,15 +60,19 @@ public class GamePageController {
     private Label lbTimer;
     @FXML
     private TextArea textArea;
-    @FXML private Label myNickName;
-    @FXML private Label lblScore;
-    @FXML private Label lblStage;
-    @FXML private ColorPicker colorPicker;
+    @FXML
+    private Label myNickName;
+    @FXML
+    private Label lblScore;
+    @FXML
+    private Label lblStage;
+    @FXML
+    private ColorPicker colorPicker;
     public static Piece myPiece;
     public static Piece computerPiece;
-//    private static final Integer STARTTIME = 0;
+    //    private static final Integer STARTTIME = 0;
     private Timeline timeline;
-//    private Integer timeSeconds = (STARTTIME);
+    //    private Integer timeSeconds = (STARTTIME);
     private String myNickHolder;
     public static ChessBoard cb;
     private String theme;
@@ -89,26 +95,26 @@ public class GamePageController {
     private ArrayList<Question> stageQuestions = new ArrayList<>();
     private int totalScore;
 
-    public GamePageController(String name,String theme){
+    public GamePageController(String name, String theme) {
         this.myNickHolder = name;
         this.theme = theme;
     }
+
     @FXML
     void initialize() throws IOException {
-        totalScore=0;
+        myStage = 1;
+        totalScore = 0;
+        myScore = 0;
+        myNickName.setText(myNickHolder);
+        lblScore.setText("Score: " + myScore);
+        lblStage.setText("Stage: " + myStage);
         questions = (ArrayList<Question>) SysData.getInstance().getQuestions().clone();
-        cb = new ChessBoard(chessBoard, theme,8);
+        cb = new ChessBoard(chessBoard, theme, 8);
         myPiece = cb.getKnight();
         computerPiece = cb.getQueen();
         this.game = true;
         lbTimer.setTextFill(Color.BLUE);
         lbTimer.setStyle("-fx-font-size: 2em;");
-        myNickName.setText(myNickHolder);
-        myScore=0;
-        lblScore.setText("Score: " + myScore);
-        myStage=1;
-        lblStage.setText("Stage: " + myStage);
-//        StartMyTimer();
         visitedTile(cb.getTiles().get(0));
         generateRandomTile();
         generateRandomTile();
@@ -120,24 +126,27 @@ public class GamePageController {
         timer();
 //        myPiece.getAllPossibleMoves();
     }
-    private ArrayList<Question> questionsByLevel(int level){
+
+    private ArrayList<Question> questionsByLevel(int level) {
         ArrayList<Question> q = new ArrayList<>();
         for (Question question : questions) {
-            if(question.getLevel() == level){
+            if (question.getLevel() == level) {
                 q.add(question);
             }
         }
         return q;
     }
+
     private Question selectRandomQuestionByLevel(int level) {
         ArrayList<Question> q = questionsByLevel(level);
         return q.get(rand.nextInt(q.size()));
     }
-    private void startMyTimeLine(){
+
+    private void startMyTimeLine() {
         updatemytimeline();
     }
 
-    private void updatemytimeline(){
+    private void updatemytimeline() {
         myRate = 5;
         timeline = new Timeline(new KeyFrame(Duration.seconds(myRate), event -> {
             computerMove();
@@ -148,7 +157,7 @@ public class GamePageController {
 // Every 10 seconds, change the original timeline rate of X
         //rateChanger
         mytimeline = new Timeline(new KeyFrame(Duration.seconds(5), event -> {
-            myRate = Math.max(1,myRate-1);
+            myRate = Math.max(1, myRate - 1);
             timeline.stop();
             timeline.getKeyFrames().clear();
             timeline.getKeyFrames().add(new KeyFrame(Duration.seconds(myRate), event2 -> {
@@ -160,9 +169,9 @@ public class GamePageController {
         mytimeline.play();
     }
 
-//    void timer() {
+    //    void timer() {
 //        startTime = System.currentTimeMillis();
-        // Create a new AnimationTimer
+    // Create a new AnimationTimer
 //        timer = new AnimationTimer() {
 //            @Override
 //            public void handle(long now) {
@@ -181,11 +190,11 @@ public class GamePageController {
 //                }
 //            }
 //        };
-void timer(){
-    startTime = System.currentTimeMillis();
-    elapsedTime=0;
-    timer = new AnimationTimer() {
-        @Override
+    void timer() {
+        startTime = System.currentTimeMillis();
+        elapsedTime = 0;
+        timer = new AnimationTimer() {
+            @Override
             public void handle(long now) {
                 if (!paused) {
                     elapsedTime += System.currentTimeMillis() - startTime;
@@ -196,15 +205,14 @@ void timer(){
                     int seconds = (int) (10 - elapsedTime / 1000);
                     lbTimer.setText(String.valueOf(seconds));
                     if (remainingTime <= 0) {
-                        if(myStage == 4){
+                        if (myStage == 4) {
                             GameOver();
-                        } else if (myScore < 0){
-                            game=false;
+                        } else if (myScore < 0) {
+                            game = false;
                             GameOver();
-                        }else{
+                        } else {
                             // countdown is finished, stop the timer
                             resetBoard();
-
                         }
 
                     }
@@ -215,34 +223,38 @@ void timer(){
         // Start the timer
 
     }
+
     public void pauseTimer() {
         paused = true;  // pause the countdown timer
         elapsedTime += System.currentTimeMillis() - startTime;  // update elapsed time
         System.out.println("pauseTimer");
-        if(myStage>=3){
+        if (myStage >= 3) {
             mytimeline.stop();
             timeline.stop();
         }
     }
+
     public void resumeTimer() {
         paused = false;  // resume the countdown timer
         startTime = System.currentTimeMillis();  // reset start time
         System.out.println("resumeTimer");
-        if(myStage>=3)
+        if (myStage >= 3)
             mytimeline.play();
     }
+
     void resetTimer() {
         timer.stop();
-        if(myStage==3){
+        if (myStage == 3) {
             startMyTimeLine();
         }
-        if(myStage==4){
+        if (myStage == 4) {
             timeline.stop();
             mytimeline.stop();
             mytimeline.playFromStart();
         }
         timer();
     }
+
     private void timeOut() {
         // Create a new alert
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -265,7 +277,8 @@ void timer(){
         // Show the dialog to the user
         Platform.runLater(alert::showAndWait);
     }
-    void generateBlockedTiles(){
+
+    void generateBlockedTiles() {
         Tile tile = selectRandomEmptyTile();
         Image image = new Image(String.valueOf(getClass().getResource("/view/pieces/Blocked.png")));
         ImageView imageView = new ImageView(image);
@@ -274,8 +287,9 @@ void timer(){
         tile.getChildren().add(imageView);
         tile.setType(TileType.BlockedTile);
     }
+
     //generate 3 quastions in the Game with different levels
-    private void questionMarkByLevel(int level){
+    private void questionMarkByLevel(int level) {
         Tile tile = selectRandomEmptyTile();
         Image image = new Image(String.valueOf(getClass().getResource("/view/pieces/QuestionMark.png")));
         ImageView imageView = new ImageView(image);
@@ -285,7 +299,23 @@ void timer(){
         tile.getChildren().add(imageView);
         tile.setType(TileType.QuestionTile);
         tile.setQuestion(selectRandomQuestionByLevel(level));
+        switch(level){
+            case 1->{
+                tile.setBorder(new Border(new BorderStroke(Color.WHITE,
+                        BorderStrokeStyle.SOLID,CornerRadii.EMPTY,new BorderWidths(7))));
+            }
+            case 2->{
+                tile.setBorder(new Border(new BorderStroke(Color.YELLOW,
+                        BorderStrokeStyle.SOLID, CornerRadii.EMPTY,new BorderWidths(7))));
+            }
+            case 3->{
+                tile.setBorder(new Border(new BorderStroke(Color.RED,
+                        BorderStrokeStyle.SOLID,CornerRadii.EMPTY,new BorderWidths(7))));
+            }
+        }
+
     }
+
     private Tile selectRandomEmptyTile() {
         // Set a maximum number of iterations
         int maxIterations = cb.getTiles().size();
@@ -309,56 +339,21 @@ void timer(){
         // If no empty tiles were found after maxIterations iterations, return null
         return null;
     }
+
     private void generateRandomTile() {
         Tile tile = selectRandomEmptyTile();
         if (tile.getType() == TileType.Nothing) {
             tile.setType(TileType.RandomTile);
         }
     }
-    private void generateQuestionTile(){
+
+    private void generateQuestionTile() {
 
     }
-    private void generateForgetTile(){
+
+    private void generateForgetTile() {
         Tile tile = selectRandomEmptyTile();
         tile.setType(TileType.ForgetTile);
-    }
-    private void stages(){
-        switch(myStage){
-            case 1 -> {
-                firstStage();
-            }
-            case 2 -> {
-                secondStage();
-            }
-            case 3 -> {
-                thirdStage();
-            }
-            case 4 -> {
-                thirdStage();
-            }
-        }
-    }
-
-    void firstStage() {
-        chessBoard.setDisable(true);
-        numberOfGlow = 8;
-        pauseTimer();
-        Image image = new Image(String.valueOf(getClass().getResource("/view/images/giphy.gif")));
-
-        ImageView imageView = new ImageView(image);
-        imgTimer.setImage(image);
-        animationRandom();
-        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1.7), event -> {
-            // code to execute after the pause
-//            Tile randomTile = dropToRandomTile();
-            Tile randomTile = selectRandomEmptyTile();
-            dropRandomPiece(randomTile);
-            System.out.println("Randommmmm!!!");
-            imgTimer.setImage(null);
-            resumeTimer();
-            chessBoard.setDisable(false);
-        }));
-        timeline.play();
     }
 
 
@@ -394,7 +389,7 @@ void timer(){
                         // countdown is finished, move the king
 
 
-                            animationRandom();
+                        animationRandom();
 
                         // reset the timer
                         elapsedTime = 0;
@@ -406,7 +401,8 @@ void timer(){
         timer.start();
         // Start the timer
     }
-    void animationRandom(){
+
+    void animationRandom() {
         Random rand = new Random();
         Tile tile = cb.getTiles().get(rand.nextInt(cb.getTiles().size()));
         ColorAdjust colorAdjust = new ColorAdjust();
@@ -418,18 +414,18 @@ void timer(){
         numberOfGlow--;
         Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(0.2), event -> {
             tile.setEffect(null);
-            if(numberOfGlow>0)
+            if (numberOfGlow > 0)
                 animationRandom();
         }));
         timeline.play();
     }
 
-//        for (Tile tile:cb.getTiles()) {
+    //        for (Tile tile:cb.getTiles()) {
 //            tile.setBorder(new Border(new BorderStroke(Color.BLACK,
 //                    BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
 //        }
-    void dropRandomPiece(Tile tile){
-        textArea.setText(textArea.getText()+"\n jump to Randommmmm");
+    void dropRandomPiece(Tile tile) {
+        textArea.setText(textArea.getText() + "\n jump to Randommmmm");
         System.out.println("0 of func");
         Tile initialSquare = (Tile) myPiece.getParent();
         System.out.println(initialSquare);
@@ -442,7 +438,7 @@ void timer(){
         System.out.println("0.7 of func");
         tile.setOccupied(true);
         System.out.println("1 of func");
-        if(!tile.isVisited()){
+        if (!tile.isVisited()) {
             visitedTile(tile);
         }
         System.out.println("2 of func");
@@ -451,32 +447,34 @@ void timer(){
         myPiece.setPosX(tile.getX());
         myPiece.setPosY(tile.getY());
         Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
-            if (computerPiece != null && computerPiece.getType().equals("Queen")){
+            if (computerPiece != null && computerPiece.getType().equals("Queen")) {
                 computerMove();
-            }else{
+            } else {
                 mytimeline.play();
             }
             deselectPiece(true);
-            System.out.println("3 of func");
-            if(!tile.getType().equals(TileType.Nothing)){
-                stages();
-            }
-            System.out.println("end of func");
+//            System.out.println("3 of func");
+//            if (!tile.getType().equals(TileType.Nothing)) {
+//                stages();
+//            }
+//            System.out.println("end of func");
         }));
         timeline.play();
-        if(computerPiece.getType().equals("King")){
+        if (computerPiece.getType().equals("King")) {
             this.timeline.stop();
             mytimeline.stop();
         }
     }
-    void visitedTile(Tile tile){
+
+    void visitedTile(Tile tile) {
         tile.setVisited(true);
         setBackgroundVisited(tile);
         myScore++;
         lblScore.setText("Score: " + myScore);
         visitedTiles.add(tile);
     }
-    void alertDisplayer(){
+
+    void alertDisplayer() {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("title");
         alert.setHeaderText(null);
@@ -490,25 +488,18 @@ void timer(){
 
         alert.close();
     }
-    void secondStage(){
-    }
-    void thirdStage(){
-
-    }
-    void fourthStage(){
-
-    }
     @FXML
     void resetButton(ActionEvent event) throws IOException {
         cb.getChessBoard().getChildren().clear();
-        if(myStage>2){
+        if (myStage > 2) {
             timeline.stop();
             mytimeline.stop();
         }
         initialize();
     }
+
     @FXML
-    void stageTwo(){
+    void stageTwo() {
         //        StartMyTimer();
         computerPiece = cb.getQueen();
         generateForgetTile();
@@ -518,27 +509,37 @@ void timer(){
         questionMarkByLevel(2);
         questionMarkByLevel(3);
     }
-    @FXML
-    void stageThree(){
-        computerPiece = cb.getKing();
-        generateForgetTile();
-        generateForgetTile();
-        generateRandomTile();
-        generateRandomTile();
-    }
-    @FXML
-    void stageFour(){
-        computerPiece = cb.getKing();
-        for(int i=0;i<8;i++) {generateBlockedTiles();}
 
-    }
     @FXML
-    void resetBoard(){
+    void stageThree() {
+        computerPiece = cb.getKing();
+        generateForgetTile();
+        generateForgetTile();
+        generateRandomTile();
+        generateRandomTile();
+        questionMarkByLevel(1);
+        questionMarkByLevel(2);
+        questionMarkByLevel(3);
+    }
+
+    @FXML
+    void stageFour() {
+        computerPiece = cb.getKing();
+        for (int i = 0; i < 8; i++) {
+            generateBlockedTiles();
+        }
+        questionMarkByLevel(1);
+        questionMarkByLevel(2);
+        questionMarkByLevel(3);
+    }
+
+    @FXML
+    void resetBoard() {
         chessBoard.setDisable(true);
         cb.getChessBoard().getChildren().clear();
-        cb = new ChessBoard(chessBoard, theme,8);
+        cb = new ChessBoard(chessBoard, theme, 8);
         myPiece = cb.getKnight();
-        switch(myStage) {
+        switch (myStage) {
             case 1 -> {
                 stageTwo();
             }
@@ -550,8 +551,8 @@ void timer(){
             }
         }
         myStage++;
-        totalScore = myScore+totalScore;
-        myScore=1;
+        totalScore = myScore + totalScore;
+        myScore = 1;
         lblStage.setText("Stage: " + myStage);
         lblScore.setText("Score: " + myScore);
         visitedTile(cb.getTiles().get(0));
@@ -559,9 +560,10 @@ void timer(){
         selectPiece(true);
         chessBoard.setDisable(false);
     }
+
     @FXML
     void backButton(ActionEvent event) throws IOException {
-        if(myStage>=3){
+        if (myStage >= 3) {
             pauseTimer();
         }
         timer.stop();
@@ -610,12 +612,12 @@ void timer(){
     private void computerMove() {
         computerPiece.getAllPossibleMoves();
         ArrayList<String> moves = computerPiece.getPossibleMoves();
-        System.out.println("computerMove:"+moves);
-        String str ="";
-        if(computerPiece.getType().equals("Queen")){
-            str = findBestMove(moves,"Queen");
-        }else{
-            str = findBestMove(moves,"King");
+        System.out.println("computerMove:" + moves);
+        String str = "";
+        if (computerPiece.getType().equals("Queen")) {
+            str = findBestMove(moves, "Queen");
+        } else {
+            str = findBestMove(moves, "King");
         }
 
         System.out.println("bestMove: " + str);
@@ -629,7 +631,8 @@ void timer(){
             }
         }
     }
-    private String queenBestMove(ArrayList<String> moves){
+
+    private String queenBestMove(ArrayList<String> moves) {
         int score = 0;
         int maxScore = score;
         String bestMove = null;
@@ -640,20 +643,21 @@ void timer(){
                 return String.format("Tile%d%d", tile.getX(), tile.getY());
             }
             score = evaluateMove(tile);
-            if (score > maxScore){
+            if (score > maxScore) {
                 maxScore = score;
                 bestMove = move;
             }
         }
         return bestMove;
     }
-    private String kingBestMove(ArrayList<String> moves){
+
+    private String kingBestMove(ArrayList<String> moves) {
         int x = computerPiece.getPosX(), y = computerPiece.getPosY();
-        System.out.println("myPiece.getPosX():"+myPiece.getPosX());
-        System.out.println("myPiece.getPosY():"+myPiece.getPosY());
+        System.out.println("myPiece.getPosX():" + myPiece.getPosX());
+        System.out.println("myPiece.getPosY():" + myPiece.getPosY());
         for (String move : moves) {
             Tile tile = Piece.getTileByName(move);
-            if((tile.getX() == myPiece.getPosX()) && (tile.getY() == myPiece.getPosY())){
+            if ((tile.getX() == myPiece.getPosX()) && (tile.getY() == myPiece.getPosY())) {
                 System.out.println("Kill!!!");
                 return String.format("Tile%d%d", tile.getX(), tile.getY());
             }
@@ -665,45 +669,46 @@ void timer(){
         }
         return String.format("Tile%d%d", x, y);
     }
-    private String findBestMove(ArrayList<String> moves,String pieceType) {
-        System.out.println("Computer Piece:"+pieceType);
-        if(pieceType.equals("Queen")){
+
+    private String findBestMove(ArrayList<String> moves, String pieceType) {
+        System.out.println("Computer Piece:" + pieceType);
+        if (pieceType.equals("Queen")) {
             return queenBestMove(moves);
-        }else{//pieceType.equals("King")
+        } else {//pieceType.equals("King")
             return kingBestMove(moves);
         }
     }
-    
-    private int evaluateMove(Tile tile){
-        Piece myKnight = PieceFactory.createPiece(myPiece.getType(),"black",myPiece.getPosX(),myPiece.getPosY());
+
+    private int evaluateMove(Tile tile) {
+        Piece myKnight = PieceFactory.createPiece(myPiece.getType(), "black", myPiece.getPosX(), myPiece.getPosY());
         int score = 0;
-        Piece piece = PieceFactory.createPiece(computerPiece.getType(),"white",tile.getX(),tile.getY());
+        Piece piece = PieceFactory.createPiece(computerPiece.getType(), "white", tile.getX(), tile.getY());
         piece.setPosX(tile.getX());
         piece.setPosY(tile.getY());
         piece.getAllPossibleMoves();
-        System.out.println("myPieceMove"+myPiece.getPossibleMoves());
-        System.out.println("computerMove:"+piece.getPossibleMoves());
-        for (String move:piece.getPossibleMoves()) {
-            if(myPiece.getPossibleMoves().contains(move)){
-                System.out.println("move:"+move);
+        System.out.println("myPieceMove" + myPiece.getPossibleMoves());
+        System.out.println("computerMove:" + piece.getPossibleMoves());
+        for (String move : piece.getPossibleMoves()) {
+            if (myPiece.getPossibleMoves().contains(move)) {
+                System.out.println("move:" + move);
                 score++;
             }
         }
-        System.out.println(tile.getName()+" Score:"+score);
+        System.out.println(tile.getName() + " Score:" + score);
         return score;
     }
 
     private void dropPiece(Tile tile) {
         if (!myPiece.getPossibleMoves().contains(tile.getName())) return;
-        if(tile.getChildren().size()>0){
+        if (tile.getChildren().size() > 0) {
             tile.getChildren().clear();
         }
         Tile initialSquare = (Tile) myPiece.getParent();
-        tile.getChildren().add(0,myPiece);
+        tile.getChildren().add(0, myPiece);
         tile.setOccupied(true);
-        if(tile.isVisited()){
+        if (tile.isVisited()) {
             myScore = Math.max(myScore - 1, 0);
-        }else{
+        } else {
             tile.setVisited(true);
             setBackgroundVisited(tile);
             myScore++;
@@ -714,14 +719,13 @@ void timer(){
         initialSquare.setOccupied(false);
         myPiece.setPosX(tile.getX());
         myPiece.setPosY(tile.getY());
-        if(!tile.getType().equals(TileType.Nothing)){
+        if (!tile.getType().equals(TileType.Nothing)) {
             System.out.println(tile.getType());
             handleSpecialTiles(tile);
         }
         deselectPiece(true);
-        if (computerPiece != null)
-        {
-            if(!tile.getType().equals(TileType.RandomTile))
+        if (computerPiece != null) {
+            if (!tile.getType().equals(TileType.RandomTile))
                 computerMove();
         }
 //        if(!tile.getType().equals(TileType.Nothing)){
@@ -733,18 +737,27 @@ void timer(){
     }
 
     private void handleSpecialTiles(Tile tile) {
-        switch (tile.getType()){
-            case ForgetTile -> {forgetTile();}
-            case RandomTile ->{randomTile();}
-            case QuestionTile -> {questionTile(tile.getQuestion());}
+        switch (tile.getType()) {
+            case ForgetTile -> {
+                forgetTile();
+            }
+            case RandomTile -> {
+                randomTile();
+            }
+            case QuestionTile -> {
+                questionTile(tile.getQuestion());
+                tile.setBorder(new Border(new BorderStroke(Color.BLACK,
+                        BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+            }
         }
         tile.setType(TileType.Nothing);
     }
-    private void forgetTile(){
-        int count=3;
-        while(visitedTiles.size()>0 && count>0){
-            Tile tile = visitedTiles.get(visitedTiles.size()-1);
-            visitedTiles.remove(visitedTiles.size()-1);
+
+    private void forgetTile() {
+        int count = 3;
+        while (visitedTiles.size() > 0 && count > 0) {
+            Tile tile = visitedTiles.get(visitedTiles.size() - 1);
+            visitedTiles.remove(visitedTiles.size() - 1);
             tile.setVisited(false);
             setBackgroundNotVisited(tile);
             count--;
@@ -752,7 +765,8 @@ void timer(){
         Tile tile = selectRandomEmptyTile();
         tile.setType(TileType.ForgetTile);
     }
-    private void questionTile(Question q){
+
+    private void questionTile(Question q) {
         pauseTimer();
 //        if(questions.isEmpty()){
 //            questions = (ArrayList<Question>) SysData.getInstance().getQuestions().clone();
@@ -777,7 +791,7 @@ void timer(){
         answer4.setToggleGroup(group);
 
 // Add the radio buttons to the dialog.
-        VBox vbox = new VBox(answer1, answer2, answer3,answer4);
+        VBox vbox = new VBox(answer1, answer2, answer3, answer4);
         dialog.getDialogPane().setContent(vbox);
 
 // Convert the result to a string when the OK button is clicked.
@@ -785,13 +799,13 @@ void timer(){
         dialog.setResultConverter(buttonType -> {
             if (buttonType == okButtonType) {
                 if (answer1.isSelected()) {
-                    return String.valueOf(correctAnswer==1);
+                    return String.valueOf(correctAnswer == 1);
                 } else if (answer2.isSelected()) {
-                    return String.valueOf(correctAnswer==2);
+                    return String.valueOf(correctAnswer == 2);
                 } else if (answer3.isSelected()) {
-                    return String.valueOf(correctAnswer==3);
-                }else if (answer4.isSelected()){
-                    return String.valueOf(correctAnswer==4);
+                    return String.valueOf(correctAnswer == 3);
+                } else if (answer4.isSelected()) {
+                    return String.valueOf(correctAnswer == 4);
                 }
             }
             return null;
@@ -799,22 +813,22 @@ void timer(){
         Optional<String> result = dialog.showAndWait();
         if (result.isPresent()) {
             System.out.println("Selected option: " + result.get());
-            if(result.get().equals("true")){
-                switch(q.getLevel()){
+            if (result.get().equals("true")) {
+                switch (q.getLevel()) {
                     case 1 -> {
                         myScore++;
 
                     }
                     case 2 -> {
-                        myScore=myScore+2;
+                        myScore = myScore + 2;
                     }
                     case 3 -> {
-                        myScore=myScore+3;
+                        myScore = myScore + 3;
                     }
                 }
-            }else{
+            } else {
                 System.out.println(q.getLevel());
-                switch(q.getLevel()){
+                switch (q.getLevel()) {
                     case 1 -> {
                         myScore = Math.max(myScore - 2, 0);
 
@@ -829,13 +843,14 @@ void timer(){
             }
             resumeTimer();
         }
-        System.out.println("myScore"+myScore);
+        System.out.println("myScore" + myScore);
         lblScore.setText("Score: " + myScore);
         questions.remove(q);
         questionMarkByLevel(q.getLevel());
         //////////////////////////////////////
     }
-    private void randomTile(){
+
+    private void randomTile() {
         chessBoard.setDisable(true);
         numberOfGlow = 8;
         pauseTimer();
@@ -857,7 +872,7 @@ void timer(){
         timeline.play();
     }
 
-    private void setBackgroundVisited(Tile tile){
+    private void setBackgroundVisited(Tile tile) {
         switch (cb.getTheme()) {
             case "Coral" -> {
                 tile.setBackground(new Background(new BackgroundFill(Color.web("#e4c16f"), CornerRadii.EMPTY, Insets.EMPTY)));
@@ -879,8 +894,9 @@ void timer(){
             }
         }
     }
-    private void setBackgroundNotVisited(Tile tile){
-        cb.setTheme(tile,cb.getTheme(),tile.getX(),tile.getY());
+
+    private void setBackgroundNotVisited(Tile tile) {
+        cb.setTheme(tile, cb.getTheme(), tile.getX(), tile.getY());
     }
 
 
@@ -888,7 +904,7 @@ void timer(){
         if (!computerPiece.getPossibleMoves().contains(tile.getName())) return;
         System.out.println("dropComputer");
         Tile initialSquare = (Tile) computerPiece.getParent();
-        tile.getChildren().add(0,computerPiece);
+        tile.getChildren().add(0, computerPiece);
         tile.setOccupied(true);
         initialSquare.getChildren().removeAll();
         initialSquare.setOccupied(false);
@@ -898,7 +914,7 @@ void timer(){
 
     private void killMyPiece(Tile tile) {
         if (!computerPiece.getPossibleMoves().contains(tile.getName())) return;
-        System.out.println("killMyPiece:"+tile.getChildren());
+        System.out.println("killMyPiece:" + tile.getChildren());
         Piece killedPiece = (Piece) tile.getChildren().get(0);
         if (killedPiece.getType().equals("Knight")) {
             this.game = false;
@@ -913,7 +929,7 @@ void timer(){
         computerPiece.setPosX(tile.getX());
         computerPiece.setPosY(tile.getY());
         deselectPiece(true);
-        if(!this.game){
+        if (!this.game) {
             GameOver();
         }
     }
@@ -936,25 +952,13 @@ void timer(){
 //    }
 
     private void GameOver() {
-        if(myStage>=3){
-            mytimeline.stop();
-            timer.stop();
-        }
-        if(!game){
-            Alert gameOverAlert = new Alert(Alert.AlertType.INFORMATION);
-            gameOverAlert.setTitle("Game Over");
-            gameOverAlert.setHeaderText("Sorry, you lost the game!");
-            gameOverAlert.setContentText("Better luck next time!");
-            pauseTimer();
-            gameOverAlert.showAndWait();
-            homePage();
-        }else{
-            Alert gameOverAlert = new Alert(Alert.AlertType.INFORMATION);
-            gameOverAlert.setTitle("Game Over");
-            gameOverAlert.setHeaderText("you Won the game!");
-            gameOverAlert.setContentText("Your Score Is"+totalScore);
-            gameOverAlert.showAndWait();
-            homePage();
+        pauseTimer();
+
+        timer.stop();
+        if (!game) {
+            gameOverPage("GameOver");
+        } else {
+            gameOverPage("Win");
         }
         try {
             SysData.getInstance().addHighScore(myNickName.getText(), totalScore);
@@ -963,16 +967,38 @@ void timer(){
         }
 
     }
-    private void homePage(){
+    private void gameOverPage(String myString){
+        FXMLLoader loader;
+        boolean result;
+        if (myString.equals("Win")) {
+         result = true;
+        } else {
+            result = false;
+
+        }
+        loader = new FXMLLoader(getClass().getResource("/view/GoToGameOver.fxml"));
+
+        loader.setControllerFactory((Class<?> type) -> {
+            if (type == goToGameOver.class) {
+                return new goToGameOver(myNickName.getText(), totalScore,result);
+            } else {
+                try {
+                    return type.newInstance();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
         try {
-            Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/view/HomePage.fxml")));
-            stage = (Stage) GamePage.getScene().getWindow();
-            scene = GamePage.getScene();
-            scene.setRoot(root);
-            stage.setScene(scene);
-            stage.show();
+            root = loader.load();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        stage = (Stage) GamePage.getScene().getWindow();
+        scene = GamePage.getScene();
+        scene.setRoot(root);
+        stage.setScene(scene);
+
+        stage.show();
     }
 }
