@@ -11,6 +11,8 @@ import model.Question;
 import model.SysData;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Objects;
 
 public class EditQuestion {
@@ -52,9 +54,16 @@ public class EditQuestion {
     public EditQuestion(Question question){
         this.question = question;
     }
+
+    String originalQuestion;
+
     @FXML
+
+
+
     void initialize()
     {
+        originalQuestion = question.getQuestionID();
         questionField.setText(question.getQuestionID());
         ToggleGroup toggleGroup = new ToggleGroup();
         answer1.setToggleGroup(toggleGroup);
@@ -90,8 +99,79 @@ public class EditQuestion {
 teamTextFie.setText(question.getTeam());
     }
     @FXML
-    void addButton(ActionEvent event) {
+    void addButton(ActionEvent event) throws IOException {
 
+        if(!checkFields())
+        {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Let's Go");
+            alert.setHeaderText("Fill in the empty fields");
+            alert.showAndWait();
+            return;
+        }
+
+       ArrayList<Question> myQuestions =  SysData.getInstance().getQuestions();
+        HashMap<Integer, String> myAnswers = new HashMap<Integer, String>();
+        myAnswers.put(1, answer1TextField.getText());
+        myAnswers.put(2, answer2TextField.getText());
+        myAnswers.put(3, answer3TextField.getText());
+        myAnswers.put(4, answer4TextField.getText());
+        int clicked= question.getCorrect_ans();
+        if(answer1.isSelected())
+            clicked=1;
+        if(answer2.isSelected())
+            clicked=2;
+        if(answer3.isSelected())
+            clicked=3;
+        if(answer4.isSelected())
+            clicked=4;
+
+       Question questionToCheck = new Question(questionField.getText(),myAnswers,clicked,Integer.parseInt(levelChoiceBox.getValue()),teamTextFie.getText());
+//if(questionToCheck.equals(question))
+//{
+//    question.setAnswers(myAnswers);
+//    question.setLevel(questionToCheck.getLevel());
+//    question.setTeam(questionToCheck.getTeam());
+//    question.setCorrect_ans(questionToCheck.getCorrect_ans());
+//}
+//else {
+//    myQuestions.remove(question);
+//    myQuestions.add(questionToCheck);
+//}
+
+
+        SysData.getInstance().removeQuestion(question.getQuestionID());
+        SysData.getInstance().addQuestion(questionToCheck);
+
+        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/view/QuestionsPage.fxml")));
+        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        scene = (Scene) ((Node) event.getSource()).getScene();
+        scene.setRoot(root);
+        stage.setScene(scene);
+        stage.show();
+
+    }
+    private boolean checkFields(){
+        if(questionField.getText().isEmpty()){
+            return false;
+        }
+        if(answer1TextField.getText().isEmpty()){
+            return false;
+        }
+        if(answer2TextField.getText().isEmpty()){
+            return false;
+        }
+        if(answer3TextField.getText().isEmpty()){
+            return false;
+        }
+        if(answer4TextField.getText().isEmpty()){
+            return false;
+        }
+        if(!answer1.isSelected() && !answer2.isSelected() && !answer3.isSelected()
+                && !answer4.isSelected() ){
+            return false;
+        }
+        return true;
     }
     @FXML
     void backButton(ActionEvent event) throws IOException {
