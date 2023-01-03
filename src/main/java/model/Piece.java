@@ -57,7 +57,7 @@ public class Piece extends ImageView {
     public void showAllPossibleMoves(boolean val) {
         if (val) {
             Glow glow = new Glow();
-            glow.setLevel(0.3);
+            glow.setLevel(1);
             for (String move : possibleMoves) {
                 Tile tile = getTileByName(move);
                 tile.setEffect(glow);
