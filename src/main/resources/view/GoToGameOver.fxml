@@ -12,7 +12,7 @@
       <Button layoutX="350.0" layoutY="464.0" mnemonicParsing="false" onAction="#backToHome" prefHeight="54.0" prefWidth="108.0" styleClass="record-sales" text="Play Again" />
       <Label fx:id="nickHolder" layoutX="280.0" layoutY="354.0" prefHeight="17.0" prefWidth="299.0" styleClass="lb" text="Label" />
       <Label layoutX="64.0" layoutY="355.0" prefHeight="35.0" prefWidth="188.0" styleClass="lb" text="Your nickname:" />
-      <ImageView fx:id="myimageScore" fitHeight="39.0" fitWidth="69.0" layoutX="125.0" layoutY="395.0" pickOnBounds="true" preserveRatio="true" styleClass="gameScore" />
+      <ImageView fx:id="myImageScore" fitHeight="39.0" fitWidth="69.0" layoutX="125.0" layoutY="395.0" pickOnBounds="true" preserveRatio="true" styleClass="gameScore" />
       <Label fx:id="scoreHolder" layoutX="278.0" layoutY="397.0" prefHeight="17.0" prefWidth="299.0" styleClass="lb" text="Label" />
    </children>
 </AnchorPane>

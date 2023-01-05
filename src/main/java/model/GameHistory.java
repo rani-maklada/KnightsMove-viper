@@ -1,7 +1,5 @@
 package model;
-
 import java.time.LocalDate;
-import java.util.Date;
 
 public class GameHistory {
     private String playerName;
@@ -17,23 +15,18 @@ public class GameHistory {
     public String getPlayerName() {
         return playerName;
     }
-
     public void setPlayerName(String playerName) {
         this.playerName = playerName;
     }
-
     public int getScore() {
         return score;
     }
-
     public void setScore(int score) {
         this.score = score;
     }
-
     public LocalDate getDate() {
         return date;
     }
-
     public void setDate(LocalDate date) {
         this.date = date;
     }

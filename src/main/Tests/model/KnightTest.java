@@ -16,7 +16,7 @@ class KnightTest {
     }
     @Test
     //test initializing knight and see if the init positioning is correct
-    void initKnight(){
+    void testInitKnight(){
         Knight knight = new Knight("black");
         int posX = knight.getPosX();
         int posY = knight.getPosY();

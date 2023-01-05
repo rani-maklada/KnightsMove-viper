@@ -23,7 +23,6 @@ public class Knight extends Piece{
         for (int[] move : m) {
             moves.add("Tile"+move[0]+move[1]);
         }
-        System.out.println("Knight Moves:"+moves);
         for(String move : moves){
             if(getTileByName(move) != null){
                 if(getTileByName(move).isOccupied() || getTileByName(move).getType() == TileType.BlockedTile) continue;
@@ -33,19 +32,19 @@ public class Knight extends Piece{
     }
     private List<int[]> getKnightMoves(int x, int y) {
         List<int[]> moves = new ArrayList<>();
-        int[] dx, dy, dx2, dy2;
+        int[] dx, dy, dx2, dy2,dx3,dy3;
         if(GamePageController.myStage == 1){
             dx = new int[] {-1, 1, 2, -2, -2, 2, -1, 1};
             dy = new int[] {-2, -2, -1, -1, 1, 1, 2, 2};
 
         }else{
             System.out.println("Here");
-            int[] dx3 = new int[] {-3, -3, -1, 1, 3, 3, 1, -1};
-            int []dy3= new int[] {-1, 1, 3, 3, 1, -1, -3, -3};
-             dx = new int[] {-3, -3, -2, 2, 3, 3, 2, -2};
-             dy = new int[] {-2, 2, 3, 3, 2, -2, -3, -3};
-             dx2 = new int[] {-2, -2, -1, 1, 2, 2, 1, -1};
-             dy2 = new int[] {-1, 1, 2, 2, 1, -1, -2, -2};
+            dx3 = new int[] {-3, -3, -1, 1, 3, 3, 1, -1};
+            dy3= new int[] {-1, 1, 3, 3, 1, -1, -3, -3};
+            dx = new int[] {-3, -3, -2, 2, 3, 3, 2, -2};
+            dy = new int[] {-2, 2, 3, 3, 2, -2, -3, -3};
+            dx2 = new int[] {-2, -2, -1, 1, 2, 2, 1, -1};
+            dy2 = new int[] {-1, 1, 2, 2, 1, -1, -2, -2};
 
             for (int i = 0; i < 8; i++) {
                 int newX = (x + dx2[i] % 8 + 8) % 8;
@@ -63,11 +62,7 @@ public class Knight extends Piece{
             int newY = (y + dy[i] % 8 + 8) % 8;
             moves.add(new int[]{newX, newY});
         }
-        System.out.println("moves:"+moves);
         return moves;
-    }
-    private int getPosition(int p, int n){
-        return (p+n<0) ?8+p+n:p+n;
     }
 }
 

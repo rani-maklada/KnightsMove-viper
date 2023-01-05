@@ -35,19 +35,15 @@ public class SysData {
 
         return questions;
     }
-
     public void setQuestions(ArrayList<Question> questions) {
         this.questions = questions;
     }
 
     public ArrayList<GameHistory> getHistory() {
         return ImportHistory();
-
-
     }
     public void addQuestion(Question question) {
         String jsonString = String.valueOf(readJSONObject("questions.json"));
-
         // Parse the JSON string into a JSON object
         JSONObject json = new JSONObject(jsonString);
 
@@ -61,10 +57,10 @@ public class SysData {
         // Create a new JSON object for the new score
         JSONObject newQuestion = new JSONObject();
         newQuestion.put("question", question.getQuestionID());
-        newQuestion.put("level", question.getLevel());
+        newQuestion.put("level", String.valueOf(question.getLevel()));
         newQuestion.put("answers", jsonAnswers);
         newQuestion.put("team", question.getTeam());
-        newQuestion.put("correct_ans", question.getCorrect_ans());
+        newQuestion.put("correct_ans", String.valueOf(question.getCorrect_ans()));
         jsonQuestions.put(newQuestion);
         questions.add(question);
         // Write the updated JSON object back to the file
@@ -73,23 +69,22 @@ public class SysData {
 
     public void addHighScore(String mynickname, int myscore) throws IOException {
         String jsonString = String.valueOf(readJSONObject("history.json"));
-
-// Parse the JSON string into a JSON object
+        // Parse the JSON string into a JSON object
         JSONObject json = new JSONObject(jsonString);
 
-// Get the "history" array from the JSON object
+        // Get the "history" array from the JSON object
         JSONArray history = json.getJSONArray("history");
 
-// Create a new JSON object for the new score
+        // Create a new JSON object for the new score
         JSONObject newScore = new JSONObject();
         newScore.put("player", mynickname);
         newScore.put("score", myscore);
         newScore.put("date", LocalDate.now());
 
-// Add the new score to the history array
+        // Add the new score to the history array
         history.put(newScore);
 
-// Write the updated JSON object back to the file
+        // Write the updated JSON object back to the file
         saveJSONObject(json, "history.json");
     }
 
@@ -108,9 +103,7 @@ public class SysData {
                     parseDate((String.valueOf(jsonObject.get("date"))))
             ));
         }
-        System.out.println(history);
         return history;
-
     }
     private LocalDate parseDate(String dateString){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -138,7 +131,6 @@ public class SysData {
                     Integer.parseInt(String.valueOf(jsonObject.get("level"))),
                     String.valueOf(jsonObject.get("team"))));
         }
-        System.out.println(questions);
     }
     private JSONObject readJSONObject(String jsonFile){
         InputStream stream;

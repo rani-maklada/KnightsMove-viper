@@ -26,11 +26,9 @@ public class King extends Piece{
         moves.add("Tile" + (x-1) + (y+1));
         moves.add("Tile" + (x-1) + (y));
         moves.add("Tile" + (x-1) + (y-1));
-
-
         for(String move : moves){
             if(getTileByName(move) != null){
-                if(Objects.requireNonNull(getTileByName(move)).getType().equals(TileType.BlockedTile))continue;
+                if(getTileByName(move).getType().equals(TileType.BlockedTile))continue;
                 getPossibleMoves().add(move);
 
             }

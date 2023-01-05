@@ -1,7 +1,7 @@
 package model;
 
 public class PieceFactory {
-    static public Piece createPiece(String pieceType, String color, int x, int y) {
+    static public Piece createPiece(String pieceType, String color) {
         if (pieceType == null) {
             return null;
         }

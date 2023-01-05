@@ -8,9 +8,16 @@
 
          -fx-background-image:url('images/YourScore.png');
 }
+
+
 .root{
      -fx-background-image:url('images/knight-chess-attack.jpg');
      -fx-background-size:cover;
+}
+.sandal
+{
+     -fx-background-image:url('images/backQ.jpg');
+
 }
 .backGroundQ{
 

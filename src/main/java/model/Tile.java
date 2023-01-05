@@ -13,10 +13,6 @@ public class Tile extends StackPane {
     private Question question;
     private QuestionLevel level;
     public Tile(int x, int y){
-//        if ((x>8 || x<0) || (y>8 || y<0)){
-//            System.out.println("Can't create a tile outside of borders");
-//            return;
-//        }
         this.x = x;
         this.y = y;
         this.occupied = false;
@@ -44,9 +40,6 @@ public class Tile extends StackPane {
                 level = QuestionLevel.Hard;
             }
         }
-    }
-     void checkValidPosition(int x, int y){
-
     }
     public int getX() {
         return x;
@@ -115,6 +108,7 @@ public class Tile extends StackPane {
 //        return "Tile" + this.x + this.y + " - " + status;
         return "Tile";
     }
-
-
+    public QuestionLevel getLevel() {
+        return level;
+    }
 }

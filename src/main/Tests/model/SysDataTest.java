@@ -20,7 +20,7 @@ class SysDataTest {
     }
     @Test
     void testAddAndRemoveQuestionFromJson() {
-        //initializing sysdata
+        //initializing sysData
         SysData sysData = SysData.getInstance();
         HashMap <Integer,String> testAnswers = new HashMap<>();
         testAnswers.put(1,"test1");
