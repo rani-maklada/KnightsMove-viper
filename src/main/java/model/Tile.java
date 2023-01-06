@@ -3,7 +3,9 @@ package model;
 import Enums.QuestionLevel;
 import Enums.TileType;
 import javafx.scene.layout.StackPane;
-
+/**
+ * Class representing a tile on the game board.
+ */
 public class Tile extends StackPane {
     private int x,y;
     private boolean occupied;
@@ -12,6 +14,11 @@ public class Tile extends StackPane {
     private TileType type;
     private Question question;
     private QuestionLevel level;
+    /**
+     * Constructor for a tile object.
+     * @param x x-coordinate of the tile on the board.
+     * @param y y-coordinate of the tile on the board.
+     */
     public Tile(int x, int y){
         this.x = x;
         this.y = y;

@@ -1,15 +1,24 @@
 package model;
 
 import java.util.HashMap;
-
+/**
+ * A class representing a question for the KnightMove game.
+ * It includes the question's level, text, and answer.
+ */
 public class Question {
     private String questionID;
     private HashMap<Integer, String> answers;
     private int correct_ans;
     private int level;
-
     private String team;
-
+    /**
+     * Construct a new Question with the given level, text, and answer.
+     * @param level the level of difficulty of the question
+     * @param questionID the text of the question
+     * @param correct_ans the correct answer to the question
+     * @param answers possible answers
+     * @param team witch team wrote the question
+     */
     public Question(String questionID, HashMap<Integer, String> answers, int correct_ans, int level, String team) {
         this.questionID = questionID;
         this.answers = answers;

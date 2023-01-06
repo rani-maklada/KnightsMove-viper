@@ -70,7 +70,6 @@ public class goToGameOver {
         image = new Image(String.valueOf(getClass().getResource("/view/images/YourScore.png")));
         myImageScore.setImage(image);
         System.out.println(nickName);
-
         if(Result)
             image = new Image(String.valueOf(getClass().getResource("/view/images/gameOverGif.gif")));
         else {

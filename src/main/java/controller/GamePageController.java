@@ -362,7 +362,7 @@ public class GamePageController {
     }
 
     /**
-     *
+     *Select random tile and make it RandomTile add it to the board
      */
     private void generateRandomTile() {
         Tile tile = selectRandomEmptyTile();
@@ -371,10 +371,18 @@ public class GamePageController {
         }
     }
 
+    /**
+     * Select random tile and make it ForgetTile and add it to the board
+     */
     private void generateForgetTile() {
         Tile tile = selectRandomEmptyTile();
         tile.setType(TileType.ForgetTile);
     }
+
+    /**
+     * make animation when you put the piece in randomTile
+     * the animation make colors the random tile
+     */
     void animationRandom() {
         Random rand = new Random();
         Tile tile = cb.getTiles().get(rand.nextInt(cb.getTiles().size()));
@@ -392,6 +400,11 @@ public class GamePageController {
         }));
         timeline.play();
     }
+
+    /**
+     * drop the piece to random tile
+     * @param tile random tile
+     */
     void dropRandomPiece(Tile tile) {
         textArea.setText(textArea.getText() + "\n jump to Randommmmm");
         Tile initialSquare = (Tile) myPiece.getParent();
@@ -425,6 +438,10 @@ public class GamePageController {
         }
     }
 
+    /**
+     * Turn tile to visited
+     * @param tile resieve tile and change it to visited
+     */
     void visitedTile(Tile tile) {
         tile.setVisited(true);
         setBackgroundVisited(tile);
@@ -432,6 +449,12 @@ public class GamePageController {
         lblScore.setText("Your Stage Score: " + myScore);
         visitedTiles.add(tile);
     }
+
+    /**
+     * reset the game and start from the beginning
+     * @param event reset button event
+     * @throws IOException
+     */
     @FXML
     void resetButton(ActionEvent event) throws IOException {
         cb.getChessBoard().getChildren().clear();
@@ -441,6 +464,11 @@ public class GamePageController {
         }
         initialize();
     }
+
+    /**
+     * move to stage 2
+     * init the board
+     */
     @FXML
     void stageTwo() {
         computerPiece = cb.getQueen();
@@ -452,6 +480,10 @@ public class GamePageController {
         questionMarkByLevel(3);
     }
 
+    /**
+     * move to stage 3
+     * init the board
+     */
     @FXML
     void stageThree() {
         computerPiece = cb.getKing();
@@ -464,6 +496,10 @@ public class GamePageController {
         questionMarkByLevel(3);
     }
 
+    /**
+     * move to stage 4
+     * init the board
+     */
     @FXML
     void stageFour() {
         computerPiece = cb.getKing();
@@ -475,6 +511,10 @@ public class GamePageController {
         questionMarkByLevel(3);
     }
 
+    /**
+     * when moving to another stage
+     * reset the board
+     */
     @FXML
     void resetBoard() {
         chessBoard.setDisable(true);
@@ -503,6 +543,11 @@ public class GamePageController {
         chessBoard.setDisable(false);
     }
 
+    /**
+     * handle backbutton go back to homepage
+     * @param event backbutton event
+     * @throws IOException
+     */
     @FXML
     void backButton(ActionEvent event) throws IOException {
         if (myStage >= 3) {
@@ -517,6 +562,10 @@ public class GamePageController {
         stage.show();
     }
 
+    /**
+     * whene you press on the cheesboard
+     * @param event mouse clicked by the player (Tile)
+     */
     @FXML
     void getOnMouseClicked(MouseEvent event) {
         EventTarget target = event.getTarget();
@@ -529,6 +578,10 @@ public class GamePageController {
         }
     }
 
+    /**
+     * select the knight piece and show possible moves
+     * @param game if game is still going
+     */
     private void selectPiece(boolean game) {
         if (!game) {
             myPiece = null;
@@ -544,12 +597,21 @@ public class GamePageController {
         myPiece.showAllPossibleMoves(true);
     }
 
+    /**
+     * deselect piece to unshow possible moves
+     * and then reselecet piece to update the possible moves
+     * @param changePlayer check if the player changes
+     */
     private void deselectPiece(boolean changePlayer) {
         myPiece.setEffect(null);
         myPiece.showAllPossibleMoves(false);
         selectPiece(true);
     }
 
+    /**
+     * when the queen or the king move
+     * they activate the method
+     */
     private void computerMove() {
         computerPiece.getAllPossibleMoves();
         ArrayList<String> moves = computerPiece.getPossibleMoves();
@@ -570,6 +632,11 @@ public class GamePageController {
         }
     }
 
+    /**
+     * calculate the best move for the queen
+     * @param moves possible moves for the queen
+     * @return best move
+     */
     private String queenBestMove(ArrayList<String> moves) {
         int score = 0;
         int maxScore = score;
@@ -588,7 +655,11 @@ public class GamePageController {
         }
         return bestMove;
     }
-
+    /**
+     * calculate the best move for the king
+     * @param moves possible moves for the king
+     * @return best move
+     */
     private String kingBestMove(ArrayList<String> moves) {
         int x = computerPiece.getPosX(), y = computerPiece.getPosY();
         for (String move : moves) {
@@ -605,6 +676,13 @@ public class GamePageController {
         return String.format("Tile%d%d", x, y);
     }
 
+    /**
+     * find best move for the computer based of the type
+     * of the piece: king / queen
+     * @param moves possible moves
+     * @param pieceType type of the piece: king/Queen
+     * @return bestmove: tile
+     */
     private String findBestMove(ArrayList<String> moves, String pieceType) {
         if (pieceType.equals("Queen")) {
             return queenBestMove(moves);
@@ -613,6 +691,13 @@ public class GamePageController {
         }
     }
 
+    /**
+     * evaluate move and give it a score.
+     * the score is based on how many tiles
+     * the queen is blocking the knight
+     * @param tile tile that the queen can move to
+     * @return the score of the tile
+     */
     private int evaluateMove(Tile tile) {
         int score = 0;
         Piece piece = PieceFactory.createPiece(computerPiece.getType(), "white");
@@ -628,6 +713,10 @@ public class GamePageController {
         return score;
     }
 
+    /**
+     * drop piece of the knight
+     * @param tile the dropped tile
+     */
     private void dropPiece(Tile tile) {
         if (!myPiece.getPossibleMoves().contains(tile.getName())) return;
         if (tile.getChildren().size() > 0) {
@@ -660,6 +749,12 @@ public class GamePageController {
         }
     }
 
+
+    /**
+     * when to stand on special Tile
+     * to get over her
+     * @param tile the special Tile
+     */
     private void handleSpecialTiles(Tile tile) {
         switch (tile.getType()) {
             case ForgetTile -> {
@@ -677,6 +772,9 @@ public class GamePageController {
         tile.setType(TileType.Nothing);
     }
 
+    /**
+     * Unvisit the last 3 tiles
+     */
     private void forgetTile() {
         int count = 3;
         while (visitedTiles.size() > 0 && count > 0) {
@@ -690,6 +788,11 @@ public class GamePageController {
         tile.setType(TileType.ForgetTile);
     }
 
+    /**
+     * Question alert.
+     * you need to answer the question to continue the game
+     * @param q the question that player need to answer
+     */
     private void questionTile(Question q) {
         pauseTimer();
         Image image = new Image(String.valueOf(getClass().getResource("/view/images/giphy.gif")));
@@ -793,9 +896,12 @@ public class GamePageController {
         questions.remove(q);
         questionMarkByLevel(q.getLevel());
         imgTimer.setImage(null);
-
     }
-
+    /**
+     * Play the animationRandom()
+     * when it finish choose random tile to jump to
+     * and then generate another random tile
+     */
     private void randomTile() {
         chessBoard.setDisable(true);
         numberOfGlow = 8;
@@ -816,6 +922,10 @@ public class GamePageController {
         timeline.play();
     }
 
+    /**
+     * add background to the visited tile
+     * @param tile visited tile
+     */
     private void setBackgroundVisited(Tile tile) {
         switch (cb.getTheme()) {
             case "Coral" -> {
@@ -838,11 +948,18 @@ public class GamePageController {
             }
         }
     }
-
+    /**
+     * reset background to the unvisited tile
+     * @param tile unvisited tile
+     */
     private void setBackgroundNotVisited(Tile tile) {
         cb.setTheme(tile, cb.getTheme(), tile.getX(), tile.getY());
     }
 
+    /**
+     * drop the computer piece to tile
+     * @param tile dropped tile
+     */
     private void dropComputer(Tile tile) {
         if (!computerPiece.getPossibleMoves().contains(tile.getName())) return;
         System.out.println("dropComputer");
@@ -855,6 +972,10 @@ public class GamePageController {
         computerPiece.setPosY(tile.getY());
     }
 
+    /**
+     * kill the knight piece
+     * @param tile the tile that the knight stand on
+     */
     private void killMyPiece(Tile tile) {
         if (!computerPiece.getPossibleMoves().contains(tile.getName())) return;
         System.out.println("killMyPiece:" + tile.getChildren());
@@ -877,6 +998,9 @@ public class GamePageController {
         }
     }
 
+    /**
+     * The game ends
+     */
     private void GameOver() {
         pauseTimer();
         timer.stop();
@@ -891,6 +1015,11 @@ public class GamePageController {
             throw new RuntimeException(e);
         }
     }
+
+    /**
+     * move to the GoToGameOver page
+     * @param myString check if the player finish the game or not
+     */
     private void gameOverPage(String myString){
         totalScore = totalScore+myScore;
         FXMLLoader loader;

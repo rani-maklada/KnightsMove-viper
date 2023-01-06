@@ -5,14 +5,23 @@ import controller.GamePageController;
 
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * This class represents the Knight chess piece. It extends the {@link Piece}
+ * class and overrides the {@link Piece#getAllPossibleMoves()}
+ * method to return a list of all the possible moves that the Knight can make.
+ */
 public class Knight extends Piece{
-
+    /**
+     * Constructor for the Knight class.
+     * @param color the color of the Knight chess piece.
+     */
     public Knight(String color) {
         super(color, 0, 0, "Knight");
-
-
     }
+    /**
+     * This method generates a list of all the possible moves that the Knight chess piece can make.
+     * It takes into account the position of the Knight on the board and the positions of other chess pieces.
+     */
     @Override
     public void getAllPossibleMoves() {
         int x = this.getPosX();

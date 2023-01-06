@@ -6,7 +6,12 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
-
+/**
+ * The ChessBoard class represents a chess board in the KnightMove game. It has a GridPane layout, an ArrayList of Tile
+ * objects, King, Queen, and Knight objects, and a string to store the current theme of the chess board. It has methods
+ * to create the tiles for the chess board and add them to the GridPane layout, set the theme of the tiles, and add the
+ * chess pieces to the board.
+ */
 public class ChessBoard {
     // Declare a GridPane object to represent the chess board
     private GridPane chessBoard;
@@ -20,7 +25,13 @@ public class ChessBoard {
     private ArrayList<Tile> tiles = new ArrayList<>();
     // Declare a variable to store the size of the chess board
     private int boardSize;
-    // Constructor for the ChessBoard class
+
+    /**
+     * Constructor for the ChessBoard class
+     * @param chessBoard GridPane from the FXML
+     * @param theme the theme of the board
+     * @param boardSize the size of the board
+     */
     public ChessBoard(GridPane chessBoard, String theme,int boardSize){
         this.chessBoard = chessBoard;
         this.theme = theme;
@@ -66,7 +77,7 @@ public class ChessBoard {
      * Method to create the tiles for the chess board
      * and add them to the GridPane layout
      * @param chessBoard GridPane from the FXML
-     * @param theme
+     * @param theme the size of the board
      */
     private void makeBoard(GridPane chessBoard, String theme){
         // Loop through the chess board and create tiles for each position
@@ -137,16 +148,27 @@ public class ChessBoard {
         }
     }
 
+    /**
+     * Adds a chess piece to the specified tile and marks the tile as occupied.
+     * @param tile the tile where the piece will be placed
+     * @param piece the chess piece to be placed on the tile
+     */
     private void addPiece(Tile tile, Piece piece){
         tile.getChildren().add(0,piece);
         tile.setOccupied(true);
     }
-    // The addPieces method places pieces on the board.
-    // It iterates through all the tiles in the tiles ArrayList.
-    // If a tile is already occupied or is not on the first row, the loop continues to the next tile.
-    // Otherwise, if the tile is in the first column, a black knight is placed on the tile.
-    // If the tile is in the seventh column and the game stage is less than 2, a white queen is placed on the tile.
-    // If the tile is in the seventh column and the game stage is 2 or greater, a white king is placed on the tile.
+
+    /**
+     * The addPieces method places pieces on the board.
+     * It iterates through all the tiles in the tiles ArrayList.
+     * If a tile is already occupied or is not on the first row,
+     * the loop continues to the next tile.
+     * Otherwise, if the tile is in the first column, a black knight is placed on the tile.
+     * If the tile is in the seventh column and the game stage is less than 2,
+     * a white queen is placed on the tile.
+     * If the tile is in the seventh column and the game stage is 2 or greater,
+     * a white king is placed on the tile.
+     */
     public void addPieces(){
         Tile tile;
         tile = getTileByPos(0,0);
@@ -164,6 +186,12 @@ public class ChessBoard {
             }
         }
     }
+    /**
+     * This method returns the Tile object at the specified position on the chess board.
+     * @param x - the row index of the tile
+     * @param y - the column index of the tile
+     * @return the Tile object at the specified position, or null if no such tile exists
+     */
     private Tile getTileByPos(int x, int y){
         for(Tile tile : tiles){
             if(tile.getX() == x && tile.getY() == y){
