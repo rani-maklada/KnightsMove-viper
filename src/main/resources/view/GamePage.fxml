@@ -66,22 +66,25 @@
             <font>
                 <Font size="37.0" />
             </font></Label>
-        <Label fx:id="myNickName" layoutX="26.0" layoutY="14.0" prefHeight="55.0" prefWidth="184.0" text="#myNickName" textFill="WHITE">
+        <Label fx:id="myNickName" layoutX="69.0" layoutY="14.0" prefHeight="55.0" prefWidth="184.0" text="#myNickName" textFill="WHITE">
             <font>
                 <Font name="Goudy Old Style" size="24.0" />
             </font>
         </Label>
-        <Label fx:id="lblScore" layoutX="264.0" layoutY="14.0" prefHeight="55.0" prefWidth="363.0" text="Score">
+        <Label fx:id="lblScore" layoutX="527.0" layoutY="69.0" prefHeight="41.0" prefWidth="113.0">
             <font>
                 <Font size="38.0" />
             </font>
         </Label>
-        <TextArea fx:id="textArea" layoutX="14.0" layoutY="200.0" prefHeight="141.0" prefWidth="150.0" />
-        <Label fx:id="lblStage" layoutX="400.0" layoutY="63.0" prefHeight="68.0" prefWidth="205.0" text="Stage">
+        <TextArea fx:id="textArea" editable="false" layoutX="14.0" layoutY="200.0" opacity="0.64" prefHeight="141.0" prefWidth="150.0" />
+        <Label fx:id="lblStage" layoutX="342.0" layoutY="73.0" prefHeight="41.0" prefWidth="57.0" text="Level:" textFill="WHITE">
             <font>
-                <Font size="38.0" />
+                <Font size="18.0" />
             </font>
         </Label>
       <ImageView fx:id="imgTimer" fitHeight="41.0" fitWidth="57.0" layoutX="256.0" layoutY="76.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="imgUser" fitHeight="38.0" fitWidth="39.0" layoutX="22.0" layoutY="23.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="imgScore" fitHeight="41.0" fitWidth="49.0" layoutX="463.0" layoutY="73.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="imgLevel" fitHeight="41.0" fitWidth="39.0" layoutX="400.0" layoutY="76.0" pickOnBounds="true" preserveRatio="true" />
     </children>
 </AnchorPane>

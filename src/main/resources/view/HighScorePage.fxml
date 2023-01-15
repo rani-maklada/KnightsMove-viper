@@ -8,15 +8,16 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" styleClass="myGameBackGround" stylesheets="@application.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.HighScorePageController">
+<AnchorPane prefHeight="600.0" prefWidth="800.0" styleClass="myGameBackGround" stylesheets="@application.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.HighScorePageController">
    <children>
-      <BorderPane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <BorderPane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="0.0">
          <center>
-            <TableView fx:id="tableView" editable="true" opacity="0.74" prefHeight="325.0" prefWidth="451.0" BorderPane.alignment="CENTER">
+            <TableView fx:id="tableView" opacity="0.74" prefHeight="501.0" prefWidth="757.0" BorderPane.alignment="CENTER">
               <columns>
-                <TableColumn fx:id="colPlayerName" editable="false" prefWidth="103.3333410024643" sortable="false" text="Player Name" />
-                  <TableColumn fx:id="colDate" editable="false" prefWidth="192.66659545898438" sortable="false" text="Date" />
-                <TableColumn fx:id="colScore" editable="false" prefWidth="72.66666412353516" sortable="false" text="Score" />
+                <TableColumn fx:id="colPlayerName" editable="false" maxWidth="180.0" minWidth="180.0" prefWidth="180.0" resizable="false" sortable="false" text="Player Name" reorderable="false"/>
+                  <TableColumn fx:id="colDate" editable="false" maxWidth="180.0" minWidth="180.0" prefWidth="180.0" resizable="false" sortable="false" text="Date" reorderable="false"/>
+                <TableColumn fx:id="colScore" editable="false" maxWidth="180.0" minWidth="180.0" prefWidth="180.0" resizable="false" sortable="false" text="Score" reorderable="false"/>
+                  <TableColumn fx:id="colImage" editable="false" maxWidth="150.0" minWidth="150.0" prefWidth="150.0" resizable="false" sortable="false" reorderable="false"/>
               </columns>
                <columnResizePolicy>
                   <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

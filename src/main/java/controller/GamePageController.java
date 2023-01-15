@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.Random;
 
 import Enums.TileType;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.effect.ColorAdjust;
 import javafx.animation.KeyFrame;
@@ -40,6 +41,14 @@ import javafx.animation.AnimationTimer;
  * logic and UI of KnightMove.
  */
 public class GamePageController {
+    @FXML
+    private ImageView imgUser;
+
+    @FXML
+    private ImageView imgScore;
+
+    @FXML
+    private ImageView imgLevel;
     @FXML private AnchorPane GamePage;
     @FXML private ImageView imgTimer;
 
@@ -88,14 +97,20 @@ public class GamePageController {
      */
     @FXML
     void initialize() throws IOException {
+        Image image = new Image(String.valueOf(getClass().getResource("/view/images/level1.png")));
+        imgLevel.setImage(image);
+         image = new Image(String.valueOf(getClass().getResource("/view/images/myUser.png")));
+        imgUser.setImage(image);
+        image = new Image(String.valueOf(getClass().getResource("/view/images/myScore.png")));
+        imgScore.setImage(image);
         // Initialize variables and set text for labels
         myStage = 1;
         totalScore = 0;
         myScore = 0;
         myNickName.setText(myNickHolder);
-        lblScore.setText("Your Stage Score: " + myScore);
-        lblStage.setText("Stage: " + myStage);
-        textArea.setText("");
+        lblScore.setText("" + myScore);
+        lblStage.setText("Level:");
+        textArea.setText("Start:");
         // Get a copy of the list of questions
         questions = (ArrayList<Question>) SysData.getInstance().getQuestions().clone();
         // Create a new chess board with the specified theme and size
@@ -134,6 +149,11 @@ public class GamePageController {
             if (question.getLevel() == level) {
                 q.add(question);
             }
+        }
+        if(q.isEmpty()){
+            questions.clear();
+            questions = (ArrayList<Question>) SysData.getInstance().getQuestions().clone();
+            q = questionsByLevel(level);
         }
         return q;
     }
@@ -393,7 +413,7 @@ public class GamePageController {
         colorAdjust.setContrast(0.5);  // increase the contrast by 0.5
         tile.setEffect(colorAdjust);
         numberOfGlow--;
-        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(0.2), event -> {
+        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(0.1), event -> {
             tile.setEffect(null);
             if (numberOfGlow > 0)
                 animationRandom();
@@ -406,7 +426,7 @@ public class GamePageController {
      * @param tile random tile
      */
     void dropRandomPiece(Tile tile) {
-        textArea.setText(textArea.getText() + "\n jump to Randommmmm");
+        textArea.setText(textArea.getText() + "\njump to Randommmmm");
         Tile initialSquare = (Tile) myPiece.getParent();
         System.out.println(initialSquare);
         System.out.println(initialSquare.getX());
@@ -423,13 +443,13 @@ public class GamePageController {
         initialSquare.setOccupied(false);
         myPiece.setPosX(tile.getX());
         myPiece.setPosY(tile.getY());
-        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
+        deselectPiece(true);
+        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(0.5), event -> {
             if (computerPiece != null && computerPiece.getType().equals("Queen")) {
                 computerMove();
             } else {
                 myRateTimeLine.play();
             }
-            deselectPiece(true);
         }));
         timeline.play();
         if (computerPiece.getType().equals("King")) {
@@ -446,7 +466,7 @@ public class GamePageController {
         tile.setVisited(true);
         setBackgroundVisited(tile);
         myScore++;
-        lblScore.setText("Your Stage Score: " + myScore);
+        lblScore.setText("" + myScore);
         visitedTiles.add(tile);
     }
 
@@ -533,10 +553,12 @@ public class GamePageController {
             }
         }
         myStage++;
+        Image image = new Image(String.valueOf(getClass().getResource("/view/images/level"+myStage+".png")));
+        imgLevel.setImage(image);
         totalScore = myScore + totalScore;
         myScore = 1;
-        lblStage.setText("Stage: " + myStage);
-        lblScore.setText("Your Stage Score: " + myScore);
+        lblStage.setText("Level:");
+        lblScore.setText("" + myScore);
         visitedTile(cb.getTiles().get(0));
         resetTimer();
         selectPiece(true);
@@ -706,7 +728,6 @@ public class GamePageController {
         piece.getAllPossibleMoves();
         for (String move : piece.getPossibleMoves()) {
             if (myPiece.getPossibleMoves().contains(move)) {
-                System.out.println("move:" + move);
                 score++;
             }
         }
@@ -733,19 +754,30 @@ public class GamePageController {
             myScore++;
             visitedTiles.add(tile);
         }
-        lblScore.setText("Your Stage Score: " + myScore);
+        lblScore.setText("" + myScore);
         initialSquare.getChildren().removeAll();
         initialSquare.setOccupied(false);
         myPiece.setPosX(tile.getX());
         myPiece.setPosY(tile.getY());
+        TileType tileType = TileType.Nothing;
         if (!tile.getType().equals(TileType.Nothing)) {
-            System.out.println(tile.getType());
+            tileType = tile.getType();
+            pauseTimer();
             handleSpecialTiles(tile);
         }
+        textArea.setText(textArea.getText() + "\nKnight move to"+tile.getName());
         deselectPiece(true);
         if (computerPiece != null) {
-            if (!tile.getType().equals(TileType.RandomTile))
-                computerMove();
+            if (!tileType.equals(TileType.RandomTile)){
+                chessBoard.setDisable(true);
+                Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(0.5), event -> {
+                    computerMove();
+                    chessBoard.setDisable(false);
+                }));
+                timeline.play();
+
+            }
+
         }
     }
 
@@ -776,6 +808,18 @@ public class GamePageController {
      * Unvisit the last 3 tiles
      */
     private void forgetTile() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Warning");
+        alert.setHeaderText("forgetTile!");
+        alert.setContentText("you stepped on forgetTile, your last 3 steps will be erase");
+        alert.show();
+        new Timeline(new KeyFrame(Duration.seconds(3), new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                alert.close();
+                resumeTimer();
+            }
+        })).play();
         int count = 3;
         while (visitedTiles.size() > 0 && count > 0) {
             Tile tile = visitedTiles.get(visitedTiles.size() - 1);
@@ -783,6 +827,7 @@ public class GamePageController {
             tile.setVisited(false);
             setBackgroundNotVisited(tile);
             count--;
+            myScore--;
         }
         Tile tile = selectRandomEmptyTile();
         tile.setType(TileType.ForgetTile);
@@ -799,7 +844,7 @@ public class GamePageController {
         imgTimer.setImage(image);
         Dialog<String> dialog = new Dialog<>();
         dialog.getDialogPane().setMinSize(600,400);
-        dialog.getDialogPane().setMaxSize(600,400);
+        dialog.getDialogPane().setMaxSize(610,410);
         dialog.setTitle("Question");
         // Style the header
         StackPane headerPane = new StackPane();
@@ -864,35 +909,52 @@ public class GamePageController {
         });
         Optional<String> result = dialog.showAndWait();
         if (result.isPresent()) {
+            int point = 0;
             if (result.get().equals("true")) {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Result");
+                alert.setHeaderText("Correct!");
                 switch (q.getLevel()) {
                     case 1 -> {
                         myScore++;
+                        point=1;
                     }
                     case 2 -> {
                         myScore = myScore + 2;
+                        point=2;
                     }
                     case 3 -> {
                         myScore = myScore + 3;
+                        point=3;
                     }
                 }
+                alert.setContentText("Congratulations, you answered correctly!\nYou earn "+point+" points");
+                alert.showAndWait();
             } else {
+                ;
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Result");
+                alert.setHeaderText("Wrong!");
                 switch (q.getLevel()) {
                     case 1 -> {
-                        myScore = Math.max(myScore - 2, 0);
-
+                        myScore = myScore - 2;
+                        point=2;
                     }
                     case 2 -> {
-                        myScore = Math.max(myScore - 3, 0);
+                        myScore = myScore - 3;
+                        point=3;
                     }
                     case 3 -> {
-                        myScore = Math.max(myScore - 4, 0);
+                        myScore = myScore - 4;
+                        point=4;
                     }
                 }
+                alert.setContentText("Sorry, you answered incorrectly.\nYou lose "+point+" points");
+                alert.showAndWait();
             }
             resumeTimer();
         }
-        lblScore.setText("Your Stage Score: " + myScore);
+        lblScore.setText("" + myScore);
         questions.remove(q);
         questionMarkByLevel(q.getLevel());
         imgTimer.setImage(null);
@@ -904,12 +966,11 @@ public class GamePageController {
      */
     private void randomTile() {
         chessBoard.setDisable(true);
-        numberOfGlow = 8;
-        pauseTimer();
+        numberOfGlow = 20;
         Image image = new Image(String.valueOf(getClass().getResource("/view/images/giphy.gif")));
         imgTimer.setImage(image);
         animationRandom();
-        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1.7), event -> {
+        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(2.1), event -> {
             // code to execute after the pause
             Tile randomTile = selectRandomEmptyTile();
             dropRandomPiece(randomTile);
@@ -970,6 +1031,7 @@ public class GamePageController {
         initialSquare.setOccupied(false);
         computerPiece.setPosX(tile.getX());
         computerPiece.setPosY(tile.getY());
+        textArea.setText(textArea.getText() + "\n"+ computerPiece.getType() +" move to"+tile.getName());
     }
 
     /**
@@ -994,7 +1056,10 @@ public class GamePageController {
         computerPiece.setPosY(tile.getY());
         deselectPiece(true);
         if (!this.game) {
-            GameOver();
+            Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(0.5), event -> {
+                GameOver();
+            }));
+            timeline.play();
         }
     }
 

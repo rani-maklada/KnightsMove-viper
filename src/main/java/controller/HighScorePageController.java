@@ -40,6 +40,7 @@ public class HighScorePageController {
     @FXML private TableColumn<GameHistory, String> colPlayerName;
     @FXML private TableColumn<GameHistory, Integer> colScore;
     @FXML private TableColumn<GameHistory, LocalDate> colDate;
+    @FXML private TableColumn<GameHistory, ImageView> colImage;
 
     /**
      * Initialize the high score page
@@ -61,9 +62,9 @@ public class HighScorePageController {
         // Set the sorted game history as the items for the table view.
         tableView.setItems(data);
         colScore.setCellValueFactory(new PropertyValueFactory<>("score"));
-        TableColumn<GameHistory, ImageView> colImage = new TableColumn<>("");
-
-        colImage.setCellValueFactory(new PropertyValueFactory<>("image"));
+//        TableColumn<GameHistory, ImageView> colImage = new TableColumn<>("");
+//
+//        colImage.setCellValueFactory(new PropertyValueFactory<>("image"));
         tableView.setItems(data);
 
         colImage.setCellValueFactory(cellData -> {
@@ -78,10 +79,8 @@ public class HighScorePageController {
             }
             return new ReadOnlyObjectWrapper<>(imageView);
         });
-        tableView.getColumns().add(colImage);
-        tableView.getColumns().get(3).setMaxWidth(30);
-        tableView.getColumns().get(3).setMinWidth(30);
         data.sort((h1, h2) -> Integer.compare(h2.getScore(), h1.getScore()));
+        tableView.setTableMenuButtonVisible(false);
     }
 
     /**

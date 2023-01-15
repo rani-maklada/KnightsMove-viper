@@ -107,30 +107,14 @@
 -fx-background-color: #28a3f4;
 }
 
-.record-sales {
-    -fx-padding: 8 15 15 15;
-    -fx-background-insets: 0,0 0 5 0, 0 0 6 0, 0 0 7 0;
-    -fx-background-radius: 8;
-    -fx-background-color:#ADD8E6,linear-gradient(#61a2b1, #2A5058);
-
-
-
-    -fx-effect: dropshadow( gaussian , rgba(0,0,0,0.75) , 4,0,0,1 );
-    -fx-font-weight: bold;
-    -fx-font-size: 1.1em;
-}
-.record-sales:hover {
-
-        -fx-background-color:#00008B,linear-gradient(#61a2b1, #2A5058),#7393B3;
-}
-.record-sales:pressed {
-    -fx-padding: 10 15 13 15;
-    -fx-background-insets: 2 0 0 0,2 0 3 0, 2 0 4 0, 2 0 5 0;
+.myCombo
+{
 
 }
-.record-sales Text {
-    -fx-fill: white;
-    -fx-effect: drop shadow( gaussian , #a30000 , 0,0,0,2 );
+.myCombo:odd
+{
+    -fx-background-color: linear-gradient(#61a2b1, #2A5058);
+
 }
 
 
@@ -199,11 +183,8 @@
 list-cell:filled:selected:focused, .list-cell:filled:selected {
     /* 3:, 4: */
     -fx-text-fill: black; /* 5 */
-     -fx-background-color:
-            linear-gradient(from 0% 93% to 0% 100%, #a34313 0%, #903b12 100%),
-            #9d4024,
-            #d86e3a,
-            radial-gradient(center 50% 50%, radius 100%, #ea7f4b, #c54e2c);
+    -fx-background-color: linear-gradient(#61a2b1, #2A5058);
+
 }
 .list-cell { /* 5 */ }
 .list-cell:odd {
@@ -263,67 +244,3 @@ list-cell:filled:selected:focused, .list-cell:filled:selected {
     -fx-background-insets: 0 -1 -1 -1, 0 0 0 0, 0 -1 3 -1;
 }
 
-.combo-box .list-cell
-{
-    -fx-background: white;
-    -fx-background-color: transparent;
-    -fx-text-fill: -fx-text-base-color;
-    -fx-padding: 3 0 2 7;
-    -fx-cell-size: 1.66667em;
-}
-
-.combo-box-popup .list-view
-{
-    -fx-background-color: white, white;
-    -fx-background-insets: 0, 1;
-    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 8, 0.0 , 0 , 0 );
-}
-
-.combo-box-popup .list-view .list-cell
-{
-    -fx-padding: 4 0 4 5;
-
-    /* No alternate highlighting */
-    -fx-background-color: white;
-}
-
-.combo-box-popup .list-view .list-cell:filled:selected, .combo-box-popup .list-view .list-cell:filled:selected:hover
-{
-    -fx-background: -fx-accent;
-    -fx-background-color: -fx-selection-bar;
-    -fx-text-fill: -fx-selection-bar-text;
-}
-
-.combo-box-popup .list-view .list-cell:filled:hover
-{
-    -fx-background-color: white;
-    -fx-text-fill: -fx-text-inner-color;
-}
-
-.combo-box-base
-{
-    -fx-background-color: white, white, white, white;
-    -fx-background-radius: 5, 5, 4, 3;
-    -fx-background-insets: 0 0 -1 0, 0, 1, 2;
-    -fx-padding: 0;
-}
-
-.combo-box-base:hover
-{
-    -fx-color: -fx-hover-base;
-}
-
-.combo-box-base:showing
-{
-    -fx-color: -fx-pressed-base;
-}
-
-.combo-box-base:focused {
-    -fx-background-color: -fx-focus-color, -fx-outer-border, -fx-inner-border, -fx-body-color;
-    -fx-background-radius: 6.4, 4, 5, 3;
-    -fx-background-insets: -1.4, 0, 1, 2;
-}
-
-.combo-box-base:disabled {
-    -fx-opacity: .4;
-}
