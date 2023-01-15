@@ -24,7 +24,7 @@ public class QuestionsPageController {
 	@FXML private Scene scene;
 	@FXML private Stage stage;
 	@FXML  private ListView<String> listViewQuestions;
-	@FXML private ListView<Label> listViewAnswers;
+	@FXML private ListView<String> listViewAnswers;
 	@FXML private AnchorPane QuestionsPage;
 	@FXML private TextField tfCorrectAnswer;
 	@FXML private TextField tfLevel;
@@ -41,6 +41,7 @@ public class QuestionsPageController {
 		listViewQuestions.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 			getAnswers();
 		});
+
 		// Set the cell factory for the questions list view to wrap the cell text
 		// and bind it to the item property.
 		listViewQuestions.setCellFactory(lv -> {
@@ -50,9 +51,44 @@ public class QuestionsPageController {
 			cell.setPrefHeight(Control.USE_COMPUTED_SIZE);
 			cell.setWrapText(true);
 			text.wrappingWidthProperty().bind(listViewQuestions.widthProperty());
+			cell.itemProperty().addListener((observable, oldValue, newValue) -> {
+				if (newValue != null) {
+					Question question = new Question(newValue);
+					int index = SysData.getInstance().getQuestions().indexOf(question);
+					int level = SysData.getInstance().getQuestions().get(index).getLevel();
+					cell.setStyle(colorByLevel(level));
+				}
+			});
+			cell.setOnMouseEntered(event -> {
+				cell.setStyle("-fx-background-color: linear-gradient(#61a2b1, #2A5058)");
+			});
+			cell.setOnMouseExited(event -> {
+				if(cell.getItem() != null){
+					String mouseExited = cell.getItem();
+					Question question = new Question(mouseExited);
+					int index = SysData.getInstance().getQuestions().indexOf(question);
+					int level = SysData.getInstance().getQuestions().get(index).getLevel();
+					cell.setStyle(colorByLevel(level));
+					cell.setStyle(colorByLevel(level));
+
+				}
+			});
+			text.textProperty().bind(cell.itemProperty());
+			return cell;
+
+		});
+		listViewAnswers.setCellFactory(lv -> {
+			ListCell<String> cell = new ListCell<>();
+			Text text = new Text();
+			cell.setGraphic(text);
+			cell.setPrefHeight(Control.USE_COMPUTED_SIZE);
+			cell.setWrapText(true);
+			text.wrappingWidthProperty().bind(listViewAnswers.widthProperty());
 			text.textProperty().bind(cell.itemProperty());
 			return cell;
 		});
+
+
 		// Set up the double-click event for the questions list view
 		// to edit the selected question.
 		listViewQuestions.setOnMouseClicked(mouseEvent -> {
@@ -68,6 +104,18 @@ public class QuestionsPageController {
 				}
 			}
 		});
+	}
+
+	public String colorByLevel(int level){
+		if (level == 1) {
+			return "-fx-background-color: white;";
+		} else if (level == 2) {
+			return "-fx-background-color: yellow;";
+		} else if (level == 3) {
+			return "-fx-background-color: red;";
+		} else {
+			return "";
+		}
 	}
 
 	/**
@@ -167,11 +215,11 @@ public class QuestionsPageController {
 		Question q = SysData.getInstance().getQuestions().get(index);
 		// Add the answers for the selected question to the listViewAnswers.
 		for (String answer : q.getAnswers().values()) {
-			Label lbItem = new Label();
+			Text text = new Text();
 			// Set the text alignment of the label to center.
-			lbItem.setStyle("-fx-text-alignment: center;");
-			lbItem.setText(answer);
-			listViewAnswers.getItems().add(lbItem);
+			text.setStyle("-fx-text-alignment: center;");
+			text.setText(answer);
+			listViewAnswers.getItems().add(text.getText());
 		}
 		// Refresh the listViewAnswers.
 		listViewAnswers.refresh();

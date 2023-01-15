@@ -970,7 +970,20 @@ public class GamePageController {
         Image image = new Image(String.valueOf(getClass().getResource("/view/images/giphy.gif")));
         imgTimer.setImage(image);
         animationRandom();
-        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(2.1), event -> {
+        generateRandomTile();
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Warning");
+        alert.setHeaderText("randomTile!");
+        alert.setContentText("you stepped on randomTile, your will Jump to random tile");
+        alert.show();
+        new Timeline(new KeyFrame(Duration.seconds(2), new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                alert.close();
+                resumeTimer();
+            }
+        })).play();
+        new Timeline(new KeyFrame(Duration.seconds(2.1), event -> {
             // code to execute after the pause
             Tile randomTile = selectRandomEmptyTile();
             dropRandomPiece(randomTile);
@@ -978,9 +991,7 @@ public class GamePageController {
             imgTimer.setImage(null);
             resumeTimer();
             chessBoard.setDisable(false);
-        }));
-        generateRandomTile();
-        timeline.play();
+        })).play();
     }
 
     /**
