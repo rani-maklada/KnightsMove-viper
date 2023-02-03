@@ -207,7 +207,7 @@ public class GamePageController {
     /**
      * A method to start the timer for the game. The timer counts down from 60 seconds.
      * When the timer reaches 0 seconds, the game ends if it is the final stage or
-     * the player's score is less than 15. Otherwise, the board is reset and a new stage begins.
+     * the player's score is less than 2. Otherwise, the board is reset and a new stage begins.
      */
     void timer() {
         // Set the start time to the current system time in milliseconds
@@ -238,11 +238,11 @@ public class GamePageController {
                         if (myStage == 4) {
                             // End the game
                             GameOver();
-                        }// If the player's score is less than 15
-                        else if (myScore < 15) {
+                        }// If the player's score is less than 2
+                        else if (myScore < 2) {
                             game = false;
                             GameOver();
-                        }// If it is not the final stage and the player's score is greater than or equal to 15
+                        }// If it is not the final stage and the player's score is greater than or equal to 2
                         else {
                             // Reset the board and start a new stage
                             resetBoard();
@@ -556,7 +556,7 @@ public class GamePageController {
         Image image = new Image(String.valueOf(getClass().getResource("/view/images/level"+myStage+".png")));
         imgLevel.setImage(image);
         totalScore = myScore + totalScore;
-        myScore = 1;
+        myScore = 0;
         lblStage.setText("Level:");
         lblScore.setText("" + myScore);
         visitedTile(cb.getTiles().get(0));
@@ -831,6 +831,7 @@ public class GamePageController {
         }
         Tile tile = selectRandomEmptyTile();
         tile.setType(TileType.ForgetTile);
+        lblScore.setText("" + myScore);
     }
 
     /**

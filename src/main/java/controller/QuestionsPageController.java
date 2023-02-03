@@ -1,6 +1,8 @@
 package controller;
 
 import java.io.IOException;
+import java.util.Set;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -40,6 +42,16 @@ public class QuestionsPageController {
 		resetViewList();
 		listViewQuestions.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 			getAnswers();
+			if (oldValue != null && getCell(oldValue) != null) {
+				String mouseExited = getCell(oldValue).getItem();
+				Question question = new Question(mouseExited);
+				int index = SysData.getInstance().getQuestions().indexOf(question);
+				int level = SysData.getInstance().getQuestions().get(index).getLevel();
+				getCell(oldValue).setStyle(colorByLevel(level));
+			}
+			if (newValue != null && getCell(newValue) != null) {
+				getCell(newValue).setStyle("-fx-background-color: linear-gradient(#61a2b1, #2A5058);");
+			}
 		});
 
 		// Set the cell factory for the questions list view to wrap the cell text
@@ -59,20 +71,34 @@ public class QuestionsPageController {
 					cell.setStyle(colorByLevel(level));
 				}
 			});
-			cell.setOnMouseEntered(event -> {
-				cell.setStyle("-fx-background-color: linear-gradient(#61a2b1, #2A5058)");
-			});
-			cell.setOnMouseExited(event -> {
-				if(cell.getItem() != null){
-					String mouseExited = cell.getItem();
-					Question question = new Question(mouseExited);
-					int index = SysData.getInstance().getQuestions().indexOf(question);
-					int level = SysData.getInstance().getQuestions().get(index).getLevel();
-					cell.setStyle(colorByLevel(level));
-					cell.setStyle(colorByLevel(level));
-
-				}
-			});
+//			cell.setOnMouseEntered(event -> {
+//				cell.setStyle("-fx-background-color: linear-gradient(#61a2b1, #2A5058)");
+//			});
+//			cell.setOnMouseExited(event -> {
+//				if(cell.getItem() != null){
+//					String mouseExited = cell.getItem();
+//					Question question = new Question(mouseExited);
+//					int index = SysData.getInstance().getQuestions().indexOf(question);
+//					int level = SysData.getInstance().getQuestions().get(index).getLevel();
+//					cell.setStyle(colorByLevel(level));
+//					cell.setStyle(colorByLevel(level));
+//
+//				}
+//			});
+//			cell.setOnMousePressed(event -> {
+//				cell.setStyle("-fx-background-color: gray;");
+//			});
+//			cell.setOnMouseReleased(event -> {
+//				if(cell.getItem() != null){
+//					String mouseExited = cell.getItem();
+//					Question question = new Question(mouseExited);
+//					int index = SysData.getInstance().getQuestions().indexOf(question);
+//					int level = SysData.getInstance().getQuestions().get(index).getLevel();
+//					cell.setStyle(colorByLevel(level));
+//					cell.setStyle(colorByLevel(level));
+//
+//				}
+//			});
 			text.textProperty().bind(cell.itemProperty());
 			return cell;
 
@@ -104,6 +130,17 @@ public class QuestionsPageController {
 				}
 			}
 		});
+	}
+	public ListCell<String> getCell(String item){
+		Set<Node> cells = listViewQuestions.lookupAll(".list-cell");
+		for (Node cellNode : cells) {
+			ListCell<String> cell = (ListCell<String>) cellNode;
+			if (cell.getItem() != null && cell.getItem().equals(item)) {
+				// the cell that represents the item has been found
+				return cell;
+			}
+		}
+		return null;
 	}
 
 	public String colorByLevel(int level){
