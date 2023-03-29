@@ -24,6 +24,7 @@ public class Knight extends Piece{
      */
     @Override
     public void getAllPossibleMoves() {
+        //**
         int x = this.getPosX();
         int y = this.getPosY();
         ArrayList<String> moves = new ArrayList<>();

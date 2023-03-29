@@ -19,6 +19,8 @@ public class Queen extends Piece{
      */
     @Override
     public void getAllPossibleMoves() {
+        //**
+
         int x = this.getPosX();
         int y = this.getPosY();
         String name;

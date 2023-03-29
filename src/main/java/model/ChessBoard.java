@@ -13,7 +13,7 @@ import java.util.ArrayList;
  * chess pieces to the board.
  */
 public class ChessBoard {
-    // Declare a GridPane object to represent the chess board
+    // Declare a GridPane object to represent the chess board**
     private GridPane chessBoard;
     // Declare King, Queen, and Knight objects
     protected King king;
@@ -33,6 +33,7 @@ public class ChessBoard {
      * @param boardSize the size of the board
      */
     public ChessBoard(GridPane chessBoard, String theme,int boardSize){
+        //**
         this.chessBoard = chessBoard;
         this.theme = theme;
         this.boardSize=boardSize;
@@ -80,6 +81,7 @@ public class ChessBoard {
      * @param theme the size of the board
      */
     private void makeBoard(GridPane chessBoard, String theme){
+        //**
         // Loop through the chess board and create tiles for each position
         for(int i=0; i<boardSize; i++){
             for(int j=0; j<boardSize; j++){
@@ -111,6 +113,7 @@ public class ChessBoard {
      @param j - the column index of the tile
      */
     public void setTheme(Tile tile, String theme, int i, int j){
+        //**
         // Set the color of the tiles based on the selected theme
         Color color1 = Color.web("#ffffff00");
         Color color2 = Color.web("#ffffff00");

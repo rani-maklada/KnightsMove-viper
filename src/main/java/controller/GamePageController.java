@@ -41,6 +41,7 @@ import javafx.animation.AnimationTimer;
  * logic and UI of KnightMove.
  */
 public class GamePageController {
+    //**
     @FXML
     private ImageView imgUser;
 
@@ -103,7 +104,7 @@ public class GamePageController {
         imgUser.setImage(image);
         image = new Image(String.valueOf(getClass().getResource("/view/images/myScore.png")));
         imgScore.setImage(image);
-        // Initialize variables and set text for labels
+        // Initialize variables and set text for labels*
         myStage = 1;
         totalScore = 0;
         myScore = 0;
@@ -111,7 +112,7 @@ public class GamePageController {
         lblScore.setText("" + myScore);
         lblStage.setText("Level:");
         textArea.setText("Start:");
-        // Get a copy of the list of questions
+        // Get a copy of the list of questionsn
         questions = (ArrayList<Question>) SysData.getInstance().getQuestions().clone();
         // Create a new chess board with the specified theme and size
         cb = new ChessBoard(chessBoard, theme, 8);
@@ -144,6 +145,7 @@ public class GamePageController {
      @return a list of questions with the specified level
      */
     private ArrayList<Question> questionsByLevel(int level) {
+        //**//
         ArrayList<Question> q = new ArrayList<>();
         for (Question question : questions) {
             if (question.getLevel() == level) {
@@ -163,7 +165,7 @@ public class GamePageController {
      * @return a random question with the specified level
      */
     private Question selectRandomQuestionByLevel(int level) {
-        // Get a list of questions with the specified level
+        // Get a list of questions with the specified level**
         ArrayList<Question> q = questionsByLevel(level);
         // Return a random question from the list
         return q.get(rand.nextInt(q.size()));
@@ -174,7 +176,7 @@ public class GamePageController {
      * the difficulty of the game. The timeline will repeat indefinitely until the game ends.
      */
     private void playKingTimeLine() {
-        // Initialize myRate to 7
+        // Initialize myRate to 7**
         myRate = 7;
         // Create a new timeline that will execute a computerMove every 10 seconds
         kingTimeLine = new Timeline(new KeyFrame(Duration.seconds(myRate), event -> {
@@ -212,7 +214,7 @@ public class GamePageController {
     void timer() {
         // Set the start time to the current system time in milliseconds
         startTime = System.currentTimeMillis();
-        // Set the elapsed time to 0
+        // Set the elapsed time to 0**
         elapsedTime = 0;
         // Create a new AnimationTimer
         timer = new AnimationTimer() {
@@ -259,7 +261,7 @@ public class GamePageController {
      * Pauses the countdown timer.
      */
     public void pauseTimer() {
-        paused = true;  // pause the countdown timer
+        paused = true;  // pause the countdown timer**
         elapsedTime += System.currentTimeMillis() - startTime;  // update elapsed time
         // If the current stage is 3 or 4, stop the king's timeline and rate timeline
         if (myStage >= 3) {
@@ -271,7 +273,7 @@ public class GamePageController {
      * Resumes the countdown timer.
      */
     public void resumeTimer() {
-        paused = false;  // resume the countdown timer
+        paused = false;  // resume the countdown timer**
         startTime = System.currentTimeMillis();  // reset start time
         // If the current stage is 3 or 4, stop the king's timeline and rate timeline
         if (myStage >= 3)
@@ -286,7 +288,7 @@ public class GamePageController {
         if (myStage == 3) {
             playKingTimeLine();
         }
-        // If the current stage is 4, stop the king's timeline,
+        // If the current stage is 4, stop the king's timeline,**
         // start the rate timeline from the beginning
         if (myStage == 4) {
             kingTimeLine.stop();
@@ -302,7 +304,7 @@ public class GamePageController {
     void generateBlockedTiles() {
         // Select a random empty tile
         Tile tile = selectRandomEmptyTile();
-        // Load the image for the blocked tile
+        // Load the image for the blocked tile**
         Image image = new Image(String.valueOf(getClass().getResource("/view/pieces/Blocked.png")));
         // Create an ImageView for the blocked tile image
         ImageView imageView = new ImageView(image);
@@ -324,13 +326,13 @@ public class GamePageController {
     private void questionMarkByLevel(int level) {
         // Select a random empty tile
         Tile tile = selectRandomEmptyTile();
-        // Load the question mark image and set its dimensions
+        // Load the question mark image and set its dimensions**
         Image image = new Image(String.valueOf(getClass().getResource("/view/pieces/QuestionMark.png")));
         ImageView imageView = new ImageView(image);
         // Add the image view to the selected tile
         imageView.setFitWidth(20);
         imageView.setFitHeight(20);
-        // Set the type of the tile to QuestionTile and associate a random question
+        // Set the type of the tile to QuestionTile and associate a random question**
         // of the specified level with the tile
         tile.getChildren().add(imageView);
         tile.setType(TileType.QuestionTile);
@@ -361,7 +363,7 @@ public class GamePageController {
         // Set a maximum number of iterations
         int maxIterations = cb.getTiles().size();
 
-        // Try to find an empty tile a maximum of maxIterations times
+        // Try to find an empty tile a maximum of maxIterations times**
         for (int i = 0; i < maxIterations; i++) {
             // Select a random index from the list of tiles
             int index = rand.nextInt(cb.getTiles().size());
@@ -385,6 +387,7 @@ public class GamePageController {
      *Select random tile and make it RandomTile add it to the board
      */
     private void generateRandomTile() {
+        //**//
         Tile tile = selectRandomEmptyTile();
         if (tile.getType() == TileType.Nothing) {
             tile.setType(TileType.RandomTile);
@@ -407,7 +410,7 @@ public class GamePageController {
         Random rand = new Random();
         Tile tile = cb.getTiles().get(rand.nextInt(cb.getTiles().size()));
         ColorAdjust colorAdjust = new ColorAdjust();
-        colorAdjust.setHue(0.9);  // shift the hue towards red
+        colorAdjust.setHue(0.9);  // shift the hue towards red**
         colorAdjust.setSaturation(1.0);  // increase the saturation
         colorAdjust.setBrightness(0.5);  // increase the brightness by 0.5
         colorAdjust.setContrast(0.5);  // increase the contrast by 0.5
@@ -456,6 +459,7 @@ public class GamePageController {
             kingTimeLine.stop();
             myRateTimeLine.stop();
         }
+        //**
     }
 
     /**
@@ -468,6 +472,7 @@ public class GamePageController {
         myScore++;
         lblScore.setText("" + myScore);
         visitedTiles.add(tile);
+        //**
     }
 
     /**
@@ -483,6 +488,7 @@ public class GamePageController {
             myRateTimeLine.stop();
         }
         initialize();
+        //**
     }
 
     /**
@@ -498,6 +504,7 @@ public class GamePageController {
         questionMarkByLevel(1);
         questionMarkByLevel(2);
         questionMarkByLevel(3);
+        //**
     }
 
     /**
@@ -514,6 +521,7 @@ public class GamePageController {
         questionMarkByLevel(1);
         questionMarkByLevel(2);
         questionMarkByLevel(3);
+        //**
     }
 
     /**
@@ -529,6 +537,7 @@ public class GamePageController {
         questionMarkByLevel(1);
         questionMarkByLevel(2);
         questionMarkByLevel(3);
+        //**
     }
 
     /**
@@ -550,6 +559,7 @@ public class GamePageController {
             }
             case 3 -> {
                 stageFour();
+                //**
             }
         }
         myStage++;
@@ -563,6 +573,7 @@ public class GamePageController {
         resetTimer();
         selectPiece(true);
         chessBoard.setDisable(false);
+        //**
     }
 
     /**
@@ -582,6 +593,7 @@ public class GamePageController {
         scene.setRoot(root);
         stage.setScene(scene);
         stage.show();
+        //**
     }
 
     /**
@@ -591,7 +603,7 @@ public class GamePageController {
     @FXML
     void getOnMouseClicked(MouseEvent event) {
         EventTarget target = event.getTarget();
-        // Clicked on Tile
+        // Clicked on Tile**
         if (target.toString().equals("Tile")) {
             Tile tile = (Tile) target;
             if (!tile.isOccupied()) {// Drop piece on blank tile
@@ -609,7 +621,7 @@ public class GamePageController {
             myPiece = null;
             return;
         }
-
+//**
         DropShadow borderGlow = new DropShadow();
         borderGlow.setColor(Color.BLACK);
         borderGlow.setOffsetX(0f);
@@ -628,6 +640,7 @@ public class GamePageController {
         myPiece.setEffect(null);
         myPiece.showAllPossibleMoves(false);
         selectPiece(true);
+        //**
     }
 
     /**
@@ -651,6 +664,7 @@ public class GamePageController {
                     dropComputer(t);
                 }
             }
+            //**
         }
     }
 
@@ -693,6 +707,7 @@ public class GamePageController {
                     && (Math.abs(tile.getY() - myPiece.getPosY()) <= Math.abs(y - myPiece.getPosY()))) {
                 x = tile.getX();
                 y = tile.getY();
+                //**
             }
         }
         return String.format("Tile%d%d", x, y);
@@ -708,7 +723,7 @@ public class GamePageController {
     private String findBestMove(ArrayList<String> moves, String pieceType) {
         if (pieceType.equals("Queen")) {
             return queenBestMove(moves);
-        } else {//pieceType.equals("King")
+        } else {//pieceType.equals("King")**
             return kingBestMove(moves);
         }
     }
@@ -730,6 +745,7 @@ public class GamePageController {
             if (myPiece.getPossibleMoves().contains(move)) {
                 score++;
             }
+            //**
         }
         return score;
     }
@@ -775,7 +791,7 @@ public class GamePageController {
                     chessBoard.setDisable(false);
                 }));
                 timeline.play();
-
+//**
             }
 
         }
@@ -791,6 +807,7 @@ public class GamePageController {
         switch (tile.getType()) {
             case ForgetTile -> {
                 forgetTile();
+                //**
             }
             case RandomTile -> {
                 randomTile();
@@ -828,6 +845,7 @@ public class GamePageController {
             setBackgroundNotVisited(tile);
             count--;
             myScore--;
+            //**
         }
         Tile tile = selectRandomEmptyTile();
         tile.setType(TileType.ForgetTile);
@@ -908,6 +926,7 @@ public class GamePageController {
             }
             return null;
         });
+        //**
         Optional<String> result = dialog.showAndWait();
         if (result.isPresent()) {
             int point = 0;
@@ -966,6 +985,7 @@ public class GamePageController {
      * and then generate another random tile
      */
     private void randomTile() {
+        //**
         chessBoard.setDisable(true);
         numberOfGlow = 20;
         Image image = new Image(String.valueOf(getClass().getResource("/view/images/giphy.gif")));
@@ -981,6 +1001,7 @@ public class GamePageController {
             @Override
             public void handle(ActionEvent event) {
                 alert.close();
+                //**
                 resumeTimer();
             }
         })).play();
@@ -1000,6 +1021,7 @@ public class GamePageController {
      * @param tile visited tile
      */
     private void setBackgroundVisited(Tile tile) {
+        //**
         switch (cb.getTheme()) {
             case "Coral" -> {
                 tile.setBackground(new Background(new BackgroundFill(Color.web("#e4c16f"), CornerRadii.EMPTY, Insets.EMPTY)));
@@ -1026,6 +1048,7 @@ public class GamePageController {
      * @param tile unvisited tile
      */
     private void setBackgroundNotVisited(Tile tile) {
+        //**
         cb.setTheme(tile, cb.getTheme(), tile.getX(), tile.getY());
     }
 
@@ -1035,6 +1058,7 @@ public class GamePageController {
      */
     private void dropComputer(Tile tile) {
         if (!computerPiece.getPossibleMoves().contains(tile.getName())) return;
+        //**
         System.out.println("dropComputer");
         Tile initialSquare = (Tile) computerPiece.getParent();
         tile.getChildren().add(0, computerPiece);
@@ -1051,6 +1075,7 @@ public class GamePageController {
      * @param tile the tile that the knight stand on
      */
     private void killMyPiece(Tile tile) {
+        //**
         if (!computerPiece.getPossibleMoves().contains(tile.getName())) return;
         System.out.println("killMyPiece:" + tile.getChildren());
         Piece killedPiece = (Piece) tile.getChildren().get(0);
@@ -1079,6 +1104,7 @@ public class GamePageController {
      * The game ends
      */
     private void GameOver() {
+        //**
         pauseTimer();
         timer.stop();
         if (!game) {
@@ -1098,6 +1124,7 @@ public class GamePageController {
      * @param myString check if the player finish the game or not
      */
     private void gameOverPage(String myString){
+        //**
         totalScore = totalScore+myScore;
         FXMLLoader loader;
         boolean result;
